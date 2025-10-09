@@ -13,7 +13,7 @@ type OrgVo struct {
 	Code        string           `json:"code"      orm:"code"       description:"组织编码"`    // 组织编码
 	Type        int64            `json:"type"      orm:"type"       description:"组织分类，枚举"` // 组织分类，枚举
 	Status      int64            `json:"status"    orm:"status"     description:"组织状态，枚举"` // 组织状态，枚举
-	Supervisors []*OrgSupervisor `json:"supervisors" orm:"with:user_id=org_id"`
+	Supervisors []*OrgSupervisor `json:"supervisors" orm:"with:org_id=id"`
 }
 
 type OrgStructureVo struct {

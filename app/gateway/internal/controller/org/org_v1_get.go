@@ -21,6 +21,14 @@ func (c *ControllerV1) Get(ctx context.Context, req *v1.GetReq) (res *v1.GetRes,
 			Type:     result.Type,
 			Status:   result.Status,
 		}
+
+		res.Supervisors = make([]*v1.Supervisor, len(result.Supervisors))
+		for k, v := range result.Supervisors {
+			res.Supervisors[k] = &v1.Supervisor{
+				UserId: v.GetId(),
+				Name:   v.GetName(),
+			}
+		}
 	}
 	return
 }
