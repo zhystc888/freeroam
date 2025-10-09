@@ -1,0 +1,31 @@
+// ==========================================================================
+// Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
+// ==========================================================================
+
+syntax = "proto3";
+
+package pbentity;
+
+option go_package = "bbk/app/org/api/pbentity";
+
+import "google/protobuf/timestamp.proto";
+
+message UserMember {
+    uint64                    Id                = 1;  // 主键
+    uint64                    UserId            = 2;  // 用户ID
+    uint64                    TenantId          = 3;  // 租户id
+    string                    Username          = 4;  // 用户名
+    string                    Name              = 5;  // 姓名
+    string                    Mobile            = 6;  // 手机号
+    uint32                    Gender            = 7;  // 性别
+    google.protobuf.Timestamp ResetPasswordTime = 8;  // 重置密码时间
+    uint32                    Status            = 9;  // 状态：0未启用，1已启用，2禁止登陆
+    uint32                    Super             = 10; // 超级管理员，0否1是
+    uint32                    IsDeleted         = 11; // 数据状态0正常1删除
+    uint64                    CreateBy          = 12; // 创建人
+    uint64                    UpdateBy          = 13; // 修改人
+    uint64                    DeleteBy          = 14; // 删除人
+    google.protobuf.Timestamp CreateAt          = 15; // 创建时间
+    google.protobuf.Timestamp UpdateAt          = 16; // 更新时间
+    google.protobuf.Timestamp DeletedAt         = 17; // 删除时间
+}

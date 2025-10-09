@@ -1,0 +1,19 @@
+{
+  "请求成功": {
+    "code": 0,
+    "message": "OK",
+    "data": {
+      "list": [
+        {
+          "userId": 1,
+          "name": "小无",
+          "status": 1,
+          "lastTime": "",
+          "lastIp": "",
+          "createAt": "2025-06-30 00:47:10"
+        }
+      ],
+      "total": 1
+    }
+  }
+}

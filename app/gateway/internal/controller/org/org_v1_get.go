@@ -1,0 +1,26 @@
+package org
+
+import (
+	"context"
+	"fmt"
+
+	"bbk/app/gateway/api/org/v1"
+
+	sorg "bbk/app/org/api/org/v1"
+)
+
+func (c *ControllerV1) Get(ctx context.Context, req *v1.GetReq) (res *v1.GetRes, err error) {
+	result, err := c.OrgRpcService.Get(ctx, &sorg.GetReq{Id: req.Id})
+	fmt.Println("result", result)
+	if result != nil && result.Id > 0 {
+		res = &v1.GetRes{
+			Id:       result.Id,
+			ParentId: result.ParentId,
+			Name:     result.Name,
+			Code:     result.Code,
+			Type:     result.Type,
+			Status:   result.Status,
+		}
+	}
+	return
+}

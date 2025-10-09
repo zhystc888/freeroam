@@ -1,0 +1,8 @@
+nacos:
+  address: "nacos-grpc.yuanjincheng.cn"
+  port: 18848
+  cacheDir: "E:/www/bbk/tmp/nacos/cache"
+  logDir: "E:/www/bbk/log"
+  username: "nacos"
+  password: "nacos"
+  namespaceId: "bbk"

@@ -1,0 +1,18 @@
+
+# CLI tool, only in development environment.
+# https://goframe.org/docs/cli
+gfcli:
+  gen:
+    dao:
+      - link: "mysql:root:ZHYstc_00.888@tcp(124.221.249.230:13306)/freeroam?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai"
+        descriptionTag: true
+        removePrefix: "free_"
+        tables: "free_enum"
+    pbentity:
+      - link: "mysql:root:ZHYstc_00.888@tcp(124.221.249.230:13306)/freeroam?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai"
+        removePrefix: "free_"
+        tables: "free_enum"
+  docker:
+    build: "-a amd64 -s linux -p temp -ew"
+    tagPrefixes:
+      - my.image.pub/my-app

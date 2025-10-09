@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package admin_member.v1;
+
+option go_package = "./api/admin_member/v1";
+
+service AdminMember{
+  // 获取成员详情
+  rpc Get(GetReq) returns (GetRes) {}
+  // 获取成员列表
+  rpc GetList(GetListReq) returns (GetListRes) {}
+}
+
+message GetReq{
+  // 用户ID
+  // v:required|integer|min:1#用户ID不能为空|用户ID必须是整数|用户ID不能小于1
+  int64 userId = 1;
+}
+
+message GetRes{
+  // 用户ID
+  int64 userId = 1;
+  // 姓名
+  string name = 2;
+  // 状态
+  int32 status = 3;
+  // 用户名
+  string username = 4;
+}
+
+message GetListReq {
+  // 用户ID
+  // v:integer#userId必须是整数
+  int64 userId = 1;
+  // 【名称|用户名】模糊搜索
+  string name = 2;
+  // 状态，见枚举
+  // v:in:0,1,2#成员状态参数不正确
+  optional int32 status = 3;
+  // 分页号码
+  // v:min:0#分页号码错误
+  int32 page = 4;
+  // 分页数量，最大100
+  // v:max:100#分页数量最大100条
+  int32 limit = 5;
+}
+
+message GetListRes {
+  // 数据列表
+  repeated GetListItem list = 1;
+  // 数据总数
+  int64 total = 2;
+}
+
+message GetListItem {
+  // 用户ID
+  int64 userId = 1;
+  // 姓名
+  string name = 2;
+  // 状态
+  int32 status = 3;
+  // 最后登陆时间
+  string lastTime = 4;
+  // 最后登陆IP
+  string lastIp = 5;
+  // 创建时间
+  string createAt = 6;
+}

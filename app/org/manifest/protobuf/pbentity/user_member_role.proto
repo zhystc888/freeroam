@@ -1,0 +1,24 @@
+// ==========================================================================
+// Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
+// ==========================================================================
+
+syntax = "proto3";
+
+package pbentity;
+
+option go_package = "bbk/app/org/api/pbentity";
+
+import "google/protobuf/timestamp.proto";
+
+message UserMemberRole {
+    uint64                    Id        = 1;  // 主键
+    uint64                    UserId    = 2;  // 用户id
+    uint64                    RoleId    = 3;  // 角色id
+    uint32                    IsDeleted = 4;  // 数据状态0正常1删除
+    uint64                    CreateBy  = 5;  // 创建人
+    uint64                    UpdateBy  = 6;  // 修改人
+    uint64                    DeleteBy  = 7;  // 删除人
+    google.protobuf.Timestamp CreateAt  = 8;  // 创建时间
+    google.protobuf.Timestamp UpdateAt  = 9;  // 更新时间
+    google.protobuf.Timestamp DeletedAt = 10; // 删除时间
+}
