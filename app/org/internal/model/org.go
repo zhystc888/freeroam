@@ -26,11 +26,6 @@ type OrgStructureVo struct {
 	Status   uint   `json:"status"    orm:"status"     description:"组织状态，枚举"` // 组织状态，枚举
 }
 
-type OrgSupervisorList struct {
-	OrgSupervisor
-	UserMember
-}
-
 type OrgSupervisor struct {
 	g.Meta `orm:"table:free_org_supervisor"`
 	UserId uint64      `json:"id" orm:"user_id" description:"主管用户id"`
