@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bbk/app/system/internal/controller/enum"
 	"context"
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 
@@ -15,6 +16,7 @@ var (
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 
 			s := grpcx.Server.New()
+			enum.Register(s)
 			s.Run()
 			return nil
 		},

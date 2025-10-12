@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package enum.v1;
+
+option go_package = "./api/enum/v1";
+
+service Enum{
+  rpc GetEnumLists(GetEnumListsReq) returns (EnumListsRes);
+}
+
+message GetEnumListsReq{
+  repeated GetEnumListsReqItem list = 1;
+}
+
+message GetEnumListsReqItem{
+  // 枚举编码
+  // v:required#枚举编码不能为空
+  string code = 1;
+
+  // 表名
+  // v:required#表名不能为空
+  string tableName = 2;
+
+  // 模块名
+  string module = 3;
+}
+
+message EnumListsRes{
+  repeated EnumListsItem list = 1;
+}
+
+message  EnumListsItem{
+  string name = 1;
+
+  repeated EnumListItem list = 2;
+}
+
+// 枚举元素
+message EnumListItem{
+  // 枚举值
+  string value = 1;
+
+  // 枚举值描述
+  string name = 2;
+}
