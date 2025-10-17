@@ -1,10 +1,10 @@
 package enum
 
 import (
-	v1 "bbk/app/system/api/enum/v1"
-	"bbk/app/system/internal/model"
-	"bbk/app/system/internal/service"
 	"context"
+	v1 "freeroam/app/system/api/enum/v1"
+	"freeroam/app/system/internal/model"
+	"freeroam/app/system/internal/service"
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 )
 

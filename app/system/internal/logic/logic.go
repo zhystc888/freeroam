@@ -5,5 +5,5 @@
 package logic
 
 import (
-	_ "bbk/app/system/internal/logic/enum"
+	_ "freeroam/app/system/internal/logic/enum"
 )

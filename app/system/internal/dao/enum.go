@@ -5,7 +5,7 @@
 package dao
 
 import (
-	"bbk/app/system/internal/dao/internal"
+	"freeroam/app/system/internal/dao/internal"
 )
 
 // enumDao is the data access object for the table free_enum.

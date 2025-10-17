@@ -1,13 +1,13 @@
 package enum
 
 import (
-	"bbk/app/system/internal/dao"
-	"bbk/app/system/internal/model"
-	"bbk/app/system/internal/service"
-	"bbk/common/berror"
-	"bbk/common/tools/string"
 	"context"
 	"fmt"
+	"freeroam/app/system/internal/dao"
+	"freeroam/app/system/internal/model"
+	"freeroam/app/system/internal/service"
+	"freeroam/common/berror"
+	"freeroam/common/tools/string"
 )
 
 type sEnum struct{}
