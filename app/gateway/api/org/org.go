@@ -7,7 +7,7 @@ package org
 import (
 	"context"
 
-	"bbk/app/gateway/api/org/v1"
+	"freeroam/app/gateway/api/org/v1"
 )
 
 type IOrgV1 interface {

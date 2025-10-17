@@ -4,8 +4,8 @@ import (
 	"context"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
-	"bbk/app/gateway/api/org/v1"
-	sorg "bbk/app/org/api/org/v1"
+	"freeroam/app/gateway/api/org/v1"
+	sorg "freeroam/app/org/api/org/v1"
 )
 
 func (c *ControllerV1) GetList(ctx context.Context, req *v1.GetListReq) (res *v1.GetListRes, err error) {

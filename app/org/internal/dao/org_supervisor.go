@@ -5,7 +5,7 @@
 package dao
 
 import (
-	"bbk/app/org/internal/dao/internal"
+	"freeroam/app/org/internal/dao/internal"
 )
 
 // orgSupervisorDao is the data access object for the table free_org_supervisor.

@@ -6,7 +6,7 @@
 package service
 
 import (
-	"bbk/app/org/internal/model"
+	"freeroam/app/org/internal/model"
 	"context"
 )
 

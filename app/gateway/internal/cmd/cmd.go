@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"bbk/app/gateway/internal/controller/enum"
-	"bbk/app/gateway/internal/controller/org"
 	"context"
+	"freeroam/app/gateway/internal/controller/enum"
+	"freeroam/app/gateway/internal/controller/org"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"

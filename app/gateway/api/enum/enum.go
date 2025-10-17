@@ -7,7 +7,7 @@ package enum
 import (
 	"context"
 
-	"bbk/app/gateway/api/enum/v1"
+	"freeroam/app/gateway/api/enum/v1"
 )
 
 type IEnumV1 interface {

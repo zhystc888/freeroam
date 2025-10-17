@@ -1,11 +1,11 @@
 package org
 
 import (
-	"bbk/app/org/internal/dao"
-	"bbk/app/org/internal/model"
-	"bbk/app/org/internal/service"
-	"bbk/common/berror"
 	"context"
+	"freeroam/app/org/internal/dao"
+	"freeroam/app/org/internal/model"
+	"freeroam/app/org/internal/service"
+	"freeroam/common/berror"
 )
 
 type sOrg struct{}

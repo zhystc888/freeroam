@@ -3,8 +3,8 @@ package enum
 import (
 	"context"
 
-	"bbk/app/gateway/api/enum/v1"
-	sEnum "bbk/app/system/api/enum/v1"
+	"freeroam/app/gateway/api/enum/v1"
+	sEnum "freeroam/app/system/api/enum/v1"
 )
 
 func (c *ControllerV1) GetEnumList(ctx context.Context, req *v1.GetEnumListReq) (res *v1.GetEnumListRes, err error) {

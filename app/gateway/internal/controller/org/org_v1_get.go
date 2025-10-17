@@ -1,10 +1,10 @@
 package org
 
 import (
-	"bbk/app/gateway/api/org/v1"
 	"context"
+	"freeroam/app/gateway/api/org/v1"
 
-	sorg "bbk/app/org/api/org/v1"
+	sorg "freeroam/app/org/api/org/v1"
 )
 
 func (c *ControllerV1) Get(ctx context.Context, req *v1.GetReq) (res *v1.GetRes, err error) {

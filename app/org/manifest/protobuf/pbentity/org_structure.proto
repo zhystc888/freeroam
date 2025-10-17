@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package pbentity;
 
-option go_package = "bbk/app/org/api/pbentity";
+option go_package = "freeroam/app/org/api/pbentity";
 
 import "google/protobuf/timestamp.proto";
 

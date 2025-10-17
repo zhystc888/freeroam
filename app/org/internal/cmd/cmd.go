@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"bbk/app/org/internal/controller/org"
 	"context"
+	"freeroam/app/org/internal/controller/org"
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 
 	"github.com/gogf/gf/v2/os/gcmd"

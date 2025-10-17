@@ -1,10 +1,10 @@
 package org
 
 import (
-	v1 "bbk/app/org/api/org/v1"
-	"bbk/app/org/internal/model"
-	"bbk/app/org/internal/service"
 	"context"
+	v1 "freeroam/app/org/api/org/v1"
+	"freeroam/app/org/internal/model"
+	"freeroam/app/org/internal/service"
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 )
 

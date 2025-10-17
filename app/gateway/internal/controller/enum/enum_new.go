@@ -5,8 +5,8 @@
 package enum
 
 import (
-	"bbk/app/gateway/api/enum"
-	v1 "bbk/app/system/api/enum/v1"
+	"freeroam/app/gateway/api/enum"
+	v1 "freeroam/app/system/api/enum/v1"
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 )
 

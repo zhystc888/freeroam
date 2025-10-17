@@ -1,4 +1,4 @@
-module bbk
+module freeroam
 
 go 1.24.2
 

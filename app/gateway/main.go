@@ -1,13 +1,13 @@
 package main
 
 import (
-	_ "bbk/app/gateway/boot"
-	_ "bbk/app/gateway/internal/packed"
+	_ "freeroam/app/gateway/boot"
+	_ "freeroam/app/gateway/internal/packed"
 	"github.com/gogf/gf/v2/os/gtime"
 
 	"github.com/gogf/gf/v2/os/gctx"
 
-	"bbk/app/gateway/internal/cmd"
+	"freeroam/app/gateway/internal/cmd"
 )
 
 func main() {

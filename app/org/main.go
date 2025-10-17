@@ -1,17 +1,17 @@
 package main
 
 import (
-	_ "bbk/app/org/internal/packed"
+	_ "freeroam/app/org/internal/packed"
 	"github.com/gogf/gf/v2/os/gtime"
 
-	_ "bbk/app/org/internal/logic"
+	_ "freeroam/app/org/internal/logic"
 
 	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 	"github.com/gogf/gf/v2/os/gctx"
 
-	_ "bbk/app/org/boot"
+	_ "freeroam/app/org/boot"
 
-	"bbk/app/org/internal/cmd"
+	"freeroam/app/org/internal/cmd"
 )
 
 func main() {

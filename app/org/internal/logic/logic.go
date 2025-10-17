@@ -5,5 +5,5 @@
 package logic
 
 import (
-	_ "bbk/app/org/internal/logic/org"
+	_ "freeroam/app/org/internal/logic/org"
 )

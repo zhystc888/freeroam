@@ -5,8 +5,8 @@
 package org
 
 import (
-	"bbk/app/gateway/api/org"
-	v1 "bbk/app/org/api/org/v1"
+	"freeroam/app/gateway/api/org"
+	v1 "freeroam/app/org/api/org/v1"
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 )
 
