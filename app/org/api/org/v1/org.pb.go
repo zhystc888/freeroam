@@ -13,6 +13,7 @@ import (
 
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 const (
@@ -228,7 +229,7 @@ type GetListReq struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty" dc:"组织名，模糊搜索"`
 	// 上级id
 	// v:integer|min:0#上级id必须是整数|上级id必须大于0
-	ParentId int64 `protobuf:"varint,2,opt,name=parentId,proto3" json:"parentId,omitempty" dc:"上级id" v:"integer|min:0#上级id必须是整数|上级id必须大于0"`
+	ParentId *wrapperspb.Int64Value `protobuf:"bytes,2,opt,name=parentId,proto3" json:"parentId,omitempty" dc:"上级id" v:"integer|min:0#上级id必须是整数|上级id必须大于0"`
 	// 组织编码
 	Code string `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty" dc:"组织编码"`
 	// 组织分类
@@ -281,11 +282,11 @@ func (x *GetListReq) GetName() string {
 	return ""
 }
 
-func (x *GetListReq) GetParentId() int64 {
+func (x *GetListReq) GetParentId() *wrapperspb.Int64Value {
 	if x != nil {
 		return x.ParentId
 	}
-	return 0
+	return nil
 }
 
 func (x *GetListReq) GetCode() string {
@@ -464,32 +465,32 @@ var File_org_v1_org_proto protoreflect.FileDescriptor
 
 const file_org_v1_org_proto_rawDesc = "" +
 	"\n" +
-	"\x10org/v1/org.proto\x12\x0fadmin_member.v1\"\x18\n" +
+	"\x10org/v1/org.proto\x12\x06org.v1\x1a\x1egoogle/protobuf/wrappers.proto\"\x18\n" +
 	"\x06GetReq\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"\xc7\x01\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"\xbe\x01\n" +
 	"\x06GetRes\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\bparentId\x18\x02 \x01(\x03R\bparentId\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12\x12\n" +
 	"\x04code\x18\x04 \x01(\tR\x04code\x12\x12\n" +
 	"\x04type\x18\x05 \x01(\x03R\x04type\x12\x16\n" +
-	"\x06status\x18\x06 \x01(\x03R\x06status\x12=\n" +
-	"\vsupervisors\x18\a \x03(\v2\x1b.admin_member.v1.SupervisorR\vsupervisors\"0\n" +
+	"\x06status\x18\x06 \x01(\x03R\x06status\x124\n" +
+	"\vsupervisors\x18\a \x03(\v2\x12.org.v1.SupervisorR\vsupervisors\"0\n" +
 	"\n" +
 	"Supervisor\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"\x8e\x01\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\xab\x01\n" +
 	"\n" +
 	"GetListReq\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1a\n" +
-	"\bparentId\x18\x02 \x01(\x03R\bparentId\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x127\n" +
+	"\bparentId\x18\x02 \x01(\v2\x1b.google.protobuf.Int64ValueR\bparentId\x12\x12\n" +
 	"\x04code\x18\x03 \x01(\tR\x04code\x12\x12\n" +
 	"\x04type\x18\x04 \x01(\x03R\x04type\x12\x12\n" +
 	"\x04page\x18\x05 \x01(\x05R\x04page\x12\x14\n" +
-	"\x05limit\x18\x06 \x01(\x05R\x05limit\"T\n" +
+	"\x05limit\x18\x06 \x01(\x05R\x05limit\"K\n" +
 	"\n" +
-	"GetListRes\x120\n" +
-	"\x04list\x18\x01 \x03(\v2\x1c.admin_member.v1.GetListItemR\x04list\x12\x14\n" +
+	"GetListRes\x12'\n" +
+	"\x04list\x18\x01 \x03(\v2\x13.org.v1.GetListItemR\x04list\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x03R\x05total\"\x8d\x01\n" +
 	"\vGetListItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
@@ -497,10 +498,10 @@ const file_org_v1_org_proto_rawDesc = "" +
 	"\x04type\x18\x03 \x01(\x03R\x04type\x12\x12\n" +
 	"\x04code\x18\x04 \x01(\tR\x04code\x12\x16\n" +
 	"\x06status\x18\x05 \x01(\x05R\x06status\x12\x1a\n" +
-	"\bcreateAt\x18\x06 \x01(\tR\bcreateAt2\x87\x01\n" +
-	"\x03Org\x129\n" +
-	"\x03Get\x12\x17.admin_member.v1.GetReq\x1a\x17.admin_member.v1.GetRes\"\x00\x12E\n" +
-	"\aGetList\x12\x1b.admin_member.v1.GetListReq\x1a\x1b.admin_member.v1.GetListRes\"\x00B\x0eZ\f./api/org/v1b\x06proto3"
+	"\bcreateAt\x18\x06 \x01(\tR\bcreateAt2c\n" +
+	"\x03Org\x12'\n" +
+	"\x03Get\x12\x0e.org.v1.GetReq\x1a\x0e.org.v1.GetRes\"\x00\x123\n" +
+	"\aGetList\x12\x12.org.v1.GetListReq\x1a\x12.org.v1.GetListRes\"\x00B\x0eZ\f./api/org/v1b\x06proto3"
 
 var (
 	file_org_v1_org_proto_rawDescOnce sync.Once
@@ -516,25 +517,27 @@ func file_org_v1_org_proto_rawDescGZIP() []byte {
 
 var file_org_v1_org_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_org_v1_org_proto_goTypes = []any{
-	(*GetReq)(nil),      // 0: admin_member.v1.GetReq
-	(*GetRes)(nil),      // 1: admin_member.v1.GetRes
-	(*Supervisor)(nil),  // 2: admin_member.v1.Supervisor
-	(*GetListReq)(nil),  // 3: admin_member.v1.GetListReq
-	(*GetListRes)(nil),  // 4: admin_member.v1.GetListRes
-	(*GetListItem)(nil), // 5: admin_member.v1.GetListItem
+	(*GetReq)(nil),                // 0: org.v1.GetReq
+	(*GetRes)(nil),                // 1: org.v1.GetRes
+	(*Supervisor)(nil),            // 2: org.v1.Supervisor
+	(*GetListReq)(nil),            // 3: org.v1.GetListReq
+	(*GetListRes)(nil),            // 4: org.v1.GetListRes
+	(*GetListItem)(nil),           // 5: org.v1.GetListItem
+	(*wrapperspb.Int64Value)(nil), // 6: google.protobuf.Int64Value
 }
 var file_org_v1_org_proto_depIdxs = []int32{
-	2, // 0: admin_member.v1.GetRes.supervisors:type_name -> admin_member.v1.Supervisor
-	5, // 1: admin_member.v1.GetListRes.list:type_name -> admin_member.v1.GetListItem
-	0, // 2: admin_member.v1.Org.Get:input_type -> admin_member.v1.GetReq
-	3, // 3: admin_member.v1.Org.GetList:input_type -> admin_member.v1.GetListReq
-	1, // 4: admin_member.v1.Org.Get:output_type -> admin_member.v1.GetRes
-	4, // 5: admin_member.v1.Org.GetList:output_type -> admin_member.v1.GetListRes
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	2, // 0: org.v1.GetRes.supervisors:type_name -> org.v1.Supervisor
+	6, // 1: org.v1.GetListReq.parentId:type_name -> google.protobuf.Int64Value
+	5, // 2: org.v1.GetListRes.list:type_name -> org.v1.GetListItem
+	0, // 3: org.v1.Org.Get:input_type -> org.v1.GetReq
+	3, // 4: org.v1.Org.GetList:input_type -> org.v1.GetListReq
+	1, // 5: org.v1.Org.Get:output_type -> org.v1.GetRes
+	4, // 6: org.v1.Org.GetList:output_type -> org.v1.GetListRes
+	5, // [5:7] is the sub-list for method output_type
+	3, // [3:5] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_org_v1_org_proto_init() }

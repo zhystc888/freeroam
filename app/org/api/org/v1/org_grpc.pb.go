@@ -20,8 +20,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Org_Get_FullMethodName     = "/admin_member.v1.Org/Get"
-	Org_GetList_FullMethodName = "/admin_member.v1.Org/GetList"
+	Org_Get_FullMethodName     = "/org.v1.Org/Get"
+	Org_GetList_FullMethodName = "/org.v1.Org/GetList"
 )
 
 // OrgClient is the client API for Org service.
@@ -147,7 +147,7 @@ func _Org_GetList_Handler(srv interface{}, ctx context.Context, dec func(interfa
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Org_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "admin_member.v1.Org",
+	ServiceName: "org.v1.Org",
 	HandlerType: (*OrgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

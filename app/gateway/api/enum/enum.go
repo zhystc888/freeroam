@@ -2,15 +2,14 @@
 // Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
 // =================================================================================
 
-package org
+package enum
 
 import (
 	"context"
 
-	"bbk/app/gateway/api/org/v1"
+	"bbk/app/gateway/api/enum/v1"
 )
 
-type IOrgV1 interface {
-	GetList(ctx context.Context, req *v1.GetListReq) (res *v1.GetListRes, err error)
-	Get(ctx context.Context, req *v1.GetReq) (res *v1.GetRes, err error)
+type IEnumV1 interface {
+	GetEnumList(ctx context.Context, req *v1.GetEnumListReq) (res *v1.GetEnumListRes, err error)
 }

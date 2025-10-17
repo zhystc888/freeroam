@@ -1,8 +1,10 @@
 syntax = "proto3";
 
-package admin_member.v1;
+package org.v1;
 
 option go_package = "./api/org/v1";
+
+import "google/protobuf/wrappers.proto";
 
 service Org{
   // 获取成员详情
@@ -47,7 +49,7 @@ message GetListReq {
   string name = 1;
   // 上级id
   // v:integer|min:0#上级id必须是整数|上级id必须大于0
-  int64 parentId = 2;
+  google.protobuf.Int64Value parentId = 2;
   // 组织编码
   string code = 3;
   // 组织分类

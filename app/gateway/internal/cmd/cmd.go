@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bbk/app/gateway/internal/controller/enum"
 	"bbk/app/gateway/internal/controller/org"
 	"context"
 
@@ -20,6 +21,7 @@ var (
 				group.Middleware(ghttp.MiddlewareHandlerResponse)
 				group.Bind(
 					org.NewV1(),
+					enum.NewV1(),
 				)
 			})
 			s.Run()

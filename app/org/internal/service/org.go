@@ -13,6 +13,7 @@ import (
 type (
 	IOrg interface {
 		Get(ctx context.Context, id int64) (res *model.OrgVo, err error)
+		GetList(ctx context.Context, params *model.OrgListDto) (res *model.ListReq[model.OrgListVo], err error)
 	}
 )
 
