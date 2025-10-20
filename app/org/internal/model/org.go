@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/gogf/gf/v2/frame/g"
 	"time"
+
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 type GetOrgDto struct {

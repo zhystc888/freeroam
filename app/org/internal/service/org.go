@@ -6,8 +6,8 @@
 package service
 
 import (
-	"freeroam/app/org/internal/model"
 	"context"
+	"freeroam/app/org/internal/model"
 )
 
 type (
