@@ -422,6 +422,108 @@ func (x *GetOneRes) GetSuper() int64 {
 	return 0
 }
 
+type UpdatePasswordReq struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 用户ID
+	// v:required|integer|min:1#用户ID不能为空|用户ID必须是整数|用户ID不能小于1
+	UserId int64 `protobuf:"varint,1,opt,name=userId,proto3" json:"userId,omitempty" dc:"用户ID" v:"required|integer|min:1#用户ID不能为空|用户ID必须是整数|用户ID不能小于1"`
+	// 原密码
+	// v:required#原密码不能为空
+	OriginalPassword string `protobuf:"bytes,2,opt,name=originalPassword,proto3" json:"originalPassword,omitempty" dc:"原密码" v:"required#原密码不能为空"`
+	// 新密码
+	// v:required|min-length:8#新密码不能为空|新密码最小长度8
+	NewPassword   string `protobuf:"bytes,3,opt,name=newPassword,proto3" json:"newPassword,omitempty" dc:"新密码" v:"required|min-length:8#新密码不能为空|新密码最小长度8"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdatePasswordReq) Reset() {
+	*x = UpdatePasswordReq{}
+	mi := &file_user_member_v1_user_member_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdatePasswordReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdatePasswordReq) ProtoMessage() {}
+
+func (x *UpdatePasswordReq) ProtoReflect() protoreflect.Message {
+	mi := &file_user_member_v1_user_member_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdatePasswordReq.ProtoReflect.Descriptor instead.
+func (*UpdatePasswordReq) Descriptor() ([]byte, []int) {
+	return file_user_member_v1_user_member_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *UpdatePasswordReq) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *UpdatePasswordReq) GetOriginalPassword() string {
+	if x != nil {
+		return x.OriginalPassword
+	}
+	return ""
+}
+
+func (x *UpdatePasswordReq) GetNewPassword() string {
+	if x != nil {
+		return x.NewPassword
+	}
+	return ""
+}
+
+type UpdatePasswordRes struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdatePasswordRes) Reset() {
+	*x = UpdatePasswordRes{}
+	mi := &file_user_member_v1_user_member_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdatePasswordRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdatePasswordRes) ProtoMessage() {}
+
+func (x *UpdatePasswordRes) ProtoReflect() protoreflect.Message {
+	mi := &file_user_member_v1_user_member_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdatePasswordRes.ProtoReflect.Descriptor instead.
+func (*UpdatePasswordRes) Descriptor() ([]byte, []int) {
+	return file_user_member_v1_user_member_proto_rawDescGZIP(), []int{6}
+}
+
 var File_user_member_v1_user_member_proto protoreflect.FileDescriptor
 
 const file_user_member_v1_user_member_proto_rawDesc = "" +
@@ -457,11 +559,17 @@ const file_user_member_v1_user_member_proto_rawDesc = "" +
 	"\x06mobile\x18\x04 \x01(\tR\x06mobile\x12\x16\n" +
 	"\x06gender\x18\x05 \x01(\x03R\x06gender\x12\x16\n" +
 	"\x06status\x18\x06 \x01(\x03R\x06status\x12\x14\n" +
-	"\x05super\x18\a \x01(\x03R\x05super2\x90\x01\n" +
+	"\x05super\x18\a \x01(\x03R\x05super\"y\n" +
+	"\x11UpdatePasswordReq\x12\x16\n" +
+	"\x06userId\x18\x01 \x01(\x03R\x06userId\x12*\n" +
+	"\x10originalPassword\x18\x02 \x01(\tR\x10originalPassword\x12 \n" +
+	"\vnewPassword\x18\x03 \x01(\tR\vnewPassword\"\x13\n" +
+	"\x11UpdatePasswordRes2\xed\x01\n" +
 	"\n" +
 	"UserMember\x12C\n" +
-	"\aGetList\x12\x1a.user_member.v1.GetListReq\x1a\x1a.user_member.v1.GetListRes\"\x00\x12=\n" +
-	"\x03Get\x12\x19.user_member.v1.GetOneReq\x1a\x19.user_member.v1.GetOneRes\"\x00B\x16Z\x14./api/user_member/v1b\x06proto3"
+	"\aGetList\x12\x1a.user_member.v1.GetListReq\x1a\x1a.user_member.v1.GetListRes\"\x00\x12@\n" +
+	"\x06GetOne\x12\x19.user_member.v1.GetOneReq\x1a\x19.user_member.v1.GetOneRes\"\x00\x12X\n" +
+	"\x0eUpdatePassword\x12!.user_member.v1.UpdatePasswordReq\x1a!.user_member.v1.UpdatePasswordRes\"\x00B\x16Z\x14./api/user_member/v1b\x06proto3"
 
 var (
 	file_user_member_v1_user_member_proto_rawDescOnce sync.Once
@@ -475,25 +583,29 @@ func file_user_member_v1_user_member_proto_rawDescGZIP() []byte {
 	return file_user_member_v1_user_member_proto_rawDescData
 }
 
-var file_user_member_v1_user_member_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_user_member_v1_user_member_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_user_member_v1_user_member_proto_goTypes = []any{
 	(*GetListReq)(nil),            // 0: user_member.v1.GetListReq
 	(*GetListRes)(nil),            // 1: user_member.v1.GetListRes
 	(*GetListItem)(nil),           // 2: user_member.v1.GetListItem
 	(*GetOneReq)(nil),             // 3: user_member.v1.GetOneReq
 	(*GetOneRes)(nil),             // 4: user_member.v1.GetOneRes
-	(*wrapperspb.Int64Value)(nil), // 5: google.protobuf.Int64Value
+	(*UpdatePasswordReq)(nil),     // 5: user_member.v1.UpdatePasswordReq
+	(*UpdatePasswordRes)(nil),     // 6: user_member.v1.UpdatePasswordRes
+	(*wrapperspb.Int64Value)(nil), // 7: google.protobuf.Int64Value
 }
 var file_user_member_v1_user_member_proto_depIdxs = []int32{
-	5, // 0: user_member.v1.GetListReq.gender:type_name -> google.protobuf.Int64Value
-	5, // 1: user_member.v1.GetListReq.status:type_name -> google.protobuf.Int64Value
+	7, // 0: user_member.v1.GetListReq.gender:type_name -> google.protobuf.Int64Value
+	7, // 1: user_member.v1.GetListReq.status:type_name -> google.protobuf.Int64Value
 	2, // 2: user_member.v1.GetListRes.list:type_name -> user_member.v1.GetListItem
 	0, // 3: user_member.v1.UserMember.GetList:input_type -> user_member.v1.GetListReq
-	3, // 4: user_member.v1.UserMember.Get:input_type -> user_member.v1.GetOneReq
-	1, // 5: user_member.v1.UserMember.GetList:output_type -> user_member.v1.GetListRes
-	4, // 6: user_member.v1.UserMember.Get:output_type -> user_member.v1.GetOneRes
-	5, // [5:7] is the sub-list for method output_type
-	3, // [3:5] is the sub-list for method input_type
+	3, // 4: user_member.v1.UserMember.GetOne:input_type -> user_member.v1.GetOneReq
+	5, // 5: user_member.v1.UserMember.UpdatePassword:input_type -> user_member.v1.UpdatePasswordReq
+	1, // 6: user_member.v1.UserMember.GetList:output_type -> user_member.v1.GetListRes
+	4, // 7: user_member.v1.UserMember.GetOne:output_type -> user_member.v1.GetOneRes
+	6, // 8: user_member.v1.UserMember.UpdatePassword:output_type -> user_member.v1.UpdatePasswordRes
+	6, // [6:9] is the sub-list for method output_type
+	3, // [3:6] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name
 	3, // [3:3] is the sub-list for extension extendee
 	0, // [0:3] is the sub-list for field type_name
@@ -510,7 +622,7 @@ func file_user_member_v1_user_member_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_member_v1_user_member_proto_rawDesc), len(file_user_member_v1_user_member_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -13,4 +13,5 @@ import (
 type IUserMemberV1 interface {
 	GetList(ctx context.Context, req *v1.GetListReq) (res *v1.GetListRes, err error)
 	GetOne(ctx context.Context, req *v1.GetOneReq) (res *v1.GetOneRes, err error)
+	UpdatePassword(ctx context.Context, req *v1.UpdatePasswordReq) (res *v1.UpdatePasswordRes, err error)
 }

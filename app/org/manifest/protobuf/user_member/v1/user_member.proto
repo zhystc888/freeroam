@@ -6,11 +6,14 @@ option go_package = "./api/user_member/v1";
 
 import "google/protobuf/wrappers.proto";
 
+// 运营后台用户
 service UserMember{
   // 获取列表
   rpc GetList(GetListReq) returns (GetListRes) {}
   // 获取详情
-  rpc Get(GetOneReq) returns (GetOneRes) {}
+  rpc GetOne(GetOneReq) returns (GetOneRes) {}
+  // 修改密码
+  rpc UpdatePassword(UpdatePasswordReq) returns (UpdatePasswordRes) {}
 }
 
 message GetListReq {
@@ -77,4 +80,19 @@ message GetOneRes{
   int64 status = 6;
   // 超级管理员
   int64 super = 7;
+}
+
+message UpdatePasswordReq{
+  // 用户ID
+  // v:required|integer|min:1#用户ID不能为空|用户ID必须是整数|用户ID不能小于1
+  int64 userId = 1;
+  // 原密码
+  // v:required#原密码不能为空
+  string originalPassword = 2;
+  // 新密码
+  // v:required|min-length:8#新密码不能为空|新密码最小长度8
+  string newPassword = 3;
+}
+
+message UpdatePasswordRes{
 }

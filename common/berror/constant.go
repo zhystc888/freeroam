@@ -3,6 +3,10 @@ package berror
 import "github.com/gogf/gf/v2/errors/gcode"
 
 var (
+	DataNotExist = gcode.New(10300, "数据不存在！", nil)
+
+	PasswordErr = gcode.New(10400, "密码错误！", nil)
+
 	CodeTokenIsEmpty = gcode.New(10401, "token不存在！", nil)
 	CodeTokenInvalid = gcode.New(10401, "token验证失败！", nil)
 	CodeTokenExpired = gcode.New(10401, "token已过期！", nil)

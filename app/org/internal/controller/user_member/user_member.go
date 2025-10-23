@@ -70,7 +70,7 @@ func (c *Controller) GetList(ctx context.Context, req *v1.GetListReq) (res *v1.G
 	return
 }
 
-func (c *Controller) Get(ctx context.Context, req *v1.GetOneReq) (res *v1.GetOneRes, err error) {
+func (c *Controller) GetOne(ctx context.Context, req *v1.GetOneReq) (res *v1.GetOneRes, err error) {
 	org, err := c.userMember.GetOne(ctx, req.GetUserId())
 	if org != nil {
 		res = &v1.GetOneRes{}
@@ -83,4 +83,8 @@ func (c *Controller) Get(ctx context.Context, req *v1.GetOneReq) (res *v1.GetOne
 		res.Super = org.Status
 	}
 	return
+}
+
+func (c *Controller) UpdatePassword(ctx context.Context, req *v1.UpdatePasswordReq) (res *v1.UpdatePasswordRes, err error) {
+	return c.userMember.UpdatePassword(ctx, req)
 }

@@ -20,18 +20,23 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserMember_GetList_FullMethodName = "/user_member.v1.UserMember/GetList"
-	UserMember_Get_FullMethodName     = "/user_member.v1.UserMember/Get"
+	UserMember_GetList_FullMethodName        = "/user_member.v1.UserMember/GetList"
+	UserMember_GetOne_FullMethodName         = "/user_member.v1.UserMember/GetOne"
+	UserMember_UpdatePassword_FullMethodName = "/user_member.v1.UserMember/UpdatePassword"
 )
 
 // UserMemberClient is the client API for UserMember service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// 运营后台用户
 type UserMemberClient interface {
 	// 获取列表
 	GetList(ctx context.Context, in *GetListReq, opts ...grpc.CallOption) (*GetListRes, error)
 	// 获取详情
-	Get(ctx context.Context, in *GetOneReq, opts ...grpc.CallOption) (*GetOneRes, error)
+	GetOne(ctx context.Context, in *GetOneReq, opts ...grpc.CallOption) (*GetOneRes, error)
+	// 修改密码
+	UpdatePassword(ctx context.Context, in *UpdatePasswordReq, opts ...grpc.CallOption) (*UpdatePasswordRes, error)
 }
 
 type userMemberClient struct {
@@ -52,10 +57,20 @@ func (c *userMemberClient) GetList(ctx context.Context, in *GetListReq, opts ...
 	return out, nil
 }
 
-func (c *userMemberClient) Get(ctx context.Context, in *GetOneReq, opts ...grpc.CallOption) (*GetOneRes, error) {
+func (c *userMemberClient) GetOne(ctx context.Context, in *GetOneReq, opts ...grpc.CallOption) (*GetOneRes, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetOneRes)
-	err := c.cc.Invoke(ctx, UserMember_Get_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, UserMember_GetOne_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userMemberClient) UpdatePassword(ctx context.Context, in *UpdatePasswordReq, opts ...grpc.CallOption) (*UpdatePasswordRes, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdatePasswordRes)
+	err := c.cc.Invoke(ctx, UserMember_UpdatePassword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -65,11 +80,15 @@ func (c *userMemberClient) Get(ctx context.Context, in *GetOneReq, opts ...grpc.
 // UserMemberServer is the server API for UserMember service.
 // All implementations must embed UnimplementedUserMemberServer
 // for forward compatibility.
+//
+// 运营后台用户
 type UserMemberServer interface {
 	// 获取列表
 	GetList(context.Context, *GetListReq) (*GetListRes, error)
 	// 获取详情
-	Get(context.Context, *GetOneReq) (*GetOneRes, error)
+	GetOne(context.Context, *GetOneReq) (*GetOneRes, error)
+	// 修改密码
+	UpdatePassword(context.Context, *UpdatePasswordReq) (*UpdatePasswordRes, error)
 	mustEmbedUnimplementedUserMemberServer()
 }
 
@@ -83,8 +102,11 @@ type UnimplementedUserMemberServer struct{}
 func (UnimplementedUserMemberServer) GetList(context.Context, *GetListReq) (*GetListRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetList not implemented")
 }
-func (UnimplementedUserMemberServer) Get(context.Context, *GetOneReq) (*GetOneRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+func (UnimplementedUserMemberServer) GetOne(context.Context, *GetOneReq) (*GetOneRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOne not implemented")
+}
+func (UnimplementedUserMemberServer) UpdatePassword(context.Context, *UpdatePasswordReq) (*UpdatePasswordRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
 }
 func (UnimplementedUserMemberServer) mustEmbedUnimplementedUserMemberServer() {}
 func (UnimplementedUserMemberServer) testEmbeddedByValue()                    {}
@@ -125,20 +147,38 @@ func _UserMember_GetList_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserMember_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserMember_GetOne_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetOneReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserMemberServer).Get(ctx, in)
+		return srv.(UserMemberServer).GetOne(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserMember_Get_FullMethodName,
+		FullMethod: UserMember_GetOne_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserMemberServer).Get(ctx, req.(*GetOneReq))
+		return srv.(UserMemberServer).GetOne(ctx, req.(*GetOneReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserMember_UpdatePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePasswordReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserMemberServer).UpdatePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserMember_UpdatePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserMemberServer).UpdatePassword(ctx, req.(*UpdatePasswordReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -155,8 +195,12 @@ var UserMember_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserMember_GetList_Handler,
 		},
 		{
-			MethodName: "Get",
-			Handler:    _UserMember_Get_Handler,
+			MethodName: "GetOne",
+			Handler:    _UserMember_GetOne_Handler,
+		},
+		{
+			MethodName: "UpdatePassword",
+			Handler:    _UserMember_UpdatePassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

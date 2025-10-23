@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	v1 "freeroam/app/org/api/user_member/v1"
 	"freeroam/app/org/internal/model"
 )
 
@@ -14,6 +15,7 @@ type (
 	IUserMember interface {
 		GetList(ctx context.Context, params *model.UserMemberListDto) (res *model.ListReq[model.UserMemberListVo], err error)
 		GetOne(ctx context.Context, userId int64) (res *model.UserMemberVo, err error)
+		UpdatePassword(ctx context.Context, req *v1.UpdatePasswordReq) (res *v1.UpdatePasswordRes, err error)
 	}
 )
 
