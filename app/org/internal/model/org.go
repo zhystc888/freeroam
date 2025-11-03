@@ -49,3 +49,30 @@ type UserMember struct {
 	UserId int64  `json:"id" orm:"user_id" description:"主管用户id"`
 	Name   string `json:"name" orm:"name" description:"主管用户姓名"`
 }
+
+type CreateOrgDto struct {
+	g.Meta        `orm:"table:free_org_structure"`
+	ParentId      int64   `json:"parentId"  orm:"parent_id"  description:"父id"`     // 父id
+	Name          string  `json:"name"      orm:"name"       description:"组织名称"`    // 组织名称
+	Code          string  `json:"code"      orm:"code"       description:"组织编码"`    // 组织编码
+	Type          int64   `json:"type"      orm:"type"       description:"组织分类，枚举"` // 组织分类，枚举
+	Status        int64   `json:"status"    orm:"status"     description:"组织状态，枚举"` // 组织状态，枚举
+	SupervisorIds []int64 `json:"supervisorIds"`
+}
+
+type UpdateOrgDto struct {
+	g.Meta        `orm:"table:free_org_structure"`
+	Id            int64   `json:"id" orm:"id" description:"id"`
+	ParentId      int64   `json:"parentId"  orm:"parent_id"  description:"父id"`     // 父id
+	Name          string  `json:"name"      orm:"name"       description:"组织名称"`    // 组织名称
+	Code          string  `json:"code"      orm:"code"       description:"组织编码"`    // 组织编码
+	Type          int64   `json:"type"      orm:"type"       description:"组织分类，枚举"` // 组织分类，枚举
+	Status        int64   `json:"status"    orm:"status"     description:"组织状态，枚举"` // 组织状态，枚举
+	SupervisorIds []int64 `json:"supervisorIds"`
+}
+
+type Supervisors struct {
+	g.Meta `orm:"table:free_org_supervisor"`
+	UserId int64 `orm:"user_id" description:"主管用户id"`
+	OrgId  int64 `orm:"org_id" description:"组织id"`
+}

@@ -5,12 +5,17 @@ package org.v1;
 option go_package = "./api/org/v1";
 
 import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto"; // 导入 empty.proto
 
 service Org{
   // 获取成员详情
   rpc Get(GetReq) returns (GetRes) {}
   // 获取成员列表
   rpc GetList(GetListReq) returns (GetListRes) {}
+
+  rpc Create(CreateReq) returns (CreateRes) {}
+
+  rpc Update(UpdateReq) returns (UpdateRes) {}
 }
 
 message GetReq{
@@ -83,4 +88,49 @@ message GetListItem {
   int32 status = 5;
   // 创建时间
   string createAt = 6;
+}
+
+message CreateReq{
+  // 上级id
+  // v:integer|min:0#上级id必须是整数|上级id必须大于0
+  int64 parentId = 1;
+  // 组织名称
+  string name = 2;
+  // 组织编码
+  string code = 3;
+  // 组织分类
+  // v:integer|min:0#组织分类不正确1|组织分类不正确2
+  int64 type = 4;
+  // 状态
+  int64 status = 5;
+  // 主管
+  repeated int64 supervisorIds = 6;
+}
+
+message UpdateReq{
+  // id
+  // v:integer|min:0#id必须是整数|id必须大于0
+  int64 id = 1;
+  // 上级id
+  // v:integer|min:0#上级id必须是整数|上级id必须大于0
+  int64 parentId = 2;
+  // 组织名称
+  string name = 3;
+  // 组织编码
+  string code = 4;
+  // 组织分类
+  // v:integer|min:0#组织分类不正确1|组织分类不正确2
+  int64 type = 5;
+  // 状态
+  int64 status = 6;
+  // 主管
+  repeated int64 supervisorIds = 7;
+}
+
+message CreateRes{
+
+}
+
+message UpdateRes{
+
 }

@@ -5,6 +5,7 @@ import (
 	v1 "freeroam/app/org/api/org/v1"
 	"freeroam/app/org/internal/model"
 	"freeroam/app/org/internal/service"
+
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 )
 
@@ -81,5 +82,32 @@ func (c *Controller) GetList(ctx context.Context, req *v1.GetListReq) (res *v1.G
 		Total: int64(result.Total),
 	}
 
+	return
+}
+
+func (c *Controller) Create(ctx context.Context, req *v1.CreateReq) (res *v1.CreateRes, err error) {
+	params := &model.CreateOrgDto{
+		Name:          req.Name,
+		Code:          req.Code,
+		Type:          req.Type,
+		Status:        req.Status,
+		ParentId:      req.ParentId,
+		SupervisorIds: req.SupervisorIds,
+	}
+	err = c.OrgServer.Create(ctx, params)
+	return
+}
+
+func (c *Controller) Update(ctx context.Context, req *v1.UpdateReq) (res *v1.UpdateRes, err error) {
+	params := &model.UpdateOrgDto{
+		Id:            req.Id,
+		Name:          req.Name,
+		Code:          req.Code,
+		Type:          req.Type,
+		Status:        req.Status,
+		ParentId:      req.ParentId,
+		SupervisorIds: req.SupervisorIds,
+	}
+	err = c.OrgServer.Update(ctx, params)
 	return
 }

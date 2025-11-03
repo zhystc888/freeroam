@@ -6,6 +6,7 @@ import (
 	"freeroam/app/org/internal/model"
 	"freeroam/app/org/internal/service"
 	"freeroam/common/berror"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 type sOrg struct{}
@@ -51,4 +52,58 @@ func (s *sOrg) GetList(ctx context.Context, params *model.OrgListDto) (res *mode
 	}
 
 	return
+}
+
+func (s *sOrg) Create(ctx context.Context, dto *model.CreateOrgDto) error {
+	m := dao.OrgStructure
+	tx, err := g.DB().Begin(ctx)
+	if err != nil {
+		return berror.NewInternalError(err)
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+
+	id, err := m.Ctx(ctx).TX(tx).Data(dto).InsertAndGetId()
+	if err != nil {
+		return berror.NewInternalError(err)
+	}
+
+	// 使用批量插入方法
+	err = dao.OrgSupervisor.BatchInsertSupervisors(ctx, tx, id, dto.SupervisorIds)
+	if err != nil {
+		return berror.NewInternalError(err)
+	}
+	return nil
+}
+
+func (s *sOrg) Update(ctx context.Context, dto *model.UpdateOrgDto) error {
+	m := dao.OrgStructure
+	tx, err := g.DB().Begin(ctx)
+	if err != nil {
+		return berror.NewInternalError(err)
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+
+	_, err = m.Ctx(ctx).TX(tx).Where(m.Columns().Id, dto.Id).Data(dto).Update()
+	if err != nil {
+		return berror.NewInternalError(err)
+	}
+
+	// 使用批量插入方法
+	err = dao.OrgSupervisor.BatchInsertSupervisors(ctx, tx, dto.Id, dto.SupervisorIds)
+	if err != nil {
+		return berror.NewInternalError(err)
+	}
+	return nil
 }

@@ -6,14 +6,16 @@
 package service
 
 import (
-	"freeroam/app/org/internal/model"
 	"context"
+	"freeroam/app/org/internal/model"
 )
 
 type (
 	IOrg interface {
 		Get(ctx context.Context, id int64) (res *model.OrgVo, err error)
 		GetList(ctx context.Context, params *model.OrgListDto) (res *model.ListReq[model.OrgListVo], err error)
+		Create(ctx context.Context, dto *model.CreateOrgDto) error
+		Update(ctx context.Context, dto *model.UpdateOrgDto) error
 	}
 )
 

@@ -5,7 +5,10 @@
 package dao
 
 import (
+	"context"
 	"freeroam/app/org/internal/dao/internal"
+	"freeroam/app/org/internal/model"
+	"github.com/gogf/gf/v2/database/gdb"
 )
 
 // orgSupervisorDao is the data access object for the table free_org_supervisor.
@@ -20,3 +23,46 @@ var (
 )
 
 // Add your custom methods and functionality below.
+
+// DeleteByOrgID 物理删除指定 org_id 的所有主管记录
+func (d *orgSupervisorDao) DeleteByOrgID(ctx context.Context, tx gdb.TX, orgID int64) error {
+	_, err := d.Ctx(ctx).TX(tx).Where(d.Columns().OrgId, orgID).Delete()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// BatchInsertSupervisors 批量插入组织主管
+// ctx: 上下文
+// tx: 事务对象
+// orgID: 组织 ID
+// supervisorIDs: 主管用户 ID 列表
+func (d *orgSupervisorDao) BatchInsertSupervisors(ctx context.Context, tx gdb.TX, orgID int64, supervisorIDs []int64) error {
+	if len(supervisorIDs) == 0 {
+		// 如果没有主管 ID，仍然删除旧记录以确保清空
+		return d.DeleteByOrgID(ctx, tx, orgID)
+	}
+
+	// 先删除指定 org_id 的所有主管记录
+	if err := d.DeleteByOrgID(ctx, tx, orgID); err != nil {
+		return err
+	}
+
+	// 构造批量插入的数据
+	supervisorList := make([]*model.Supervisors, len(supervisorIDs))
+	for i, userID := range supervisorIDs {
+		supervisorList[i] = &model.Supervisors{
+			UserId: userID,
+			OrgId:  orgID,
+		}
+	}
+
+	// 执行批量插入
+	_, err := d.Ctx(ctx).TX(tx).Data(supervisorList).Insert()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
