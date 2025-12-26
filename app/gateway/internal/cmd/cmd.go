@@ -2,9 +2,6 @@ package cmd
 
 import (
 	"context"
-	"freeroam/app/gateway/internal/controller/enum"
-	"freeroam/app/gateway/internal/controller/org"
-	"freeroam/app/gateway/internal/controller/user_member"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
@@ -20,11 +17,7 @@ var (
 			s := g.Server()
 			s.Group("/", func(group *ghttp.RouterGroup) {
 				group.Middleware(ghttp.MiddlewareHandlerResponse)
-				group.Bind(
-					enum.NewV1(),
-					org.NewV1(),
-					user_member.NewV1(),
-				)
+				group.Bind()
 			})
 			s.Run()
 			return nil

@@ -1,17 +1,14 @@
 package main
 
 import (
+	_ "freeroam/app/org/boot"
 	_ "freeroam/app/org/internal/packed"
-	"github.com/gogf/gf/v2/os/gtime"
 
-	_ "freeroam/app/org/internal/logic"
+	"freeroam/app/org/internal/cmd"
 
 	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 	"github.com/gogf/gf/v2/os/gctx"
-
-	_ "freeroam/app/org/boot"
-
-	"freeroam/app/org/internal/cmd"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 func main() {

@@ -3,11 +3,11 @@ package main
 import (
 	_ "freeroam/app/gateway/boot"
 	_ "freeroam/app/gateway/internal/packed"
-	"github.com/gogf/gf/v2/os/gtime"
-
-	"github.com/gogf/gf/v2/os/gctx"
 
 	"freeroam/app/gateway/internal/cmd"
+
+	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 func main() {

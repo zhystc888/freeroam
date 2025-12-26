@@ -1,4 +1,1 @@
-# GoFrame Template For SingleRepo
-
-Quick Start: 
-- https://goframe.org/quick
+# 系统服务

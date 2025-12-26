@@ -3,6 +3,8 @@ package boot
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/gogf/gf/contrib/config/nacos/v2"
 	rnacos "github.com/gogf/gf/contrib/registry/nacos/v2"
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
@@ -13,7 +15,6 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/v2/clients"
 	"github.com/nacos-group/nacos-sdk-go/v2/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
-	"os"
 )
 
 var (
