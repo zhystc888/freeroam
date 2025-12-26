@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package enum.v1;
+
+option go_package = "./api/enum/v1";
+
+service Enum{
+  // 根据枚举类型和code 获取一个枚举
+  rpc GetByTypeAndCode(GetByTypeAndCodeReq) returns (GetByTypeAndCodeRes);
+  // 根据枚举类型数组 获取多个枚举
+  rpc GetByType(GetByTypeReq) returns (GetByTypeRes);
+}
+
+message GetByTypeAndCodeReq {
+  // 枚举类型
+  string enumType = 1; // v:required#枚举类型不能为空
+  // 枚举编码
+  string enumCode = 2; // v:required#枚举编码不能为空
+}
+
+message GetByTypeAndCodeRes {
+  // 枚举值，如 1
+  string enumValue = 1;
+  // 前端展示文本
+  string enumLabel = 2;
+  // 枚举值说明
+  string enumValueDesc = 3;
+  // 顺序
+  int64 sort = 4;
+}
+
+message GetByTypeReq{
+  repeated string Type = 1; // v:required|min-length:1#枚举类型不能为空|至少需要一个枚举类型
+}
+
+message GetByTypeRes{
+  // 用户状态选项列表 - 使用 map 来存储不同类型的用户状态配置
+  map<string, GetByTypeOptionList> user_status_map = 1;
+}
+
+message  GetByTypeOptionList{
+  repeated GetByTypeOption options = 1;
+}
+
+// 枚举元素
+message GetByTypeOption{
+  // 枚举编码，如 ADMIN
+  string enumCode = 1;
+  // 枚举值，如 1
+  string enumValue = 2;
+  // 前端展示文本
+  string enumLabel = 3;
+  // 枚举值说明
+  string enumValueDesc = 4;
+  // 顺序
+  int64 sort = 5;
+}

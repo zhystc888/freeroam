@@ -14,4 +14,10 @@ var (
 
 var (
 	CodeInternal = gcode.New(50000, "服务器内部错误", nil)
+
+	RedisErr = gcode.New(50100, "Redis 查询错误", nil)
+
+	DBErr = gcode.New(50200, "Redis 查询错误", nil)
+
+	JSONErr = gcode.New(50300, "JSON 解析错误", nil)
 )

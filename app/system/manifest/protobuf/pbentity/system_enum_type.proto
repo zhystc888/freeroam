@@ -1,0 +1,25 @@
+// ==========================================================================
+// Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
+// ==========================================================================
+
+syntax = "proto3";
+
+package pbentity;
+
+option go_package = "freeroam/app/system/api/pbentity";
+
+import "google/protobuf/timestamp.proto";
+
+message SystemEnumType {
+    int64                     Id           = 1;  //
+    string                    EnumType     = 2;  // 枚举类型，如 user_type
+    string                    EnumTypeDesc = 3;  // 枚举类型说明
+    int32                     IsEnabled    = 4;  // 是否启用0:否,1:是
+    uint32                    IsDeleted    = 5;  // 是否删除0:否,1:是
+    uint64                    CreateBy     = 6;  // 创建人
+    uint64                    UpdateBy     = 7;  // 修改人
+    uint64                    DeleteBy     = 8;  // 删除人
+    google.protobuf.Timestamp CreateAt     = 9;  // 创建时间
+    google.protobuf.Timestamp UpdateAt     = 10; // 更新时间
+    google.protobuf.Timestamp DeletedAt    = 11; // 删除时间
+}

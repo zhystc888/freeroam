@@ -5,6 +5,7 @@ go 1.24.2
 require (
 	github.com/gogf/gf/contrib/config/nacos/v2 v2.9.0
 	github.com/gogf/gf/contrib/drivers/mysql/v2 v2.9.0
+	github.com/gogf/gf/contrib/nosql/redis/v2 v2.9.6
 	github.com/gogf/gf/contrib/rpc/grpcx/v2 v2.9.0
 	github.com/gogf/gf/v2 v2.9.6
 	github.com/nacos-group/nacos-sdk-go/v2 v2.3.2
@@ -13,9 +14,11 @@ require (
 )
 
 require (
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/emirpasic/gods/v2 v2.0.0-alpha // indirect
 	github.com/olekukonko/errors v1.1.0 // indirect
 	github.com/olekukonko/ll v0.0.9 // indirect
+	github.com/redis/go-redis/v9 v9.12.1 // indirect
 )
 
 require (
