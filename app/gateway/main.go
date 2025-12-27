@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "freeroam/app/gateway/boot"
 	_ "freeroam/app/gateway/internal/packed"
 
 	"freeroam/app/gateway/internal/cmd"
