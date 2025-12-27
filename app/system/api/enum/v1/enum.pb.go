@@ -150,7 +150,7 @@ func (x *GetByTypeAndCodeRes) GetSort() int64 {
 
 type GetByTypeReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          []string               `protobuf:"bytes,1,rep,name=Type,proto3" json:"Type,omitempty" v:"required|min-length:1#枚举类型不能为空|至少需要一个枚举类型"` // v:required|min-length:1#枚举类型不能为空|至少需要一个枚举类型
+	EnumTypes     []string               `protobuf:"bytes,1,rep,name=enumTypes,proto3" json:"enumTypes,omitempty" v:"required|min-length:1#枚举类型不能为空|至少需要一个枚举类型"` // v:required|min-length:1#枚举类型不能为空|至少需要一个枚举类型
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -185,9 +185,9 @@ func (*GetByTypeReq) Descriptor() ([]byte, []int) {
 	return file_enum_v1_enum_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetByTypeReq) GetType() []string {
+func (x *GetByTypeReq) GetEnumTypes() []string {
 	if x != nil {
-		return x.Type
+		return x.EnumTypes
 	}
 	return nil
 }
@@ -375,9 +375,9 @@ const file_enum_v1_enum_proto_rawDesc = "" +
 	"\tenumValue\x18\x01 \x01(\tR\tenumValue\x12\x1c\n" +
 	"\tenumLabel\x18\x02 \x01(\tR\tenumLabel\x12$\n" +
 	"\renumValueDesc\x18\x03 \x01(\tR\renumValueDesc\x12\x12\n" +
-	"\x04sort\x18\x04 \x01(\x03R\x04sort\"\"\n" +
-	"\fGetByTypeReq\x12\x12\n" +
-	"\x04Type\x18\x01 \x03(\tR\x04Type\"\xc0\x01\n" +
+	"\x04sort\x18\x04 \x01(\x03R\x04sort\",\n" +
+	"\fGetByTypeReq\x12\x1c\n" +
+	"\tenumTypes\x18\x01 \x03(\tR\tenumTypes\"\xc0\x01\n" +
 	"\fGetByTypeRes\x12P\n" +
 	"\x0fuser_status_map\x18\x01 \x03(\v2(.enum.v1.GetByTypeRes.UserStatusMapEntryR\ruserStatusMap\x1a^\n" +
 	"\x12UserStatusMapEntry\x12\x10\n" +

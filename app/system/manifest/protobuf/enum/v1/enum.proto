@@ -30,7 +30,7 @@ message GetByTypeAndCodeRes {
 }
 
 message GetByTypeReq{
-  repeated string Type = 1; // v:required|min-length:1#枚举类型不能为空|至少需要一个枚举类型
+  repeated string enumTypes = 1; // v:required|min-length:1#枚举类型不能为空|至少需要一个枚举类型
 }
 
 message GetByTypeRes{

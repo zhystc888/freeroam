@@ -17,7 +17,8 @@ var (
 
 	RedisErr = gcode.New(50100, "Redis 查询错误", nil)
 
-	DBErr = gcode.New(50200, "Redis 查询错误", nil)
+	DBErr = gcode.New(50200, "DB 查询错误", nil)
 
-	JSONErr = gcode.New(50300, "JSON 解析错误", nil)
+	SerializationErr   = gcode.New(50300, "序列化错误", nil)
+	DeserializationErr = gcode.New(50310, "反序列化错误", nil)
 )
