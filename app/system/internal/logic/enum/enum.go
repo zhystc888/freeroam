@@ -89,7 +89,7 @@ func (s *sEnum) GetByType(ctx context.Context, in *v1.GetByTypeReq) (*v1.GetByTy
 		enumTypeMap[enumType] = &v1.GetByTypeOptionList{Options: enumTypeOptionList}
 	}
 
-	res.UserStatusMap = enumTypeMap
+	res.GetByTypeOptionListMap = enumTypeMap
 	return &res, nil
 }
 

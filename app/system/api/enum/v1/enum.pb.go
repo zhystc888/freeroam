@@ -195,9 +195,9 @@ func (x *GetByTypeReq) GetEnumTypes() []string {
 type GetByTypeRes struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// 用户状态选项列表 - 使用 map 来存储不同类型的用户状态配置
-	UserStatusMap map[string]*GetByTypeOptionList `protobuf:"bytes,1,rep,name=user_status_map,json=userStatusMap,proto3" json:"user_status_map,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value" dc:"用户状态选项列表 - 使用 map 来存储不同类型的用户状态配置"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	GetByTypeOptionListMap map[string]*GetByTypeOptionList `protobuf:"bytes,1,rep,name=GetByTypeOptionListMap,proto3" json:"GetByTypeOptionListMap,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value" dc:"用户状态选项列表 - 使用 map 来存储不同类型的用户状态配置"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *GetByTypeRes) Reset() {
@@ -230,9 +230,9 @@ func (*GetByTypeRes) Descriptor() ([]byte, []int) {
 	return file_enum_v1_enum_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetByTypeRes) GetUserStatusMap() map[string]*GetByTypeOptionList {
+func (x *GetByTypeRes) GetGetByTypeOptionListMap() map[string]*GetByTypeOptionList {
 	if x != nil {
-		return x.UserStatusMap
+		return x.GetByTypeOptionListMap
 	}
 	return nil
 }
@@ -377,10 +377,10 @@ const file_enum_v1_enum_proto_rawDesc = "" +
 	"\renumValueDesc\x18\x03 \x01(\tR\renumValueDesc\x12\x12\n" +
 	"\x04sort\x18\x04 \x01(\x03R\x04sort\",\n" +
 	"\fGetByTypeReq\x12\x1c\n" +
-	"\tenumTypes\x18\x01 \x03(\tR\tenumTypes\"\xc0\x01\n" +
-	"\fGetByTypeRes\x12P\n" +
-	"\x0fuser_status_map\x18\x01 \x03(\v2(.enum.v1.GetByTypeRes.UserStatusMapEntryR\ruserStatusMap\x1a^\n" +
-	"\x12UserStatusMapEntry\x12\x10\n" +
+	"\tenumTypes\x18\x01 \x03(\tR\tenumTypes\"\xe2\x01\n" +
+	"\fGetByTypeRes\x12i\n" +
+	"\x16GetByTypeOptionListMap\x18\x01 \x03(\v21.enum.v1.GetByTypeRes.GetByTypeOptionListMapEntryR\x16GetByTypeOptionListMap\x1ag\n" +
+	"\x1bGetByTypeOptionListMapEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x122\n" +
 	"\x05value\x18\x02 \x01(\v2\x1c.enum.v1.GetByTypeOptionListR\x05value:\x028\x01\"I\n" +
 	"\x13GetByTypeOptionList\x122\n" +
@@ -415,12 +415,12 @@ var file_enum_v1_enum_proto_goTypes = []any{
 	(*GetByTypeRes)(nil),        // 3: enum.v1.GetByTypeRes
 	(*GetByTypeOptionList)(nil), // 4: enum.v1.GetByTypeOptionList
 	(*GetByTypeOption)(nil),     // 5: enum.v1.GetByTypeOption
-	nil,                         // 6: enum.v1.GetByTypeRes.UserStatusMapEntry
+	nil,                         // 6: enum.v1.GetByTypeRes.GetByTypeOptionListMapEntry
 }
 var file_enum_v1_enum_proto_depIdxs = []int32{
-	6, // 0: enum.v1.GetByTypeRes.user_status_map:type_name -> enum.v1.GetByTypeRes.UserStatusMapEntry
+	6, // 0: enum.v1.GetByTypeRes.GetByTypeOptionListMap:type_name -> enum.v1.GetByTypeRes.GetByTypeOptionListMapEntry
 	5, // 1: enum.v1.GetByTypeOptionList.options:type_name -> enum.v1.GetByTypeOption
-	4, // 2: enum.v1.GetByTypeRes.UserStatusMapEntry.value:type_name -> enum.v1.GetByTypeOptionList
+	4, // 2: enum.v1.GetByTypeRes.GetByTypeOptionListMapEntry.value:type_name -> enum.v1.GetByTypeOptionList
 	0, // 3: enum.v1.Enum.GetByTypeAndCode:input_type -> enum.v1.GetByTypeAndCodeReq
 	2, // 4: enum.v1.Enum.GetByType:input_type -> enum.v1.GetByTypeReq
 	1, // 5: enum.v1.Enum.GetByTypeAndCode:output_type -> enum.v1.GetByTypeAndCodeRes

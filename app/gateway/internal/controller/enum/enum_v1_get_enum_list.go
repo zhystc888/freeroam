@@ -27,8 +27,8 @@ func (c *ControllerV1) GetEnumList(ctx context.Context, req *v1.GetEnumListReq) 
 		return nil, err
 	}
 
-	resMap := make(v1.GetEnumListRes, len(data.UserStatusMap))
-	for key, item := range data.UserStatusMap {
+	resMap := make(v1.GetEnumListRes, len(data.GetByTypeOptionListMap))
+	for key, item := range data.GetByTypeOptionListMap {
 		items := make([]v1.GetEnumListResItem, 0, len(item.Options))
 		for _, options := range item.Options {
 			items = append(items, v1.GetEnumListResItem{

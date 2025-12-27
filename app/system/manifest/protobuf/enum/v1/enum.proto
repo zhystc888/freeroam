@@ -35,10 +35,10 @@ message GetByTypeReq{
 
 message GetByTypeRes{
   // 用户状态选项列表 - 使用 map 来存储不同类型的用户状态配置
-  map<string, GetByTypeOptionList> user_status_map = 1;
+  map<string, GetByTypeOptionList> GetByTypeOptionListMap = 1;
 }
 
-message  GetByTypeOptionList{
+message GetByTypeOptionList{
   repeated GetByTypeOption options = 1;
 }
 
