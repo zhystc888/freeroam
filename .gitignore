@@ -19,3 +19,4 @@ bin
 **/config/config.yaml
 log
 tmp
+doc

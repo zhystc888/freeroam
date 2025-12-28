@@ -2,23 +2,19 @@ package berror
 
 import "github.com/gogf/gf/v2/errors/gcode"
 
+// 异常code 6位，前3位和httpStatus保持一致
 var (
-	DataNotExist = gcode.New(10300, "数据不存在！", nil)
-
-	PasswordErr = gcode.New(10400, "密码错误！", nil)
-
-	CodeTokenIsEmpty = gcode.New(10401, "token不存在！", nil)
-	CodeTokenInvalid = gcode.New(10401, "token验证失败！", nil)
-	CodeTokenExpired = gcode.New(10401, "token已过期！", nil)
+	DataNotExist     = gcode.New(400000, "数据不存在！", nil)
+	PasswordErr      = gcode.New(401000, "密码错误！", nil)
+	CodeTokenIsEmpty = gcode.New(401001, "token不存在！", nil)
+	CodeTokenInvalid = gcode.New(401002, "token验证失败！", nil)
+	CodeTokenExpired = gcode.New(401003, "token已过期！", nil)
 )
 
 var (
-	CodeInternal = gcode.New(50000, "服务器内部错误", nil)
-
-	RedisErr = gcode.New(50100, "Redis 查询错误", nil)
-
-	DBErr = gcode.New(50200, "DB 查询错误", nil)
-
-	SerializationErr   = gcode.New(50300, "序列化错误", nil)
-	DeserializationErr = gcode.New(50310, "反序列化错误", nil)
+	CodeInternal       = gcode.New(500000, "服务器内部错误", nil)
+	RedisErr           = gcode.New(500100, "Redis 查询错误", nil)
+	DBErr              = gcode.New(500200, "DB 查询错误", nil)
+	SerializationErr   = gcode.New(500300, "序列化错误", nil)
+	DeserializationErr = gcode.New(500301, "反序列化错误", nil)
 )
