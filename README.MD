@@ -11,7 +11,10 @@
 │   ├── enum        # 枚举文件
 │   ├── model       # 结构模型
 │   └── tools       # 工具文件
+│       ├── fvalid  # 自定义验证规则
+│       └── string  # 字符串工具
 ├── config          # 配置文件
+│   └── sql         # sql文件
 ├── hack            # 工具脚本
 ├── utility         # 工具包
 └── go.mod          # 依赖管理
