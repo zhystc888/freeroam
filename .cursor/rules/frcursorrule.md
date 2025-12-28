@@ -1,0 +1,113 @@
+# 自游｜GoFrame Cursor Rules
+
+**Go 1.24.2 / GoFrame v2.9.0 / Monorepo / 微服务 + Gateway**
+
+------
+
+## 1) 服务边界（硬规则）
+
+- `app/gateway`：唯一对外 HTTP（路由/鉴权/聚合/调用下游 gRPC）
+- `app/org`、`app/system`：只提供 gRPC，不提供 HTTP
+- 跨服务通信：一律 gRPC
+- `gateway`：禁止直连数据库
+- `common`：只放通用基础能力（`berror/enum/model/tools`），禁止放具体业务逻辑
+
+------
+
+## 2) Cursor 产出顺序
+
+1. gateway HTTP API 定义（api 包：Req/Res + g.Meta，确保可生成）
+2. 对应 gRPC proto（按服务拆分范围）
+3. 如涉及数据：MySQL DDL（只输出可执行 SQL）
+4. 最后才写：少量关键业务逻辑要点（不要堆模板代码）
+
+------
+
+## 3) Gateway HTTP API 定义规则（最重要：可生成）
+
+- API 定义：在 `app/gateway/api/**/v1`（或项目现有 api 目录约定）
+- 结构体命名：请求结构体必须以 **Req** 结尾；响应结构体必须以 **Res** 结尾
+- 元信息：每个 Req 必须包含 `g.Meta`（`path/method/tags/summary`）
+- Controller 方法签名固定：
+  `Func(ctx context.Context, req *v1.XxxReq) (res *v1.XxxRes, err error)`
+- 路由风格：
+  - CRUD 用 RESTful
+  - 操作用 action（如 `/xxx/{id}/enable`）
+  - 复杂场景用聚合接口
+- 分页固定：`page/limit`，`limit` 最大 100（沿用项目 PageReq）
+
+------
+
+## 4) gRPC / proto 规则（按 GoFrame CLI 风格）
+
+- proto 由 HTTP 设计反推：每个对外 endpoint 都必须有对应 rpc（在下游服务范围内）
+- package`：默认沿用 GoFrame CLI 现有生成
+- `option go_package`：必须是项目内真实导入路径（保持 CLI/现有工程的目录组织，不强行改）
+- 分层语义（如项目已有则遵循）：
+  - `pbentity`：只放实体 message
+  - `pbreq/pbres`：放请求响应
+  - `pbservice`：放 service + rpc
+- 兼容性：
+  - 字段编号只增不改、不复用
+  - 已发布字段不改类型
+- gateway 调用 gRPC：保持现有“控制器注入 client”写法，不引入 DI 框架
+
+------
+
+## 5) 统一词典（命名必须一致）
+
+- `member`（成员）
+- `org`（组织）
+- `org_unit`（组织单元/部门节点：DB/字段用 `org_unit`；类型名用 `OrgUnit`）
+- `position`（职务）
+- `role`（角色）
+- `permission`（权限）
+- `enum`（枚举，system 域）
+
+禁止混用 `user/account/member`。
+
+------
+
+## 6) MySQL 规则（涉及建表必须遵守）
+
+- 只输出可执行 SQL，不要表格
+- 所有表必带审计字段：
+  `is_deleted, create_by, update_by, delete_by, create_at, update_at, deleted_at`
+- 不建物理外键（逻辑外键 + 代码保证）
+- 唯一性与软删（统一策略）：
+  - 允许“删除后可重复创建同值”的字段：不加 UNIQUE，只加普通索引 `idx_xxx`
+  - 只有业务明确要求“历史也不能重复”（删除也不允许重复）才加 UNIQUE
+  - 需要“仅对 is_deleted=0 唯一”的场景：不做生成列/函数索引；用业务层校验 + 普通索引
+- 索引最低要求（配合业务校验）：
+  - 对要做重复校验的字段必须加普通索引
+  - 组合校验加组合索引（如 `(enum_type, enum_code)`）
+
+------
+
+## 7) 枚举（system 服务）
+
+- 非底层通用枚举：一律走 DB 枚举表（`free_system_enum_type` / `free_system_enum_data`）
+- 字段注释必须标明 enum_type（例：`枚举: member_status`）
+- `common/enum`：仅放跨服务底层强约束枚举（慎用）
+
+------
+
+## 8) 错误与日志（最小约束）
+
+- 业务错误必须带 code：统一用 `common/berror`（`gerror.NewCode` + `gcode.Code`）
+- 禁止 `errors.New()` 作为业务错误直接返回
+- 日志使用 GoFrame 自带日志
+
+------
+
+## 9) 事务（硬规则）
+
+- 禁止嵌套事务
+- 事务尽量小：禁止把网络 I/O、文件 I/O、跨服务 gRPC 调用放进事务
+
+------
+
+## 10) 最低质量要求（你们不启用 lint 的前提下）
+
+- 必须 gofmt
+- Cursor 输出的 Go 代码必须至少可编译（不要生成一堆未引用/不完整模板）

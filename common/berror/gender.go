@@ -6,8 +6,8 @@ import (
 )
 
 // NewBizError 创建业务异常
-func NewBizError(code gcode.Code, msg string) error {
-	return gerror.NewCode(code, msg)
+func NewBizError(code gcode.Code, text ...string) error {
+	return gerror.NewCode(code, text...)
 }
 
 // NewInternalError 创建服务器内部异常，附带堆栈信息
