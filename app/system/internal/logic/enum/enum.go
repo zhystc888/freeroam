@@ -139,6 +139,7 @@ func (*sEnum) dbToRedisByType(ctx context.Context, enumType string) error {
 	query := m.Ctx(ctx).Safe(false).
 		Where(m.Columns().EnumType, enumType).
 		Where(m.Columns().IsEnabled, true).
+		Where(m.Columns().IsDeleted, false).
 		OrderAsc(m.Columns().Sort)
 
 	var data []*entity.SystemEnumData

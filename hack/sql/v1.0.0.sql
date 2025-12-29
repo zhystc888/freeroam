@@ -34,3 +34,20 @@ CREATE TABLE `free_system_enum_data` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_enum` (`enum_type`,`enum_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='枚举数据';
+
+-- 系统配置
+CREATE TABLE `free_system_config` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `config_code` varchar(64) COLLATE utf8mb4_general_ci NOT NULL COMMENT '配置编码，如 token_validity_period',
+  `config_value` varchar(64) COLLATE utf8mb4_general_ci NOT NULL COMMENT '配置值，如 60',
+  `config_desc` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '配置说明，如 token有效时长(分钟)',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '是否删除0:否,1:是',
+  `create_by` bigint unsigned NOT NULL DEFAULT '0' COMMENT '创建人',
+  `update_by` bigint unsigned NOT NULL DEFAULT '0' COMMENT '修改人',
+  `delete_by` bigint unsigned NOT NULL DEFAULT '0' COMMENT '删除人',
+  `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT '删除时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_enum` (`config_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='系统配置';
