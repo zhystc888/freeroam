@@ -1,0 +1,173 @@
+syntax = "proto3";
+
+package role.v1;
+
+option go_package = "./api/role/v1";
+
+service Role{
+  // 创建角色
+  rpc CreateRole(CreateRoleReq) returns (CreateRoleRes);
+  // 更新角色
+  rpc UpdateRole(UpdateRoleReq) returns (UpdateRoleRes);
+  // 删除角色
+  rpc DeleteRole(DeleteRoleReq) returns (DeleteRoleRes);
+  // 获取角色详情
+  rpc GetRole(GetRoleReq) returns (GetRoleRes);
+  // 获取角色列表
+  rpc ListRole(ListRoleReq) returns (ListRoleRes);
+  // 查询角色绑定的职务列表
+  rpc GetRolePositionList(GetRolePositionListReq) returns (GetRolePositionListRes);
+  // 批量绑定职务到角色（覆盖式）
+  rpc BatchAssignRolePosition(BatchAssignRolePositionReq) returns (BatchAssignRolePositionRes);
+  // 查询角色当前绑定职务ID集合（表单回显）
+  rpc GetRolePositionIds(GetRolePositionIdsReq) returns (GetRolePositionIdsRes);
+}
+
+message CreateRoleReq {
+  // 角色编码(唯一)
+  string code = 1; // v:required|length:1,64#角色编码不能为空|角色编码长度必须在1-64之间
+  // 角色名称
+  string name = 2; // v:required|length:1,64#角色名称不能为空|角色名称长度必须在1-64之间
+  // 状态:role_status
+  string status = 3; // // v:required|enum:role_status#状态不能为空
+  // 备注
+  string remark = 4;
+}
+
+message CreateRoleRes {
+  // 角色ID
+  int64 id = 1;
+}
+
+message UpdateRoleReq {
+  // 角色ID
+  int64 id = 1; // v:required|min:1#角色ID不能为空|角色ID必须大于0
+  // 角色名称
+  string name = 2; // v:length:1,64#角色名称长度必须在1-64之间
+  // 状态:role_status
+  string status = 3; // v:enum:role_status
+  // 备注
+  string remark = 4;
+}
+
+message UpdateRoleRes {
+  // 是否成功
+  bool success = 1;
+}
+
+message DeleteRoleReq {
+  // 角色ID
+  int64 id = 1; // v:required|min:1#角色ID不能为空|角色ID必须大于0
+}
+
+message DeleteRoleRes {
+  // 是否成功
+  bool success = 1;
+}
+
+message GetRoleReq {
+  // 角色ID
+  int64 id = 1; // v:required|min:1#角色ID不能为空|角色ID必须大于0
+}
+
+message GetRoleRes {
+  // 角色ID
+  int64 id = 1;
+  // 角色编码(唯一)
+  string code = 2;
+  // 角色名称
+  string name = 3;
+  // 状态:role_status
+  string status = 4;
+  // 是否系统内置0:否,1:是
+  bool isSystem = 5;
+  // 备注
+  string remark = 6;
+  // 创建时间
+  int64 createAt = 9;
+  // 更新时间
+  int64 updateAt = 10;
+}
+
+message ListRoleReq {
+  // 页码
+  int64 page = 1; // v:min:1#页码必须大于0
+  // 每页数量
+  int64 pageSize = 2; // v:min:1|max:100#每页数量必须大于0|每页数量不能超过100
+  // 对 code/name 模糊
+  string keyword = 3;
+  // 状态:role_status
+  string status = 4; // v:enum:role_status
+  // 是否系统内置0:否,1:是
+  int64 isSystem = 5;
+}
+
+message ListRoleRes {
+  // 角色列表
+  repeated GetRoleRes list = 1;
+  // 总数
+  int64 total = 2;
+  // 页码
+  int64 page = 3;
+  // 每页数量
+  int64 pageSize = 4;
+}
+
+message GetRolePositionListReq {
+  // 页码
+  int64 page = 1; // v:min:1#页码必须大于0
+  // 每页数量
+  int64 pageSize = 2; // v:min:1|max:100#每页数量必须大于0|每页数量不能超过100
+  // 对 职务名称模糊 模糊
+  string keyword = 3;
+  // 角色ID
+  int64 roleId = 4; // v:required|min:1#角色ID不能为空|角色ID必须大于0
+}
+
+message GetRolePositionListRes {
+  // 职务列表
+  repeated PositionItem list = 1;
+  // 总数
+  int64 total = 2;
+  // 页码
+  int64 page = 3;
+  // 每页数量
+  int64 pageSize = 4;
+}
+
+message PositionItem {
+  // 职务ID
+  int64 positionId = 1;
+  // 职务名称
+  string positionName = 3;
+  // 职务状态
+  string positionStatus = 2;
+  // 绑定时间
+  string createAt = 4;
+}
+
+// 批量绑定职务到角色（覆盖式）
+message BatchAssignRolePositionReq {
+  // 角色ID
+  int64 roleId = 1; // v:required|min:1#角色ID不能为空|角色ID必须大于0
+  // 职务ID列表
+  repeated int64 positionIds = 2;
+}
+
+message BatchAssignRolePositionRes {
+  // 是否成功
+  bool success = 1;
+}
+
+// 查询角色当前绑定职务ID集合（表单回显）
+message GetRolePositionIdsReq {
+  // 角色ID
+  int64 roleId = 1; // v:required|min:1#角色ID不能为空|角色ID必须大于0
+}
+
+message GetRolePositionIdsRes {
+  // 职务ID列表
+  repeated int64 positionIds = 1;
+}
+
+

@@ -1,0 +1,27 @@
+// ==========================================================================
+// Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
+// ==========================================================================
+
+syntax = "proto3";
+
+package pbentity;
+
+option go_package = "freeroam/app/org/api/pbentity";
+
+import "google/protobuf/timestamp.proto";
+
+message Role {
+    uint64                    Id        = 1;  // 主键
+    string                    Code      = 2;  // 角色编码(唯一)
+    string                    Name      = 3;  // 角色名称
+    string                    Status    = 4;  // 状态:role_status
+    uint32                    IsSystem  = 5;  // 是否系统内置0:否,1:是
+    string                    Remark    = 6;  // 备注
+    uint32                    IsDeleted = 7;  // 是否删除0:否,1:是
+    uint64                    CreateBy  = 8;  // 创建人
+    uint64                    UpdateBy  = 9;  // 修改人
+    uint64                    DeleteBy  = 10; // 删除人
+    google.protobuf.Timestamp CreateAt  = 11; // 创建时间
+    google.protobuf.Timestamp UpdateAt  = 12; // 更新时间
+    google.protobuf.Timestamp DeletedAt = 13; // 删除时间
+}
