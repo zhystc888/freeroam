@@ -66,15 +66,14 @@ func (s *sRole) UpdateRole(ctx context.Context, in *v1.UpdateRoleReq) (*v1.Updat
 	m := dao.Role
 
 	// 检查角色是否存在
-	var role entity.Role
-	err := m.Ctx(ctx).
+	count, err := m.Ctx(ctx).
 		Where(m.Columns().Id, in.Id).
-		Where(m.Columns().IsDeleted, 0).
-		Scan(&role)
+		Where(m.Columns().IsDeleted, false).
+		Count()
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
 	}
-	if role.Id == 0 {
+	if count == 0 {
 		return nil, gerror.NewCode(berror.RoleNotExist)
 	}
 
@@ -113,7 +112,7 @@ func (s *sRole) DeleteRole(ctx context.Context, in *v1.DeleteRoleReq) (*v1.Delet
 	var role entity.Role
 	err := m.Ctx(ctx).
 		Where(m.Columns().Id, in.Id).
-		Where(m.Columns().IsDeleted, 0).
+		Where(m.Columns().IsDeleted, false).
 		Scan(&role)
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
@@ -131,7 +130,7 @@ func (s *sRole) DeleteRole(ctx context.Context, in *v1.DeleteRoleReq) (*v1.Delet
 	positionRole := dao.PositionRole
 	count, err := positionRole.Ctx(ctx).
 		Where(positionRole.Columns().RoleId, in.Id).
-		Where(positionRole.Columns().IsDeleted, 0).
+		Where(positionRole.Columns().IsDeleted, false).
 		Count()
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
@@ -144,7 +143,7 @@ func (s *sRole) DeleteRole(ctx context.Context, in *v1.DeleteRoleReq) (*v1.Delet
 	_, err = m.Ctx(ctx).
 		Where(m.Columns().Id, in.Id).
 		Data(do.Role{
-			IsDeleted: 1,
+			IsDeleted: true,
 			DeleteBy:  0, // TODO: 从上下文获取用户ID
 			DeletedAt: gtime.Now(),
 		}).
@@ -165,7 +164,7 @@ func (s *sRole) GetRole(ctx context.Context, in *v1.GetRoleReq) (*v1.GetRoleRes,
 	var role entity.Role
 	err := m.Ctx(ctx).
 		Where(m.Columns().Id, in.Id).
-		Where(m.Columns().IsDeleted, 0).
+		Where(m.Columns().IsDeleted, false).
 		Scan(&role)
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
@@ -192,17 +191,17 @@ func (s *sRole) ListRole(ctx context.Context, in *v1.ListRoleReq) (*v1.ListRoleR
 
 	// 构建查询条件
 	query := m.Ctx(ctx).
-		Where(m.Columns().IsDeleted, 0)
+		Where(m.Columns().IsDeleted, false)
 
 	if in.Keyword != "" {
 		query = query.WhereLike(m.Columns().Code, "%"+in.Keyword+"%").
-			WhereLike(m.Columns().Name, "%"+in.Keyword+"%")
+			WhereOrLike(m.Columns().Name, "%"+in.Keyword+"%")
 	}
 	if in.Status != "" {
 		query = query.Where(m.Columns().Status, in.Status)
 	}
 	if in.IsSystem > 0 {
-		query = query.Where(m.Columns().IsSystem, in.IsSystem)
+		query = query.Where(m.Columns().IsSystem, in.IsSystem == 1)
 	}
 
 	// 获取总数
@@ -249,8 +248,10 @@ func (s *sRole) ListRole(ctx context.Context, in *v1.ListRoleReq) (*v1.ListRoleR
 	}
 
 	return &v1.ListRoleRes{
-		Total: int64(total),
-		List:  list,
+		List:     list,
+		Total:    int64(total),
+		Page:     int64(page),
+		PageSize: int64(pageSize),
 	}, nil
 }
 
@@ -261,7 +262,7 @@ func (s *sRole) GetRolePositionList(ctx context.Context, in *v1.GetRolePositionL
 	var role entity.Role
 	err := m.Ctx(ctx).
 		Where(m.Columns().Id, in.RoleId).
-		Where(m.Columns().IsDeleted, 0).
+		Where(m.Columns().IsDeleted, false).
 		Scan(&role)
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
@@ -314,15 +315,14 @@ func (s *sRole) GetRolePositionList(ctx context.Context, in *v1.GetRolePositionL
 func (s *sRole) BatchAssignRolePosition(ctx context.Context, in *v1.BatchAssignRolePositionReq) (*v1.BatchAssignRolePositionRes, error) {
 	// 检查角色是否存在
 	m := dao.Role
-	var role entity.Role
-	err := m.Ctx(ctx).
+	count, err := m.Ctx(ctx).
 		Where(m.Columns().Id, in.RoleId).
-		Where(m.Columns().IsDeleted, 0).
-		Scan(&role)
+		Where(m.Columns().IsDeleted, false).
+		Count()
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
 	}
-	if role.Id == 0 {
+	if count == 0 {
 		return nil, gerror.NewCode(berror.RoleNotExist)
 	}
 
@@ -392,41 +392,30 @@ func (s *sRole) BatchAssignRolePosition(ctx context.Context, in *v1.BatchAssignR
 func (s *sRole) GetRolePositionIds(ctx context.Context, in *v1.GetRolePositionIdsReq) (*v1.GetRolePositionIdsRes, error) {
 	// 检查角色是否存在
 	m := dao.Role
-	var role entity.Role
-	err := m.Ctx(ctx).
+	count, err := m.Ctx(ctx).
 		Where(m.Columns().Id, in.RoleId).
-		Where(m.Columns().IsDeleted, 0).
-		Scan(&role)
+		Where(m.Columns().IsDeleted, false).
+		Count()
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
 	}
-	if role.Id == 0 {
+	if count == 0 {
 		return nil, gerror.NewCode(berror.RoleNotExist)
 	}
 
 	// 查询角色绑定的职务ID列表
-	var positionList []struct {
-		PositionId int64 `json:"position_id"`
-	}
-
 	positionRole := dao.PositionRole
-	err = positionRole.Ctx(ctx).
+	positionIds, err := positionRole.Ctx(ctx).
 		Where(positionRole.Columns().RoleId, in.RoleId).
 		Where(positionRole.Columns().IsDeleted, false).
 		Fields(positionRole.Columns().PositionId).
 		OrderAsc(positionRole.Columns().PositionId).
-		Scan(&positionList)
+		Array()
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
 	}
 
-	// 转换为ID列表
-	positionIds := make([]int64, 0, len(positionList))
-	for _, item := range positionList {
-		positionIds = append(positionIds, item.PositionId)
-	}
-
 	return &v1.GetRolePositionIdsRes{
-		PositionIds: positionIds,
+		PositionIds: positionIds.Int64s(),
 	}, nil
 }

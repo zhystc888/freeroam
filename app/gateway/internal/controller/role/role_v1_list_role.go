@@ -34,7 +34,9 @@ func (c *ControllerV1) ListRole(ctx context.Context, req *v1.ListRoleReq) (res *
 	}
 
 	return &v1.ListRoleRes{
-		Total: result.Total,
-		List:  list,
+		List:     list,
+		Total:    result.Total,
+		Page:     result.Page,
+		PageSize: result.PageSize,
 	}, nil
 }

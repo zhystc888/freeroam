@@ -15,7 +15,12 @@ func (c *ControllerV1) GetRolePositionIds(ctx context.Context, req *v1.GetRolePo
 		return nil, err
 	}
 
+	positionIds := result.PositionIds
+	if positionIds == nil {
+		positionIds = []int64{}
+	}
+
 	return &v1.GetRolePositionIdsRes{
-		PositionIds: result.PositionIds,
+		PositionIds: positionIds,
 	}, nil
 }
