@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"freeroam/app/gateway/internal/controller/enum"
+	"freeroam/app/gateway/internal/controller/role"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
@@ -20,6 +21,7 @@ var (
 				group.Middleware(ghttp.MiddlewareHandlerResponse)
 				group.Bind(
 					enum.NewV1(),
+					role.NewV1(),
 				)
 			})
 			s.Run()
