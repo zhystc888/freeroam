@@ -9,8 +9,8 @@ import (
 
 func (c *ControllerV1) ListOrg(ctx context.Context, req *v1.ListOrgReq) (res *v1.ListOrgRes, err error) {
 	rpcReq := &oOrg.ListOrgReq{
-		Page:     req.Page,
-		PageSize: req.PageSize,
+		Page:     req.GetPage(),
+		PageSize: req.GetPageSize(),
 		Keyword:  req.Keyword,
 		Code:     req.Code,
 		Category: req.Category,

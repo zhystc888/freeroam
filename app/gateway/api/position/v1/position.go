@@ -1,14 +1,15 @@
 package v1
 
-import "github.com/gogf/gf/v2/frame/g"
+import (
+	"freeroam/common/model"
+
+	"github.com/gogf/gf/v2/frame/g"
+)
 
 // ListPositionReq 职务列表请求
 type ListPositionReq struct {
 	g.Meta `path:"/org/positions" tags:"职务管理" method:"get" summary:"职务列表"`
-	// 页码
-	Page int64 `p:"page" v:"min:1#页码必须大于0" dc:"页码"`
-	// 每页数量
-	PageSize int64 `p:"pageSize" v:"min:1|max:200#每页数量必须大于0|每页数量不能超过200" dc:"每页数量"`
+	model.PageReq
 	// 职务名称模糊
 	Keyword string `p:"keyword" dc:"职务名称模糊"`
 	// 状态:position_status
@@ -34,16 +35,7 @@ type PositionListItem struct {
 }
 
 // ListPositionRes 职务列表响应
-type ListPositionRes struct {
-	// 职务列表
-	List []*PositionListItem `json:"list" dc:"职务列表"`
-	// 总数
-	Total int64 `json:"total" dc:"总数"`
-	// 页码
-	Page int64 `json:"page" dc:"页码"`
-	// 每页数量
-	PageSize int64 `json:"pageSize" dc:"每页数量"`
-}
+type ListPositionRes = model.ListRes[PositionListItem]
 
 // GetPositionReq 获取职务详情请求
 type GetPositionReq struct {
