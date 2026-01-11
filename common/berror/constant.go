@@ -6,7 +6,14 @@ import "github.com/gogf/gf/v2/errors/gcode"
 var (
 	DataNotExist = gcode.New(400000, "数据不存在！", nil)
 
-	RoleNotExist                    = gcode.New(404011, "角色不存在！", nil)
+	OrgNotExist      = gcode.New(404001, "组织不存在！", nil)
+	PositionNotExist = gcode.New(404002, "职务不存在！", nil)
+	RoleNotExist     = gcode.New(404011, "角色不存在！", nil)
+
+	OrgCodeAlreadyExist             = gcode.New(409001, "组织编码已存在！", nil)
+	OrgMoveIllegal                  = gcode.New(409002, "组织移动非法（不能移动到自身子树）！", nil)
+	PositionNameDuplicate           = gcode.New(409004, "同一组织下职务名称重复！", nil)
+	PositionOrgRelationNotExist     = gcode.New(409005, "组织-职务关系不存在！", nil)
 	RoleCodeAlreadyExists           = gcode.New(409010, "角色编码已存在！", nil)
 	RoleIsBoundCannotDeleted        = gcode.New(409011, "角色仍被职务绑定，无法删除！", nil)
 	BuiltInSystemRolesCannotDeleted = gcode.New(409012, "系统内置角色不允许删除！", nil)

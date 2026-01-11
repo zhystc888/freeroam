@@ -29,7 +29,7 @@ type CreateRoleReq struct {
 	// 角色名称
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty" dc:"角色名称" v:"required|length:1,64#角色名称不能为空|角色名称长度必须在1-64之间"` // v:required|length:1,64#角色名称不能为空|角色名称长度必须在1-64之间
 	// 状态:role_status
-	Status string `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty" dc:"状态:role_status// v:required|enum:role_status#状态不能为空"` // // v:required|enum:role_status#状态不能为空
+	Status string `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty" dc:"状态:role_status" v:"required|enum:role_status#状态不能为空"` // v:required|enum:role_status#状态不能为空
 	// 备注
 	Remark        string `protobuf:"bytes,4,opt,name=remark,proto3" json:"remark,omitempty" dc:"备注"`
 	unknownFields protoimpl.UnknownFields

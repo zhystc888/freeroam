@@ -2,8 +2,6 @@ package enum
 
 import (
 	"context"
-	"fmt"
-
 	"freeroam/app/gateway/api/enum/v1"
 	sEnum "freeroam/app/system/api/enum/v1"
 )
@@ -13,12 +11,6 @@ func (c *ControllerV1) GetEnumList(ctx context.Context, req *v1.GetEnumListReq) 
 	for _, item := range req.Type {
 		types = append(types, item)
 	}
-
-	data1, err1 := c.EnumRpcService.GetByTypeAndCode(ctx, &sEnum.GetByTypeAndCodeReq{
-		EnumType: "test",
-		EnumCode: "b",
-	})
-	fmt.Println(data1, err1)
 
 	data, err := c.EnumRpcService.GetByType(ctx, &sEnum.GetByTypeReq{
 		EnumTypes: types,

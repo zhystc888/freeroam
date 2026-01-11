@@ -1,0 +1,211 @@
+syntax = "proto3";
+
+package org.v1;
+
+option go_package = "./api/org/v1";
+
+service Org {
+  // 获取组织树
+  rpc GetOrgTree(GetOrgTreeReq) returns (GetOrgTreeRes);
+  // 获取组织列表
+  rpc ListOrg(ListOrgReq) returns (ListOrgRes);
+  // 获取组织详情
+  rpc GetOrg(GetOrgReq) returns (GetOrgRes);
+  // 新建组织
+  rpc CreateOrg(CreateOrgReq) returns (CreateOrgRes);
+  // 编辑组织
+  rpc UpdateOrg(UpdateOrgReq) returns (UpdateOrgRes);
+  // 删除组织
+  rpc DeleteOrg(DeleteOrgReq) returns (DeleteOrgRes);
+  // 拖拽移动/排序
+  rpc MoveOrg(MoveOrgReq) returns (MoveOrgRes);
+}
+
+// 获取组织树请求
+message GetOrgTreeReq {
+  // 组织名称模糊搜索
+  string keyword = 1;
+}
+
+// 组织树节点
+message OrgTreeNode {
+  // 组织ID
+  int64 id = 1;
+  // 组织名称
+  string name = 2;
+  // 组织全称
+  string fullName = 3;
+  // 组织编码
+  string code = 4;
+  // 分类:1部门2公司
+  string category = 5;
+  // 状态:1启用0禁用
+  string status = 6;
+  // 该组织成员数量
+  int64 memberCount = 7;
+  // 子组织数组
+  repeated OrgTreeNode children = 8;
+}
+
+// 获取组织树响应
+message GetOrgTreeRes {
+  // 组织树列表
+  repeated OrgTreeNode list = 1;
+}
+
+// 获取组织列表请求
+message ListOrgReq {
+  // 页码
+  int64 page = 1; // v:min:1#页码必须大于0
+  // 每页数量
+  int64 pageSize = 2; // v:min:1|max:200#每页数量必须大于0|每页数量不能超过200
+  // 组织名称模糊
+  string keyword = 3;
+  // 组织编码精确
+  string code = 4;
+  // 分类:org_category
+  string category = 5; // v:required|enum:org_category#分类不能为空
+  // 状态:org_status
+  string status = 6; // v:required|enum:org_status#状态不能为空
+}
+
+// 组织列表项
+message OrgListItem {
+  // 组织ID
+  int64 id = 1;
+  // 组织名称
+  string name = 2;
+  // 组织全称
+  string fullName = 3;
+  // 组织编码
+  string code = 4;
+  // 状态:org_status
+  string status = 5;
+  // 分类:org_category
+  string category = 6;
+  // 创建时间
+  int64 createAt = 7;
+}
+
+// 获取组织列表响应
+message ListOrgRes {
+  // 组织列表
+  repeated OrgListItem list = 1;
+  // 总数
+  int64 total = 2;
+  // 页码
+  int64 page = 3;
+  // 每页数量
+  int64 pageSize = 4;
+}
+
+// 获取组织详情请求
+message GetOrgReq {
+  // 组织ID
+  int64 id = 1; // v:required|min:1#组织ID不能为空|组织ID必须大于0
+}
+
+// 获取组织详情响应
+message GetOrgRes {
+  // 组织ID
+  int64 id = 1;
+  // 父组织ID
+  int64 parentId = 2;
+  // 组织名称
+  string name = 3;
+  // 组织全称
+  string fullName = 4;
+  // 组织编码
+  string code = 5;
+  // 分类:org_category
+  string category = 6;
+  // 状态:org_status
+  string status = 7;
+  // 同级排序
+  int32 sort = 8;
+  // 物化路径
+  string path = 9;
+  // 创建时间
+  int64 createAt = 10;
+  // 更新时间
+  int64 updateAt = 11;
+}
+
+// 新建组织请求
+message CreateOrgReq {
+  // 上级组织ID（0表示顶级）
+  int64 parentId = 1;
+  // 组织名称
+  string name = 2; // v:required|length:1,30#组织名称不能为空|组织名称长度必须在1-30之间
+  // 组织全称
+  string fullName = 3;
+  // 组织编码
+  string code = 4; // v:required|length:1,20#组织编码不能为空|组织编码长度必须在1-20之间
+  // 分类:org_category
+  string category = 5; // v:required|enum:org_category#分类不能为空
+  // 状态:org_status
+  string status = 6; // v:required|enum:org_status#状态不能为空
+  // 同级排序
+  int32 sort = 7;
+}
+
+// 新建组织响应
+message CreateOrgRes {
+  // 组织ID
+  int64 id = 1;
+}
+
+// 编辑组织请求
+message UpdateOrgReq {
+  // 组织ID
+  int64 id = 1; // v:required|min:1#组织ID不能为空|组织ID必须大于0
+  // 上级组织ID
+  int64 parentId = 2;
+  // 组织名称
+  string name = 3; // v:length:1,30#组织名称长度必须在1-30之间
+  // 组织全称
+  string fullName = 4;
+  // 组织编码
+  string code = 5; // v:length:1,20#组织编码长度必须在1-20之间
+  // 分类:org_category
+  string category = 6; // v:required|enum:org_category#分类不能为空
+  // 状态:org_status
+  string status = 7; // v:required|enum:org_status#状态不能为空
+  // 同级排序
+  int32 sort = 8;
+}
+
+// 编辑组织响应
+message UpdateOrgRes {
+  // 是否成功
+  bool success = 1;
+}
+
+// 删除组织请求
+message DeleteOrgReq {
+  // 组织ID
+  int64 id = 1; // v:required|min:1#组织ID不能为空|组织ID必须大于0
+}
+
+// 删除组织响应
+message DeleteOrgRes {
+  // 是否成功
+  bool success = 1;
+}
+
+// 拖拽移动/排序请求
+message MoveOrgReq {
+  // 组织ID
+  int64 id = 1; // v:required|min:1#组织ID不能为空|组织ID必须大于0
+  // 新的父组织ID（0为顶级）
+  int64 newParentId = 2;
+  // 新的同级排序值
+  int32 newSort = 3;
+}
+
+// 拖拽移动/排序响应
+message MoveOrgRes {
+  // 是否成功
+  bool success = 1;
+}
+
