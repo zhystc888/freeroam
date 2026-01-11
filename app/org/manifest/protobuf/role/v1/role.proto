@@ -29,7 +29,7 @@ message CreateRoleReq {
   // 角色名称
   string name = 2; // v:required|length:1,64#角色名称不能为空|角色名称长度必须在1-64之间
   // 状态:role_status
-  string status = 3; // // v:required|enum:role_status#状态不能为空
+  string status = 3; // v:required|enum:role_status#状态不能为空
   // 备注
   string remark = 4;
 }

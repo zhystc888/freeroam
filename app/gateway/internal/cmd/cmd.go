@@ -3,6 +3,8 @@ package cmd
 import (
 	"context"
 	"freeroam/app/gateway/internal/controller/enum"
+	"freeroam/app/gateway/internal/controller/org"
+	"freeroam/app/gateway/internal/controller/position"
 	"freeroam/app/gateway/internal/controller/role"
 
 	"github.com/gogf/gf/v2/frame/g"
@@ -22,6 +24,8 @@ var (
 				group.Bind(
 					enum.NewV1(),
 					role.NewV1(),
+					org.NewV1(),
+					position.NewV1(),
 				)
 			})
 			s.Run()

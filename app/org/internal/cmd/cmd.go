@@ -3,6 +3,8 @@ package cmd
 import (
 	"context"
 
+	"freeroam/app/org/internal/controller/org"
+	"freeroam/app/org/internal/controller/position"
 	"freeroam/app/org/internal/controller/role"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
@@ -18,6 +20,8 @@ var (
 
 			s := grpcx.Server.New()
 			role.Register(s)
+			org.Register(s)
+			position.Register(s)
 			s.Run()
 			return nil
 		},
