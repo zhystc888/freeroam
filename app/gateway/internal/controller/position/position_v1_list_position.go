@@ -9,8 +9,8 @@ import (
 
 func (c *ControllerV1) ListPosition(ctx context.Context, req *v1.ListPositionReq) (res *v1.ListPositionRes, err error) {
 	rpcReq := &oPosition.ListPositionReq{
-		Page:     req.Page,
-		PageSize: req.PageSize,
+		Page:     req.GetPage(),
+		PageSize: req.GetPageSize(),
 		Keyword:  req.Keyword,
 		Status:   req.Status,
 	}

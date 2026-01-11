@@ -98,16 +98,7 @@ func (s *sOrg) ListOrg(ctx context.Context, in *v1.ListOrgReq) (*v1.ListOrgRes, 
 
 	// 分页
 	page := int(in.Page)
-	if page < 1 {
-		page = 1
-	}
 	pageSize := int(in.PageSize)
-	if pageSize < 1 {
-		pageSize = 20
-	}
-	if pageSize > 200 {
-		pageSize = 200
-	}
 
 	var orgs []*entity.Org
 	err = query.OrderDesc(m.Columns().CreateAt).Page(page, pageSize).Scan(&orgs)
@@ -183,7 +174,7 @@ func (s *sOrg) CreateOrg(ctx context.Context, in *v1.CreateOrgReq) (*v1.CreateOr
 		return nil, gerror.NewCode(berror.OrgCodeAlreadyExist)
 	}
 
-	// 获取父级路径 TODO: 获取所有上级生成全称
+	// 获取父级路径
 	var parentPath string
 	if in.ParentId > 0 {
 		var parent entity.Org
@@ -202,7 +193,7 @@ func (s *sOrg) CreateOrg(ctx context.Context, in *v1.CreateOrgReq) (*v1.CreateOr
 		parentPath = "/"
 	}
 
-	// 生成全称 TODO: 获取所有上级生成全称
+	// 生成全称
 	fullName := in.FullName
 	if fullName == "" {
 		if in.ParentId > 0 {

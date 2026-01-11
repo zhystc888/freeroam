@@ -1,6 +1,10 @@
 package v1
 
-import "github.com/gogf/gf/v2/frame/g"
+import (
+	"freeroam/common/model"
+
+	"github.com/gogf/gf/v2/frame/g"
+)
 
 // GetOrgTreeReq 获取组织树请求
 type GetOrgTreeReq struct {
@@ -38,10 +42,7 @@ type GetOrgTreeRes struct {
 // ListOrgReq 获取组织列表请求
 type ListOrgReq struct {
 	g.Meta `path:"/org/units" tags:"组织管理" method:"get" summary:"获取组织列表"`
-	// 页码
-	Page int64 `p:"page" v:"min:1#页码必须大于0" dc:"页码"`
-	// 每页数量
-	PageSize int64 `p:"pageSize" v:"min:1|max:200#每页数量必须大于0|每页数量不能超过200" dc:"每页数量"`
+	model.PageReq
 	// 组织名称模糊
 	Keyword string `p:"keyword" dc:"组织名称模糊"`
 	// 组织编码精确
@@ -71,16 +72,7 @@ type OrgListItem struct {
 }
 
 // ListOrgRes 获取组织列表响应
-type ListOrgRes struct {
-	// 组织列表
-	List []*OrgListItem `json:"list" dc:"组织列表"`
-	// 总数
-	Total int64 `json:"total" dc:"总数"`
-	// 页码
-	Page int64 `json:"page" dc:"页码"`
-	// 每页数量
-	PageSize int64 `json:"pageSize" dc:"每页数量"`
-}
+type ListOrgRes = model.ListRes[OrgListItem]
 
 // GetOrgReq 获取组织详情请求
 type GetOrgReq struct {

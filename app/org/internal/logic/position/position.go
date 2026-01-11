@@ -45,16 +45,7 @@ func (s *sPosition) ListPosition(ctx context.Context, in *v1.ListPositionReq) (*
 
 	// 分页
 	page := int(in.Page)
-	if page < 1 {
-		page = 1
-	}
 	pageSize := int(in.PageSize)
-	if pageSize < 1 {
-		pageSize = 20
-	}
-	if pageSize > 200 {
-		pageSize = 200
-	}
 
 	var positions []*entity.Position
 	err = query.OrderDesc(m.Columns().CreateAt).Page(page, pageSize).Scan(&positions)
