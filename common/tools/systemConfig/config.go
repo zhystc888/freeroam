@@ -42,6 +42,21 @@ func GetBool(code string) (*bool, error) {
 	return &parseBool, err
 }
 
+// GetBoolD 获取 bool 类型配置（带默认值，不抛异常，不返回指针，方便调用方不再判断，慎用）
+func GetBoolD(code string, defaultValue bool) bool {
+	stringValue, err := GetString(code)
+	if err != nil {
+		return defaultValue
+	}
+
+	parseBool, err := strconv.ParseBool(*stringValue)
+	if err != nil {
+		return defaultValue
+	}
+
+	return parseBool
+}
+
 // GetInt 获取 int64 类型配置
 func GetInt(code string) (*int64, error) {
 	stringValue, err := GetString(code)
@@ -51,6 +66,21 @@ func GetInt(code string) (*int64, error) {
 
 	i, err := strconv.ParseInt(*stringValue, 10, 64)
 	return &i, err
+}
+
+// GetIntD 获取 int64 类型配置（带默认值，不可为0，不抛异常，不返回指针，方便调用方不再判断，慎用）
+func GetIntD(code string, defaultValue int64) int64 {
+	stringValue, err := GetString(code)
+	if err != nil {
+		return defaultValue
+	}
+
+	i, err := strconv.ParseInt(*stringValue, 10, 64)
+	if i == 0 || err != nil {
+		return defaultValue
+	}
+
+	return i
 }
 
 // GetUint 获取 uint64 类型配置

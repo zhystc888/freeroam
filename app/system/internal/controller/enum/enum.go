@@ -2,6 +2,7 @@ package enum
 
 import (
 	"context"
+	"fmt"
 	v1 "freeroam/app/system/api/enum/v1"
 	"freeroam/app/system/internal/service"
 

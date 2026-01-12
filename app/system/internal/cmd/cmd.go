@@ -16,8 +16,8 @@ var (
 		Usage: "main",
 		Brief: "start http server",
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
-
 			s := grpcx.Server.New()
+
 			config.Register(s)
 			enum.Register(s)
 

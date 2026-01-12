@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # 自游｜GoFrame Cursor Rules
 
 **Go 1.24.2 / GoFrame v2.9.0 / Monorepo / 微服务 + Gateway**
