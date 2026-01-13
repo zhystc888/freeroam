@@ -36,7 +36,7 @@ func (s *sOrg) GetOrgTree(ctx context.Context, in *v1.GetOrgTreeReq) (*v1.GetOrg
 		query = query.WhereLike(m.Columns().Name, "%"+in.Keyword+"%")
 	}
 
-	var orgs []*entity.Org
+	orgs := make([]*entity.Org, 0)
 	err := query.OrderAsc(m.Columns().ParentId).OrderAsc(m.Columns().Sort).Scan(&orgs)
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
@@ -52,23 +52,39 @@ func (s *sOrg) GetOrgTree(ctx context.Context, in *v1.GetOrgTreeReq) (*v1.GetOrg
 
 // buildOrgTree 递归构建组织树
 func buildOrgTree(orgs []*entity.Org, parentId uint64) []*v1.OrgTreeNode {
-	var nodes []*v1.OrgTreeNode
+	// 1. 按 ParentId 分组
+	childrenMap := make(map[uint64][]*v1.OrgTreeNode)
 	for _, org := range orgs {
-		if org.ParentId == parentId {
-			node := &v1.OrgTreeNode{
-				Id:          int64(org.Id),
-				Name:        org.Name,
-				FullName:    org.FullName,
-				Code:        org.Code,
-				Category:    org.Category,
-				Status:      org.Status,
-				MemberCount: 0, // TODO: 后续实现成员统计
-				Children:    buildOrgTree(orgs, org.Id),
+		node := &v1.OrgTreeNode{
+			Id:          int64(org.Id),
+			Name:        org.Name,
+			FullName:    org.FullName,
+			Code:        org.Code,
+			Category:    org.Category,
+			Status:      org.Status,
+			MemberCount: 0, // TODO: 后续实现成员统计
+			Children:    make([]*v1.OrgTreeNode, 0),
+		}
+		pid := org.ParentId
+		childrenMap[pid] = append(childrenMap[pid], node)
+	}
+
+	// 2. 递归组装 (利用Map查找，复杂度 O(N))
+	var attachChildren func(nodes []*v1.OrgTreeNode)
+	attachChildren = func(nodes []*v1.OrgTreeNode) {
+		for _, node := range nodes {
+			if children, ok := childrenMap[uint64(node.Id)]; ok {
+				node.Children = children
+				attachChildren(children)
 			}
-			nodes = append(nodes, node)
 		}
 	}
-	return nodes
+
+	// 3. 获取根节点列表并开始组装
+	roots := childrenMap[parentId]
+	attachChildren(roots)
+
+	return roots
 }
 
 // ListOrg 获取组织列表
@@ -194,19 +210,17 @@ func (s *sOrg) CreateOrg(ctx context.Context, in *v1.CreateOrgReq) (*v1.CreateOr
 	}
 
 	// 生成全称
-	fullName := in.FullName
-	if fullName == "" {
-		if in.ParentId > 0 {
-			var parent entity.Org
-			_ = m.Ctx(ctx).Where(m.Columns().Id, in.ParentId).Scan(&parent)
-			if parent.FullName != "" {
-				fullName = parent.FullName + "/" + in.Name
-			} else {
-				fullName = in.Name
-			}
+	var fullName string
+	if in.ParentId > 0 {
+		var parent entity.Org
+		_ = m.Ctx(ctx).Where(m.Columns().Id, in.ParentId).Scan(&parent)
+		if parent.FullName != "" {
+			fullName = parent.FullName + "/" + in.Name
 		} else {
 			fullName = in.Name
 		}
+	} else {
+		fullName = in.Name
 	}
 
 	// 创建组织
@@ -251,12 +265,9 @@ func (s *sOrg) CreateOrg(ctx context.Context, in *v1.CreateOrgReq) (*v1.CreateOr
 func (s *sOrg) UpdateOrg(ctx context.Context, in *v1.UpdateOrgReq) (*v1.UpdateOrgRes, error) {
 	m := dao.Org
 
-	// 检查组织是否存在
+	// 1. 获取当前组织信息 (检查是否存在)
 	var org entity.Org
-	err := m.Ctx(ctx).
-		Where(m.Columns().Id, in.Id).
-		Where(m.Columns().IsDeleted, false).
-		Scan(&org)
+	err := m.Ctx(ctx).Where(m.Columns().Id, in.Id).Where(m.Columns().IsDeleted, false).Scan(&org)
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
 	}
@@ -264,7 +275,7 @@ func (s *sOrg) UpdateOrg(ctx context.Context, in *v1.UpdateOrgReq) (*v1.UpdateOr
 		return nil, gerror.NewCode(berror.OrgNotExist)
 	}
 
-	// 检查编码是否重复（排除自己）
+	// 2. 检查编码唯一性 (如果修改了编码)
 	if in.Code != "" && in.Code != org.Code {
 		count, err := m.Ctx(ctx).
 			Where(m.Columns().Code, in.Code).
@@ -278,42 +289,124 @@ func (s *sOrg) UpdateOrg(ctx context.Context, in *v1.UpdateOrgReq) (*v1.UpdateOr
 			return nil, gerror.NewCode(berror.OrgCodeAlreadyExist)
 		}
 	}
-	// TODO: parentId 不是空 更新path等路径
 
-	// 更新数据
-	data := do.Org{
-		UpdateBy: 0, // TODO: 从上下文获取用户ID
+	// 3. 计算变更后的核心字段: ParentId, Path, FullName
+	targetParentId := int64(org.ParentId)
+	targetPath := org.Path
+	targetFullName := org.FullName
+
+	// 判断是否涉及结构/名称变更
+	isMove := in.ParentId != 0 && in.ParentId != int64(org.ParentId)
+	isRename := in.Name != "" && in.Name != org.Name
+
+	// 如果涉及移动或改名，可能需要查询父节点信息
+	var parentOrg entity.Org
+	needParentInfo := isMove || (isRename && targetParentId > 0)
+
+	if needParentInfo {
+		lookupId := targetParentId
+		if isMove {
+			lookupId = in.ParentId
+		}
+
+		if lookupId > 0 {
+			err := m.Ctx(ctx).Where(m.Columns().Id, lookupId).Where(m.Columns().IsDeleted, false).Scan(&parentOrg)
+			if err != nil {
+				return nil, gerror.NewCode(berror.DBErr, err.Error())
+			}
+			if parentOrg.Id == 0 {
+				return nil, gerror.NewCode(berror.OrgNotExist)
+			}
+		}
+	}
+
+	// 处理移动带来的 Path 和 ParentId 变更
+	if isMove {
+		// 防环校验
+		if strings.HasPrefix(parentOrg.Path, org.Path) {
+			return nil, gerror.NewCode(berror.OrgMoveIllegal)
+		}
+		targetParentId = in.ParentId
+
+		// 计算新 Path
+		if targetParentId == 0 {
+			targetPath = fmt.Sprintf("/%d/", org.Id)
+		} else {
+			targetPath = fmt.Sprintf("%s%d/", parentOrg.Path, org.Id)
+		}
+	}
+
+	// 处理移动或改名带来的 FullName 变更
+	if isMove || isRename {
+		newName := org.Name
+		if in.Name != "" {
+			newName = in.Name
+		}
+
+		if targetParentId == 0 {
+			targetFullName = newName
+		} else {
+			if parentOrg.FullName != "" {
+				targetFullName = parentOrg.FullName + "/" + newName
+			} else {
+				targetFullName = newName
+			}
+		}
+	}
+
+	// 4. 构建更新数据
+	updateData := g.Map{
+		m.Columns().UpdateBy: 0, // TODO: 从上下文获取用户ID
 	}
 	if in.Name != "" {
-		data.Name = in.Name
-	}
-	if in.FullName != "" {
-		data.FullName = in.FullName
+		updateData[m.Columns().Name] = in.Name
 	}
 	if in.Code != "" {
-		data.Code = in.Code
+		updateData[m.Columns().Code] = in.Code
 	}
 	if in.Category != "" {
-		data.Category = in.Category
+		updateData[m.Columns().Category] = in.Category
 	}
 	if in.Status != "" {
-		data.Status = in.Status
+		updateData[m.Columns().Status] = in.Status
 	}
 	if in.Sort >= 0 {
-		data.Sort = in.Sort
+		updateData[m.Columns().Sort] = in.Sort
+	}
+	if isMove {
+		updateData[m.Columns().ParentId] = targetParentId
+		updateData[m.Columns().Path] = targetPath
+	}
+	if isMove || isRename {
+		updateData[m.Columns().FullName] = targetFullName
 	}
 
-	_, err = m.Ctx(ctx).
-		Where(m.Columns().Id, in.Id).
-		Data(data).
-		Update()
+	// 5. 事务执行
+	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
+		// 更新自身
+		_, err := tx.Model(m.Table()).Ctx(ctx).
+			Where(m.Columns().Id, in.Id).
+			Data(updateData).
+			Update()
+		if err != nil {
+			return err
+		}
+
+		// 如果 Path 或 FullName 变更，递归更新子孙节点
+		if targetPath != org.Path || targetFullName != org.FullName {
+			if err := updateRecursiveInfo(tx, org.Id, org.Path, targetPath, org.FullName, targetFullName); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
 	}
 
-	return &v1.UpdateOrgRes{
-		Success: true,
-	}, nil
+	return &v1.UpdateOrgRes{Success: true}, nil
 }
 
 // DeleteOrg 删除组织
@@ -335,22 +428,42 @@ func (s *sOrg) DeleteOrg(ctx context.Context, in *v1.DeleteOrgReq) (*v1.DeleteOr
 
 	// 使用事务删除组织及其子树
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
-		// 软删除该组织及其所有子组织
-		_, err := tx.Model(m.Table()).Ctx(ctx).
+		// 获取所有子组织
+		var orgs []*entity.Org
+		if err := tx.Model(m.Table()).Ctx(ctx).
 			Where(m.Columns().IsDeleted, false).
 			WhereLike(m.Columns().Path, org.Path+"%").
-			Data(g.Map{
-				m.Columns().IsDeleted: true,
-				m.Columns().DeleteBy:  0, // TODO: 从上下文获取用户ID
-				m.Columns().DeletedAt: gtime.Now(),
-			}).
-			Update()
-		if err != nil {
+			Scan(orgs); err != nil {
 			return err
 		}
 
-		// TODO: 清理成员关联（软删除）
-		// member_org_unit 和 member_org_position 中涉及该组织及其子组织的记录
+		// 需要删除的组织和关联关系
+		positionOrg := dao.PositionOrg
+		for _, item := range orgs {
+			if _, err = tx.Model(m.Table()).Ctx(ctx).
+				Where(m.Columns().Id, item.Id).
+				Data(g.Map{
+					m.Columns().IsDeleted: true,
+					m.Columns().DeleteBy:  0, // TODO: 从上下文获取用户ID
+					m.Columns().DeletedAt: gtime.Now(),
+				}).
+				Update(); err != nil {
+				return err
+			}
+
+			// 清理关联
+			if _, err = tx.Model(positionOrg.Table()).Ctx(ctx).
+				Where(positionOrg.Columns().IsDeleted, false).
+				Where(positionOrg.Columns().OrgId, item.Id).
+				Data(g.Map{
+					m.Columns().IsDeleted: true,
+					m.Columns().DeleteBy:  0, // TODO: 从上下文获取用户ID
+					m.Columns().DeletedAt: gtime.Now(),
+				}).
+				Update(); err != nil {
+				return err
+			}
+		}
 
 		return nil
 	})
@@ -381,8 +494,9 @@ func (s *sOrg) MoveOrg(ctx context.Context, in *v1.MoveOrgReq) (*v1.MoveOrgRes, 
 		return nil, gerror.NewCode(berror.OrgNotExist)
 	}
 
-	// 获取新父级路径
+	// 获取新父级路径和全称
 	var newParentPath string
+	var newParentFullName string
 	if in.NewParentId > 0 {
 		var newParent entity.Org
 		err := m.Ctx(ctx).
@@ -400,13 +514,22 @@ func (s *sOrg) MoveOrg(ctx context.Context, in *v1.MoveOrgReq) (*v1.MoveOrgRes, 
 			return nil, gerror.NewCode(berror.OrgMoveIllegal)
 		}
 		newParentPath = newParent.Path
+		newParentFullName = newParent.FullName
 	} else {
 		newParentPath = "/"
+		newParentFullName = ""
 	}
 
 	// 计算新路径
 	newPath := fmt.Sprintf("%s%d/", newParentPath, org.Id)
 	oldPath := org.Path
+
+	// 计算新全称
+	newFullName := org.Name
+	if newParentFullName != "" {
+		newFullName = newParentFullName + "/" + org.Name
+	}
+	oldFullName := org.FullName
 
 	// 使用事务更新
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
@@ -417,6 +540,7 @@ func (s *sOrg) MoveOrg(ctx context.Context, in *v1.MoveOrgReq) (*v1.MoveOrgRes, 
 				m.Columns().ParentId: in.NewParentId,
 				m.Columns().Sort:     in.NewSort,
 				m.Columns().Path:     newPath,
+				m.Columns().FullName: newFullName,
 				m.Columns().UpdateBy: 0, // TODO: 从上下文获取用户ID
 			}).
 			Update()
@@ -424,15 +548,9 @@ func (s *sOrg) MoveOrg(ctx context.Context, in *v1.MoveOrgReq) (*v1.MoveOrgRes, 
 			return err
 		}
 
-		// 批量更新子孙节点的路径（旧前缀替换新前缀）
-		if oldPath != newPath {
-			_, err = tx.Exec(
-				fmt.Sprintf("UPDATE %s SET path = REPLACE(path, ?, ?) WHERE path LIKE ? AND is_deleted = 0 AND id != ?",
-					m.Table()),
-				oldPath, newPath, oldPath+"%", in.Id)
-			if err != nil {
-				return err
-			}
+		// 批量更新子孙节点的路径和全称
+		if err := updateRecursiveInfo(tx, org.Id, oldPath, newPath, oldFullName, newFullName); err != nil {
+			return err
 		}
 
 		return nil
@@ -445,4 +563,32 @@ func (s *sOrg) MoveOrg(ctx context.Context, in *v1.MoveOrgReq) (*v1.MoveOrgRes, 
 	return &v1.MoveOrgRes{
 		Success: true,
 	}, nil
+}
+
+// updateRecursiveInfo 递归更新子节点信息（Path和FullName）
+func updateRecursiveInfo(tx gdb.TX, orgId uint64, oldPath, newPath, oldFullName, newFullName string) error {
+	m := dao.Org
+	// 如果路径有变化，批量更新子孙节点路径
+	if oldPath != newPath {
+		_, err := tx.Exec(
+			fmt.Sprintf("UPDATE %s SET %s = REPLACE(%s, ?, ?) WHERE %s LIKE ? AND %s = 0 AND %s != ?",
+				m.Table(), m.Columns().Path, m.Columns().Path, m.Columns().Path, m.Columns().IsDeleted, m.Columns().Id),
+			oldPath, newPath, oldPath+"%", orgId)
+		if err != nil {
+			return err
+		}
+	}
+
+	// 如果全称有变化，批量更新子孙节点全称
+	if oldFullName != newFullName {
+		// 注意这里匹配 oldFullName + "/" 确保只替换作为前缀的部分
+		_, err := tx.Exec(
+			fmt.Sprintf("UPDATE %s SET %s = REPLACE(%s, ?, ?) WHERE %s LIKE ? AND %s = 0 AND %s != ?",
+				m.Table(), m.Columns().FullName, m.Columns().FullName, m.Columns().FullName, m.Columns().IsDeleted, m.Columns().Id),
+			oldFullName, newFullName, oldFullName+"/%", orgId)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

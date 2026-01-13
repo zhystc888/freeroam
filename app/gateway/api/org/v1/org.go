@@ -114,8 +114,6 @@ type CreateOrgReq struct {
 	ParentId int64 `json:"parentId" dc:"上级组织ID（0表示顶级）"`
 	// 组织名称
 	Name string `json:"name" v:"required|length:1,30#组织名称不能为空|组织名称长度必须在1-30之间" dc:"组织名称"`
-	// 组织全称
-	FullName string `json:"fullName" dc:"组织全称"`
 	// 组织编码
 	Code string `json:"code" v:"required|length:1,20#组织编码不能为空|组织编码长度必须在1-20之间" dc:"组织编码"`
 	// 分类:org_category
@@ -141,8 +139,6 @@ type UpdateOrgReq struct {
 	ParentId int64 `json:"parentId" dc:"上级组织ID"`
 	// 组织名称
 	Name string `json:"name" v:"length:1,30#组织名称长度必须在1-30之间" dc:"组织名称"`
-	// 组织全称
-	FullName string `json:"fullName" dc:"组织全称"`
 	// 组织编码
 	Code string `json:"code" v:"length:1,20#组织编码长度必须在1-20之间" dc:"组织编码"`
 	// 分类:org_category

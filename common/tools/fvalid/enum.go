@@ -22,6 +22,9 @@ func enumRule(ctx context.Context, in gvalid.RuleFuncInput) error {
 	enumType := parts[1]
 
 	value := in.Value.String()
+	if value == "" {
+		return nil
+	}
 
 	conn := grpcx.Client.MustNewGrpcClientConn("system")
 	enumClient := v1.NewEnumClient(conn)
@@ -30,7 +33,7 @@ func enumRule(ctx context.Context, in gvalid.RuleFuncInput) error {
 		EnumTypes: []string{enumType},
 	})
 	if err != nil {
-		return gerror.Newf(`调用服务 "%s" 获取数据异常`, "system")
+		return gerror.Wrapf(err, `调用服务 "%s" 获取数据异常`, "system")
 	}
 
 	statusMap := enumList.GetByTypeOptionListMap

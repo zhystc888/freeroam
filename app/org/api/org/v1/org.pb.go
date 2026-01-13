@@ -86,7 +86,7 @@ type OrgTreeNode struct {
 	// 该组织成员数量
 	MemberCount int64 `protobuf:"varint,7,opt,name=memberCount,proto3" json:"memberCount,omitempty" dc:"该组织成员数量"`
 	// 子组织数组
-	Children      []*OrgTreeNode `protobuf:"bytes,8,rep,name=children,proto3" json:"children,omitempty" dc:"子组织数组"`
+	Children      []*OrgTreeNode `protobuf:"bytes,8,rep,name=children,proto3" json:"children,omitempty" dc:"子组织数组" json:"\"children\""` // json:"children"
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -676,16 +676,14 @@ type CreateOrgReq struct {
 	ParentId int64 `protobuf:"varint,1,opt,name=parentId,proto3" json:"parentId,omitempty" dc:"上级组织ID（0表示顶级）"`
 	// 组织名称
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty" dc:"组织名称" v:"required|length:1,30#组织名称不能为空|组织名称长度必须在1-30之间"` // v:required|length:1,30#组织名称不能为空|组织名称长度必须在1-30之间
-	// 组织全称
-	FullName string `protobuf:"bytes,3,opt,name=fullName,proto3" json:"fullName,omitempty" dc:"组织全称"`
 	// 组织编码
-	Code string `protobuf:"bytes,4,opt,name=code,proto3" json:"code,omitempty" dc:"组织编码" v:"required|length:1,20#组织编码不能为空|组织编码长度必须在1-20之间"` // v:required|length:1,20#组织编码不能为空|组织编码长度必须在1-20之间
+	Code string `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty" dc:"组织编码" v:"required|length:1,20#组织编码不能为空|组织编码长度必须在1-20之间"` // v:required|length:1,20#组织编码不能为空|组织编码长度必须在1-20之间
 	// 分类:org_category
-	Category string `protobuf:"bytes,5,opt,name=category,proto3" json:"category,omitempty" dc:"分类:org_category" v:"required|enum:org_category#分类不能为空"` // v:required|enum:org_category#分类不能为空
+	Category string `protobuf:"bytes,4,opt,name=category,proto3" json:"category,omitempty" dc:"分类:org_category" v:"required|enum:org_category#分类不能为空"` // v:required|enum:org_category#分类不能为空
 	// 状态:org_status
-	Status string `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty" dc:"状态:org_status" v:"required|enum:org_status#状态不能为空"` // v:required|enum:org_status#状态不能为空
+	Status string `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty" dc:"状态:org_status" v:"required|enum:org_status#状态不能为空"` // v:required|enum:org_status#状态不能为空
 	// 同级排序
-	Sort          int32 `protobuf:"varint,7,opt,name=sort,proto3" json:"sort,omitempty" dc:"同级排序"`
+	Sort          int32 `protobuf:"varint,6,opt,name=sort,proto3" json:"sort,omitempty" dc:"同级排序"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -730,13 +728,6 @@ func (x *CreateOrgReq) GetParentId() int64 {
 func (x *CreateOrgReq) GetName() string {
 	if x != nil {
 		return x.Name
-	}
-	return ""
-}
-
-func (x *CreateOrgReq) GetFullName() string {
-	if x != nil {
-		return x.FullName
 	}
 	return ""
 }
@@ -824,16 +815,14 @@ type UpdateOrgReq struct {
 	ParentId int64 `protobuf:"varint,2,opt,name=parentId,proto3" json:"parentId,omitempty" dc:"上级组织ID"`
 	// 组织名称
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty" dc:"组织名称" v:"length:1,30#组织名称长度必须在1-30之间"` // v:length:1,30#组织名称长度必须在1-30之间
-	// 组织全称
-	FullName string `protobuf:"bytes,4,opt,name=fullName,proto3" json:"fullName,omitempty" dc:"组织全称"`
 	// 组织编码
-	Code string `protobuf:"bytes,5,opt,name=code,proto3" json:"code,omitempty" dc:"组织编码" v:"length:1,20#组织编码长度必须在1-20之间"` // v:length:1,20#组织编码长度必须在1-20之间
+	Code string `protobuf:"bytes,4,opt,name=code,proto3" json:"code,omitempty" dc:"组织编码" v:"length:1,20#组织编码长度必须在1-20之间"` // v:length:1,20#组织编码长度必须在1-20之间
 	// 分类:org_category
-	Category string `protobuf:"bytes,6,opt,name=category,proto3" json:"category,omitempty" dc:"分类:org_category" v:"required|enum:org_category#分类不能为空"` // v:required|enum:org_category#分类不能为空
+	Category string `protobuf:"bytes,5,opt,name=category,proto3" json:"category,omitempty" dc:"分类:org_category" v:"required|enum:org_category#分类不能为空"` // v:required|enum:org_category#分类不能为空
 	// 状态:org_status
-	Status string `protobuf:"bytes,7,opt,name=status,proto3" json:"status,omitempty" dc:"状态:org_status" v:"required|enum:org_status#状态不能为空"` // v:required|enum:org_status#状态不能为空
+	Status string `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty" dc:"状态:org_status" v:"required|enum:org_status#状态不能为空"` // v:required|enum:org_status#状态不能为空
 	// 同级排序
-	Sort          int32 `protobuf:"varint,8,opt,name=sort,proto3" json:"sort,omitempty" dc:"同级排序"`
+	Sort          int32 `protobuf:"varint,7,opt,name=sort,proto3" json:"sort,omitempty" dc:"同级排序"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -885,13 +874,6 @@ func (x *UpdateOrgReq) GetParentId() int64 {
 func (x *UpdateOrgReq) GetName() string {
 	if x != nil {
 		return x.Name
-	}
-	return ""
-}
-
-func (x *UpdateOrgReq) GetFullName() string {
-	if x != nil {
-		return x.FullName
 	}
 	return ""
 }
@@ -1226,26 +1208,24 @@ const file_org_v1_org_proto_rawDesc = "" +
 	"\x04path\x18\t \x01(\tR\x04path\x12\x1a\n" +
 	"\bcreateAt\x18\n" +
 	" \x01(\x03R\bcreateAt\x12\x1a\n" +
-	"\bupdateAt\x18\v \x01(\x03R\bupdateAt\"\xb6\x01\n" +
+	"\bupdateAt\x18\v \x01(\x03R\bupdateAt\"\x9a\x01\n" +
 	"\fCreateOrgReq\x12\x1a\n" +
 	"\bparentId\x18\x01 \x01(\x03R\bparentId\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1a\n" +
-	"\bfullName\x18\x03 \x01(\tR\bfullName\x12\x12\n" +
-	"\x04code\x18\x04 \x01(\tR\x04code\x12\x1a\n" +
-	"\bcategory\x18\x05 \x01(\tR\bcategory\x12\x16\n" +
-	"\x06status\x18\x06 \x01(\tR\x06status\x12\x12\n" +
-	"\x04sort\x18\a \x01(\x05R\x04sort\"\x1e\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
+	"\x04code\x18\x03 \x01(\tR\x04code\x12\x1a\n" +
+	"\bcategory\x18\x04 \x01(\tR\bcategory\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x12\x12\n" +
+	"\x04sort\x18\x06 \x01(\x05R\x04sort\"\x1e\n" +
 	"\fCreateOrgRes\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"\xc6\x01\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"\xaa\x01\n" +
 	"\fUpdateOrgReq\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\bparentId\x18\x02 \x01(\x03R\bparentId\x12\x12\n" +
-	"\x04name\x18\x03 \x01(\tR\x04name\x12\x1a\n" +
-	"\bfullName\x18\x04 \x01(\tR\bfullName\x12\x12\n" +
-	"\x04code\x18\x05 \x01(\tR\x04code\x12\x1a\n" +
-	"\bcategory\x18\x06 \x01(\tR\bcategory\x12\x16\n" +
-	"\x06status\x18\a \x01(\tR\x06status\x12\x12\n" +
-	"\x04sort\x18\b \x01(\x05R\x04sort\"(\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x12\n" +
+	"\x04code\x18\x04 \x01(\tR\x04code\x12\x1a\n" +
+	"\bcategory\x18\x05 \x01(\tR\bcategory\x12\x16\n" +
+	"\x06status\x18\x06 \x01(\tR\x06status\x12\x12\n" +
+	"\x04sort\x18\a \x01(\x05R\x04sort\"(\n" +
 	"\fUpdateOrgRes\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x1e\n" +
 	"\fDeleteOrgReq\x12\x0e\n" +

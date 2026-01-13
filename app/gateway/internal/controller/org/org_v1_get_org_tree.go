@@ -25,8 +25,9 @@ func (c *ControllerV1) GetOrgTree(ctx context.Context, req *v1.GetOrgTreeReq) (r
 
 // convertOrgTreeNodes 转换组织树节点
 func convertOrgTreeNodes(nodes []*oOrg.OrgTreeNode) []*v1.OrgTreeNode {
+	// 保证返回的是空数组而不是 nil
 	if nodes == nil {
-		return nil
+		return make([]*v1.OrgTreeNode, 0)
 	}
 	result := make([]*v1.OrgTreeNode, 0, len(nodes))
 	for _, node := range nodes {

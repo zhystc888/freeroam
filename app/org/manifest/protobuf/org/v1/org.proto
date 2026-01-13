@@ -137,16 +137,14 @@ message CreateOrgReq {
   int64 parentId = 1;
   // 组织名称
   string name = 2; // v:required|length:1,30#组织名称不能为空|组织名称长度必须在1-30之间
-  // 组织全称
-  string fullName = 3;
   // 组织编码
-  string code = 4; // v:required|length:1,20#组织编码不能为空|组织编码长度必须在1-20之间
+  string code = 3; // v:required|length:1,20#组织编码不能为空|组织编码长度必须在1-20之间
   // 分类:org_category
-  string category = 5; // v:required|enum:org_category#分类不能为空
+  string category = 4; // v:required|enum:org_category#分类不能为空
   // 状态:org_status
-  string status = 6; // v:required|enum:org_status#状态不能为空
+  string status = 5; // v:required|enum:org_status#状态不能为空
   // 同级排序
-  int32 sort = 7;
+  int32 sort = 6;
 }
 
 // 新建组织响应
@@ -163,16 +161,14 @@ message UpdateOrgReq {
   int64 parentId = 2;
   // 组织名称
   string name = 3; // v:length:1,30#组织名称长度必须在1-30之间
-  // 组织全称
-  string fullName = 4;
   // 组织编码
-  string code = 5; // v:length:1,20#组织编码长度必须在1-20之间
+  string code = 4; // v:length:1,20#组织编码长度必须在1-20之间
   // 分类:org_category
-  string category = 6; // v:required|enum:org_category#分类不能为空
+  string category = 5; // v:required|enum:org_category#分类不能为空
   // 状态:org_status
-  string status = 7; // v:required|enum:org_status#状态不能为空
+  string status = 6; // v:required|enum:org_status#状态不能为空
   // 同级排序
-  int32 sort = 8;
+  int32 sort = 7;
 }
 
 // 编辑组织响应

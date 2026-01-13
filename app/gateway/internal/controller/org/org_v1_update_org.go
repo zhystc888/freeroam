@@ -12,7 +12,6 @@ func (c *ControllerV1) UpdateOrg(ctx context.Context, req *v1.UpdateOrgReq) (res
 		Id:       req.Id,
 		ParentId: req.ParentId,
 		Name:     req.Name,
-		FullName: req.FullName,
 		Code:     req.Code,
 		Category: req.Category,
 		Status:   req.Status,

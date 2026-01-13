@@ -11,7 +11,6 @@ func (c *ControllerV1) CreateOrg(ctx context.Context, req *v1.CreateOrgReq) (res
 	rpcReq := &oOrg.CreateOrgReq{
 		ParentId: req.ParentId,
 		Name:     req.Name,
-		FullName: req.FullName,
 		Code:     req.Code,
 		Category: req.Category,
 		Status:   req.Status,
