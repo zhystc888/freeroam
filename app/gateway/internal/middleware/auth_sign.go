@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"context"
 	"freeroam/app/gateway/internal/utility/authsession"
+	"freeroam/common/consts"
 	"freeroam/common/tools/systemConfig"
 	"time"
 
@@ -13,8 +15,6 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 )
-
-const CtxKeyJwtClaims = "auth.jwt.claims"
 
 // AuthSign JWT 验签中间件
 func AuthSign(r *ghttp.Request) {
@@ -32,7 +32,7 @@ func AuthSign(r *ghttp.Request) {
 
 	// 校验会话版本 & 空闲过期，并续租
 	idleTimeoutSeconds := systemConfig.GetIntD("auth.session.idle_timeout", int64(1800))
-	
+
 	if _, _, err := authsession.ValidateAndTouch(
 		r.Context(),
 		claims.ID,       // sid = jti
@@ -46,8 +46,9 @@ func AuthSign(r *ghttp.Request) {
 	}
 
 	ctx := grpcx.Ctx.SetOutgoing(r.Context(), g.Map{
-		CtxKeyJwtClaims: claims,
+		consts.CtxKeyJwtClaims: claims,
 	})
+	ctx = context.WithValue(ctx, consts.CtxKeyJwtClaims, claims)
 	r.SetCtx(ctx)
 
 	r.Middleware.Next()

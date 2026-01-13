@@ -22,6 +22,7 @@ var (
 			c.Options = append(c.Options, []grpc.ServerOption{
 				grpcx.Server.ChainUnary(
 					cgrpcx.ErrorLogInterceptor,
+					cgrpcx.UnaryServerInterceptorInjectJwtClaims,
 				)}...,
 			)
 

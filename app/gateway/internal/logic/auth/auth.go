@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"freeroam/common/model/cjwt"
 	"time"
 
 	v1 "freeroam/app/gateway/api/auth/v1"
@@ -91,7 +92,7 @@ func (s *sAuth) Login(ctx context.Context, req *v1.LoginReq) (res *v1.LoginRes, 
 	}
 
 	// 签发 JWT：member_id/ver 为业务字段；jti(sid)/exp 等为标准字段
-	claims := &jwtutil.Claims{
+	claims := &cjwt.Claims{
 		MemberId: memberRes.MemberId,
 		Ver:      ver,
 		RegisteredClaims: jwt.RegisteredClaims{

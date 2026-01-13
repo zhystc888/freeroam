@@ -3,6 +3,7 @@ package jwt
 import (
 	"context"
 	"fmt"
+	"freeroam/common/model/cjwt"
 	"time"
 
 	"freeroam/common/berror"
@@ -13,7 +14,7 @@ import (
 // GenerateToken 签发 JWT Token
 // claims: JWT Claims 数据
 // 返回: token 字符串和错误
-func GenerateToken(ctx context.Context, claims *Claims) (string, error) {
+func GenerateToken(ctx context.Context, claims *cjwt.Claims) (string, error) {
 	// 读取配置（每次调用都读取，支持 Nacos 动态配置）
 	cfg, err := GetConfig(ctx)
 	if err != nil {
@@ -58,7 +59,7 @@ func GenerateToken(ctx context.Context, claims *Claims) (string, error) {
 // tokenString: JWT token 字符串
 // ctx: 上下文（用于读取配置）
 // 返回: Claims 和错误
-func ValidateToken(ctx context.Context, tokenString string) (*Claims, error) {
+func ValidateToken(ctx context.Context, tokenString string) (*cjwt.Claims, error) {
 	// 检查 token 是否为空
 	if tokenString == "" {
 		return nil, berror.NewCode(berror.CodeTokenIsEmpty)
@@ -71,7 +72,7 @@ func ValidateToken(ctx context.Context, tokenString string) (*Claims, error) {
 	}
 
 	// 创建空的 Claims 用于解析
-	claims := &Claims{}
+	claims := &cjwt.Claims{}
 
 	// 解析并验证 token（包括签名验证）
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
@@ -89,7 +90,7 @@ func ValidateToken(ctx context.Context, tokenString string) (*Claims, error) {
 	}
 
 	// 提取 Claims
-	if validatedClaims, ok := token.Claims.(*Claims); ok && token.Valid {
+	if validatedClaims, ok := token.Claims.(*cjwt.Claims); ok && token.Valid {
 		return validatedClaims, nil
 	}
 
