@@ -25,8 +25,6 @@ func init() {
 // ListPosition 职务列表
 func (s *sPosition) ListPosition(ctx context.Context, in *v1.ListPositionReq) (*v1.ListPositionRes, error) {
 	m := dao.Position
-	mPosOrg := dao.PositionOrg
-	mPosRole := dao.PositionRole
 
 	query := m.Ctx(ctx).Where(m.Columns().IsDeleted, false)
 
@@ -55,24 +53,10 @@ func (s *sPosition) ListPosition(ctx context.Context, in *v1.ListPositionReq) (*
 
 	list := make([]*v1.PositionListItem, 0, len(positions))
 	for _, pos := range positions {
-		// 获取关联的组织 ID
-		orgIds, err := mPosOrg.Ctx(ctx).
-			Where(mPosOrg.Columns().PositionId, pos.Id).
-			Where(mPosOrg.Columns().IsDeleted, false).
-			Fields(mPosOrg.Columns().OrgId).
-			Array()
+		// 获取关联数据
+		orgIds, roleIds, err := s.retrieveRelatedData(ctx, pos.Id)
 		if err != nil {
-			return nil, gerror.NewCode(berror.DBErr, err.Error())
-		}
-
-		// 获取关联的角色 ID
-		roleIds, err := mPosRole.Ctx(ctx).
-			Where(mPosRole.Columns().PositionId, pos.Id).
-			Where(mPosRole.Columns().IsDeleted, false).
-			Fields(mPosRole.Columns().RoleId).
-			Array()
-		if err != nil {
-			return nil, gerror.NewCode(berror.DBErr, err.Error())
+			return nil, err
 		}
 
 		list = append(list, &v1.PositionListItem{
@@ -97,8 +81,6 @@ func (s *sPosition) ListPosition(ctx context.Context, in *v1.ListPositionReq) (*
 // GetPosition 获取职务详情
 func (s *sPosition) GetPosition(ctx context.Context, in *v1.GetPositionReq) (*v1.GetPositionRes, error) {
 	m := dao.Position
-	mPosOrg := dao.PositionOrg
-	mPosRole := dao.PositionRole
 
 	var pos entity.Position
 	err := m.Ctx(ctx).
@@ -112,24 +94,10 @@ func (s *sPosition) GetPosition(ctx context.Context, in *v1.GetPositionReq) (*v1
 		return nil, gerror.NewCode(berror.PositionNotExist)
 	}
 
-	// 获取关联的组织 ID
-	orgIds, err := mPosOrg.Ctx(ctx).
-		Where(mPosOrg.Columns().PositionId, pos.Id).
-		Where(mPosOrg.Columns().IsDeleted, false).
-		Fields(mPosOrg.Columns().OrgId).
-		Array()
+	// 获取关联数据
+	orgIds, roleIds, err := s.retrieveRelatedData(ctx, pos.Id)
 	if err != nil {
-		return nil, gerror.NewCode(berror.DBErr, err.Error())
-	}
-
-	// 获取关联的角色 ID
-	roleIds, err := mPosRole.Ctx(ctx).
-		Where(mPosRole.Columns().PositionId, pos.Id).
-		Where(mPosRole.Columns().IsDeleted, false).
-		Fields(mPosRole.Columns().RoleId).
-		Array()
-	if err != nil {
-		return nil, gerror.NewCode(berror.DBErr, err.Error())
+		return nil, err
 	}
 
 	return &v1.GetPositionRes{
@@ -188,8 +156,7 @@ func (s *sPosition) CreatePosition(ctx context.Context, in *v1.CreatePositionReq
 					mPosOrg.Columns().CreateBy:   0, // TODO: 从上下文获取用户ID
 				})
 			}
-			_, err = tx.Model(mPosOrg.Table()).Ctx(ctx).Data(insertData).Insert()
-			if err != nil {
+			if _, err = tx.Model(mPosOrg.Table()).Ctx(ctx).Data(insertData).Insert(); err != nil {
 				return err
 			}
 		}
@@ -204,8 +171,7 @@ func (s *sPosition) CreatePosition(ctx context.Context, in *v1.CreatePositionReq
 					mPosRole.Columns().CreateBy:   0, // TODO: 从上下文获取用户ID
 				})
 			}
-			_, err = tx.Model(mPosRole.Table()).Ctx(ctx).Data(insertData).Insert()
-			if err != nil {
+			if _, err = tx.Model(mPosRole.Table()).Ctx(ctx).Data(insertData).Insert(); err != nil {
 				return err
 			}
 		}
@@ -273,16 +239,10 @@ func (s *sPosition) UpdatePosition(ctx context.Context, in *v1.UpdatePositionReq
 		}
 
 		// 覆盖写职务-组织关联
-		// 先软删除旧的
-		_, err = tx.Model(mPosOrg.Table()).Ctx(ctx).
+		// 先删除旧的
+		if _, err = tx.Model(mPosOrg.Table()).Ctx(ctx).Unscoped().
 			Where(mPosOrg.Columns().PositionId, in.Id).
-			Data(g.Map{
-				mPosOrg.Columns().IsDeleted: true,
-				mPosOrg.Columns().DeleteBy:  0, // TODO: 从上下文获取用户ID
-				mPosOrg.Columns().DeletedAt: gtime.Now(),
-			}).
-			Update()
-		if err != nil {
+			Delete(); err != nil {
 			return err
 		}
 
@@ -303,16 +263,10 @@ func (s *sPosition) UpdatePosition(ctx context.Context, in *v1.UpdatePositionReq
 		}
 
 		// 覆盖写职务-角色关联
-		// 先软删除旧的
-		_, err = tx.Model(mPosRole.Table()).Ctx(ctx).
+		// 先删除旧的
+		if _, err = tx.Model(mPosRole.Table()).Ctx(ctx).Unscoped().
 			Where(mPosRole.Columns().PositionId, in.Id).
-			Data(g.Map{
-				mPosRole.Columns().IsDeleted: true,
-				mPosRole.Columns().DeleteBy:  0, // TODO: 从上下文获取用户ID
-				mPosRole.Columns().DeletedAt: gtime.Now(),
-			}).
-			Update()
-		if err != nil {
+			Delete(); err != nil {
 			return err
 		}
 
@@ -365,45 +319,42 @@ func (s *sPosition) DeletePosition(ctx context.Context, in *v1.DeletePositionReq
 
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
 		// 软删除职务
-		_, err := tx.Model(m.Table()).Ctx(ctx).
+		if _, err := tx.Model(m.Table()).Ctx(ctx).
 			Where(m.Columns().Id, in.Id).
 			Data(g.Map{
 				m.Columns().IsDeleted: true,
 				m.Columns().DeleteBy:  0, // TODO: 从上下文获取用户ID
 				m.Columns().DeletedAt: gtime.Now(),
 			}).
-			Update()
-		if err != nil {
+			Update(); err != nil {
 			return err
 		}
 
 		// 软删除职务-组织关联
-		_, err = tx.Model(mPosOrg.Table()).Ctx(ctx).
+		if _, err = tx.Model(mPosOrg.Table()).Ctx(ctx).
 			Where(mPosOrg.Columns().PositionId, in.Id).
 			Data(g.Map{
 				mPosOrg.Columns().IsDeleted: true,
 				mPosOrg.Columns().DeleteBy:  0,
 				mPosOrg.Columns().DeletedAt: gtime.Now(),
 			}).
-			Update()
-		if err != nil {
+			Update(); err != nil {
 			return err
 		}
 
 		// 软删除职务-角色关联
-		_, err = tx.Model(mPosRole.Table()).Ctx(ctx).
+		if _, err = tx.Model(mPosRole.Table()).Ctx(ctx).
 			Where(mPosRole.Columns().PositionId, in.Id).
 			Data(g.Map{
 				mPosRole.Columns().IsDeleted: true,
 				mPosRole.Columns().DeleteBy:  0,
 				mPosRole.Columns().DeletedAt: gtime.Now(),
 			}).
-			Update()
-		if err != nil {
+			Update(); err != nil {
 			return err
 		}
 
-		// TODO: 同步清理成员侧绑定（软删除）：member_org_position 中 position_id = id
+		// TODO: 成员关联删除
 
 		return nil
 	})
@@ -420,13 +371,13 @@ func (s *sPosition) DeletePosition(ctx context.Context, in *v1.DeletePositionReq
 // GetPositionOptions 按组织获取可选职务集合
 func (s *sPosition) GetPositionOptions(ctx context.Context, in *v1.GetPositionOptionsReq) (*v1.GetPositionOptionsRes, error) {
 	if len(in.OrgIds) == 0 {
-		return nil, gerror.NewCode(berror.IncorrectParameters, "组织ID不能为空")
+		return nil, gerror.NewCode(berror.IncorrectParameters, "组织 ID 不能为空")
 	}
 
 	m := dao.Position
 	mPosOrg := dao.PositionOrg
 
-	// 查询关联了这些组织的职务ID
+	// 查询关联了这些组织的职务 ID
 	positionIds, err := mPosOrg.Ctx(ctx).
 		Where(mPosOrg.Columns().IsDeleted, false).
 		WhereIn(mPosOrg.Columns().OrgId, in.OrgIds).
@@ -526,4 +477,31 @@ func (s *sPosition) checkPositionNameDuplicate(ctx context.Context, excludeId in
 	}
 
 	return nil
+}
+
+// 获取关联数据 return：关联组织id，关联角色id
+func (s *sPosition) retrieveRelatedData(ctx context.Context, positionId uint64) (gdb.Array, gdb.Array, error) {
+	mPosOrg := dao.PositionOrg
+	mPosRole := dao.PositionRole
+
+	// 获取关联的组织 ID
+	orgIds, err := mPosOrg.Ctx(ctx).
+		Where(mPosOrg.Columns().PositionId, positionId).
+		Where(mPosOrg.Columns().IsDeleted, false).
+		Fields(mPosOrg.Columns().OrgId).
+		Array()
+	if err != nil {
+		return nil, nil, gerror.NewCode(berror.DBErr, err.Error())
+	}
+
+	// 获取关联的角色 ID
+	roleIds, err := mPosRole.Ctx(ctx).
+		Where(mPosRole.Columns().PositionId, positionId).
+		Where(mPosRole.Columns().IsDeleted, false).
+		Fields(mPosRole.Columns().RoleId).
+		Array()
+	if err != nil {
+		return nil, nil, gerror.NewCode(berror.DBErr, err.Error())
+	}
+	return orgIds, roleIds, nil
 }

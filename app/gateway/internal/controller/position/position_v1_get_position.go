@@ -17,13 +17,23 @@ func (c *ControllerV1) GetPosition(ctx context.Context, req *v1.GetPositionReq) 
 		return nil, err
 	}
 
+	orgIds := result.OrgIds
+	if orgIds == nil {
+		orgIds = make([]int64, 0)
+	}
+
+	roleIds := result.RoleIds
+	if roleIds == nil {
+		roleIds = make([]int64, 0)
+	}
+
 	res = &v1.GetPositionRes{
 		Id:        result.Id,
 		Name:      result.Name,
 		Status:    result.Status,
 		DataScope: result.DataScope,
-		OrgIds:    result.OrgIds,
-		RoleIds:   result.RoleIds,
+		OrgIds:    orgIds,
+		RoleIds:   roleIds,
 		CreateAt:  result.CreateAt,
 		UpdateAt:  result.UpdateAt,
 	}
