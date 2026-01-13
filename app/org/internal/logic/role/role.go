@@ -273,7 +273,6 @@ func (s *sRole) GetRolePositionList(ctx context.Context, in *v1.GetRolePositionL
 
 	// TODO: 职务表完成后编写
 	// 查询角色绑定的职务列表
-	// 假设有角色职务关联表 free_role_position 和职务表 free_position
 	// 通过关联查询获取职务信息
 	//var positionList []struct {
 	//	Id   uint64 `json:"id"`
@@ -328,9 +327,9 @@ func (s *sRole) BatchAssignRolePosition(ctx context.Context, in *v1.BatchAssignR
 
 	// 使用事务处理
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
-		// 先删除该角色的所有职务关联（覆盖式）
+		// 先删除该角色的所有职务关联
 		positionRole := dao.PositionRole
-		_, err := tx.Model(positionRole.Table()).Ctx(ctx).
+		_, err := tx.Model(positionRole.Table()).Ctx(ctx).Unscoped().
 			Where(positionRole.Columns().RoleId, in.RoleId).
 			Data(g.Map{
 				positionRole.Columns().IsDeleted: true,
@@ -344,19 +343,18 @@ func (s *sRole) BatchAssignRolePosition(ctx context.Context, in *v1.BatchAssignR
 
 		// 如果有新的职务ID列表，则插入新的关联
 		if len(in.PositionIds) > 0 {
-			// TODO: 验证职务是否存在
-			//var positionCount int
-			//err := tx.Ctx(ctx).
-			//	Table("free_position").
-			//	Where("id", in.PositionIds).
-			//	Where("is_deleted", 0).
-			//	Count(&positionCount)
-			//if err != nil {
-			//	return err
-			//}
-			//if positionCount != len(in.PositionIds) {
-			//	return gerror.NewCode(berror.DataNotExist, "部分职务不存在")
-			//}
+			// 验证职务是否存在
+			position := dao.Position
+			positionCount, err := tx.Model(position.Table()).Ctx(ctx).
+				WhereIn(position.Columns().Id, in.PositionIds).
+				Where(position.Columns().IsDeleted, false).
+				Count()
+			if err != nil {
+				return err
+			}
+			if positionCount != len(in.PositionIds) {
+				return gerror.NewCode(berror.DataNotExist, "部分职务不存在")
+			}
 
 			// 批量插入新的关联关系
 			insertData := make([]g.Map, 0, len(in.PositionIds))
