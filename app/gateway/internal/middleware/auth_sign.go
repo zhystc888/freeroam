@@ -31,10 +31,8 @@ func AuthSign(r *ghttp.Request) {
 	}
 
 	// 校验会话版本 & 空闲过期，并续租
-	idleTimeoutSeconds := int64(1800)
-	if v, err := systemConfig.GetInt("auth.session.idle_timeout"); err == nil && v != nil && *v > 0 {
-		idleTimeoutSeconds = *v
-	}
+	idleTimeoutSeconds := systemConfig.GetIntD("auth.session.idle_timeout", int64(1800))
+	
 	if _, _, err := authsession.ValidateAndTouch(
 		r.Context(),
 		claims.ID,       // sid = jti

@@ -27,7 +27,7 @@ func (s *sAuth) ValidateMemberCredential(ctx context.Context, req *v1.ValidateMe
 	// 查询成员信息（账号、未删除）
 	err = m.Ctx(ctx).Safe(false).
 		Where(m.Columns().Username, req.Username).
-		Where(m.Columns().IsDeleted, 0).
+		Where(m.Columns().IsDeleted, false).
 		Scan(&member)
 
 	if err != nil {
@@ -49,19 +49,14 @@ func (s *sAuth) ValidateMemberCredential(ctx context.Context, req *v1.ValidateMe
 		return nil, gerror.NewCode(berror.CodePasswordError)
 	}
 
-	// 校验状态：1启用0禁用
-	if member.Status == 0 {
+	// 校验是否禁用 TODO 用枚举
+	if member.Status == 2 {
 		return nil, berror.NewCode(berror.CodeAccountDisabled)
 	}
 
-	// 校验是否已离职（resigned_at 不为空）
-	if member.ResignedAt != nil && !member.ResignedAt.IsZero() {
+	// 校验是否已离职（resigned_at 不为空） TODO 用枚举
+	if member.Status == 3 {
 		return nil, berror.NewCode(berror.CodeAccountResigned)
-	}
-
-	// 校验是否已删除（is_deleted = 1）
-	if member.IsDeleted == 1 {
-		return nil, berror.NewCode(berror.CodeAccountDeleted)
 	}
 
 	res = &v1.ValidateMemberCredentialRes{

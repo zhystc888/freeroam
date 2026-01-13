@@ -13,9 +13,9 @@ type Member struct {
 	Id               uint64      `json:"id"               orm:"id"                 description:"主键"`                // 主键
 	Username         string      `json:"username"         orm:"username"           description:"账号(<=20), 不可重复"`    // 账号(<=20), 不可重复
 	Name             string      `json:"name"             orm:"name"               description:"姓名(<=10)"`          // 姓名(<=10)
-	Gender           uint        `json:"gender"           orm:"gender"             description:"性别:1男2女(可扩展0未知)"`   // 性别:1男2女(可扩展0未知)
+	Gender           uint        `json:"gender"           orm:"gender"             description:"性别:1男2女(可扩展0未知) enum_type:gender"`   // 性别:1男2女(可扩展0未知)
 	Mobile           string      `json:"mobile"           orm:"mobile"             description:"手机号(11位数字)"`        // 手机号(11位数字)
-	Status           uint        `json:"status"           orm:"status"             description:"状态:1启用0禁用"`         // 状态:1启用0禁用
+	Status           uint        `json:"status"           orm:"status"             description:"状态:1启用2禁用3离职 enum_type:member_status"`         // 状态:1启用0禁用
 	IsSuperAdmin     uint        `json:"isSuperAdmin"     orm:"is_super_admin"     description:"超级管理员:1是0否"`        // 超级管理员:1是0否
 	PasswordHash     string      `json:"passwordHash"     orm:"password_hash"      description:"密码hash"`            // 密码hash
 	LastLoginAt      *gtime.Time `json:"lastLoginAt"      orm:"last_login_at"      description:"最近一次登录时间"`          // 最近一次登录时间

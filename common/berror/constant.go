@@ -20,7 +20,6 @@ var (
 	CodePasswordError      = gcode.New(400102, "密码错误", nil)
 	CodeAccountDisabled    = gcode.New(400103, "账号被禁用", nil)
 	CodeAccountResigned    = gcode.New(400104, "账号已离职", nil)
-	CodeAccountDeleted     = gcode.New(400105, "账号已删除（软删 is_deleted=1）", nil)
 	UnrecognizedClientType = gcode.New(400106, "未识别的客户端类型", nil)
 )
 
