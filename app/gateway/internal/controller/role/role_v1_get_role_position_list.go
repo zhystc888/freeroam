@@ -29,6 +29,9 @@ func (c *ControllerV1) GetRolePositionList(ctx context.Context, req *v1.GetRoleP
 	}
 
 	return &v1.GetRolePositionListRes{
-		List: list,
+		List:     list,
+		Total:    result.Total,
+		Page:     result.Page,
+		PageSize: result.PageSize,
 	}, nil
 }

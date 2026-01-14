@@ -213,16 +213,7 @@ func (s *sRole) ListRole(ctx context.Context, in *v1.ListRoleReq) (*v1.ListRoleR
 	// 分页查询
 	var roles []*entity.Role
 	page := int(in.Page)
-	if page < 1 {
-		page = 1
-	}
 	pageSize := int(in.PageSize)
-	if pageSize < 1 {
-		pageSize = 10
-	}
-	if pageSize > 100 {
-		pageSize = 100
-	}
 
 	err = query.
 		OrderDesc(m.Columns().Id).
@@ -271,43 +262,60 @@ func (s *sRole) GetRolePositionList(ctx context.Context, in *v1.GetRolePositionL
 		return nil, gerror.NewCode(berror.RoleNotExist)
 	}
 
-	// TODO: 职务表完成后编写
 	// 查询角色绑定的职务列表
-	// 通过关联查询获取职务信息
-	//var positionList []struct {
-	//	Id   uint64 `json:"id"`
-	//	Code string `json:"code"`
-	//	Name string `json:"name"`
-	//}
-	//
-	//err = g.DB().Ctx(ctx).
-	//	Table("free_position p").
-	//	InnerJoin("free_role_position rp", "p.id = rp.position_id").
-	//	Where("rp.role_id", in.RoleId).
-	//	Where("rp.is_deleted", 0).
-	//	Where("p.is_deleted", 0).
-	//	Fields("p.id, p.code, p.name").
-	//	OrderAsc("p.id").
-	//	Scan(&positionList)
-	//if err != nil {
-	//	return nil, gerror.NewCode(berror.DBErr, err.Error())
-	//}
-	//
-	//// 转换为响应格式
-	//list := make([]*v1.PositionItem, 0, len(positionList))
-	//for _, item := range positionList {
-	//	list = append(list, &v1.PositionItem{
-	//		Id:   item.Id,
-	//		Code: item.Code,
-	//		Name: item.Name,
-	//	})
-	//}
-	//
-	//return &v1.GetRolePositionListRes{
-	//	List: list,
-	//}, nil
+	positionRole := dao.PositionRole
+	positionIds, err := positionRole.Ctx(ctx).
+		Where(positionRole.Columns().RoleId, in.RoleId).
+		Where(positionRole.Columns().IsDeleted, false).
+		Fields(positionRole.Columns().PositionId).
+		Array()
+	if err != nil {
+		return nil, gerror.NewCode(berror.DBErr, err.Error())
+	}
 
-	return nil, nil
+	// 查询获取职务信息
+	page := int(in.Page)
+	pageSize := int(in.PageSize)
+
+	positions := make([]*entity.Position, 0, pageSize)
+	position := dao.Position
+
+	positionQuery := position.Ctx(ctx).
+		WhereIn(position.Columns().Id, positionIds).
+		Where(position.Columns().IsDeleted, false)
+
+	if in.Keyword != "" {
+		positionQuery = positionQuery.WhereLike(position.Columns().Name, "%"+in.Keyword+"%")
+	}
+
+	count, err := positionQuery.Count()
+	if err != nil {
+		return nil, gerror.NewCode(berror.DBErr, err.Error())
+	}
+
+	if err = positionQuery.OrderAsc(position.Columns().Id).
+		Page(page, pageSize).
+		Scan(&positions); err != nil {
+		return nil, gerror.NewCode(berror.DBErr, err.Error())
+	}
+
+	// 转换为响应格式
+	list := make([]*v1.PositionItem, 0, pageSize)
+	for _, item := range positions {
+		list = append(list, &v1.PositionItem{
+			PositionId:     int64(item.Id),
+			PositionName:   item.Name,
+			PositionStatus: item.Status,
+			CreateAt:       item.CreateAt.Format("2006-01-02 15:04:05"),
+		})
+	}
+
+	return &v1.GetRolePositionListRes{
+		List:     list,
+		Total:    int64(count),
+		Page:     int64(page),
+		PageSize: int64(pageSize),
+	}, nil
 }
 
 // BatchAssignRolePosition 批量绑定职务到角色（覆盖式）

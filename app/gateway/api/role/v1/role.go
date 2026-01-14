@@ -116,8 +116,8 @@ type GetRolePositionListReq struct {
 	Page int64 `p:"page" v:"min:1#页码必须大于0" dc:"页码"`
 	// 每页数量
 	PageSize int64 `p:"pageSize" v:"min:1|max:100#每页数量必须大于0|每页数量不能超过100" dc:"每页数量"`
-	// 对 code/name 模糊
-	Keyword string `p:"keyword" dc:"对 code/name 模糊"`
+	// 对 职务名称 模糊
+	Keyword string `p:"keyword" dc:"对 职务名称 模糊"`
 }
 
 // GetRolePositionListRes 查询角色绑定的职务列表响应
