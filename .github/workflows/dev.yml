@@ -1,0 +1,54 @@
+name: Build & Push (dev)
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+    types: [ "closed" ]
+
+concurrency:
+  group: dev-image-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    # push 事件直接跑；PR 事件仅当 merged 才跑
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
+    steps:
+      - name: Checkout latest dev
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Install gf CLI
+        run: |
+          go install github.com/gogf/gf/v2/cmd/gf@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+          gf -v
+
+      - name: Docker login (Aliyun ACR)
+        uses: docker/login-action@v3
+        with:
+          registry: crpi-r1dgt60thunecut1.cn-shanghai.personal.cr.aliyuncs.com
+          username: ${{ secrets.ALIYUN_ACR_USERNAME }}
+          password: ${{ secrets.ALIYUN_ACR_PASSWORD }}
+
+      - name: Build & push images (ENV=dev)
+        env:
+          ENV: dev
+        run: |
+          # 根目录 Makefile 会分发到 app/gateway（你已实现）
+          make image.push ENV=dev

@@ -2,6 +2,16 @@
 # CLI tool, only in development environment.
 # https://goframe.org/docs/cli
 gfcli:
+  # gf build 配置（按官方文档： https://goframe.org/docs/cli/build ）
+  build:
+    # 产物名：对齐 manifest/docker/Dockerfile 里的 `./temp/linux_amd64/main`
+    name: "main"
+    arch: "amd64"
+    system: "linux"
+    # 输出目录（等同命令行的 -p/--path）
+    path: "./temp"
+    # 额外 go build 参数（如需要再加）
+    extra: ""
   gen:
     dao:
       - link: "mysql:root:ZHYstc_00.888@tcp(124.221.249.230:13306)/freeroam?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai"
@@ -15,4 +25,4 @@ gfcli:
   docker:
     build: "-a amd64 -s linux -p temp -ew"
     tagPrefixes:
-      - my.image.pub/my-app
+      - "crpi-r1dgt60thunecut1.cn-shanghai.personal.cr.aliyuncs.com/freeroam"

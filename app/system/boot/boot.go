@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/gogf/gf/contrib/config/nacos/v2"
 	rnacos "github.com/gogf/gf/contrib/registry/nacos/v2"
@@ -22,6 +24,45 @@ var (
 	localConfigPath = gfile.Pwd() + "/app/system/manifest/config/config.yaml"
 	env             = os.Getenv("APP_ENV")
 )
+
+// envFirstString 优先从环境变量读取（非空白），若不存在则从 configPath 对应的配置文件读取。
+func envFirstString(ctx context.Context, envKey, configPath, configKey string) string {
+	if v, ok := os.LookupEnv(envKey); ok {
+		v = strings.TrimSpace(v)
+		if v != "" {
+			return v
+		}
+	}
+	return g.Cfg(configPath).MustGet(ctx, configKey).String()
+}
+
+// envFirstInt 优先从环境变量读取（非空白），若不存在则从 configPath 对应的配置文件读取。
+func envFirstInt(ctx context.Context, envKey, configPath, configKey string) int {
+	if v, ok := os.LookupEnv(envKey); ok {
+		v = strings.TrimSpace(v)
+		if v != "" {
+			i, err := strconv.Atoi(v)
+			if err == nil {
+				return i
+			}
+		}
+	}
+	return g.Cfg(configPath).MustGet(ctx, configKey).Int()
+}
+
+// envFirstUint64 优先从环境变量读取（非空白），若不存在则从 configPath 对应的配置文件读取。
+func envFirstUint64(ctx context.Context, envKey, configPath, configKey string) uint64 {
+	if v, ok := os.LookupEnv(envKey); ok {
+		v = strings.TrimSpace(v)
+		if v != "" {
+			u, err := strconv.ParseUint(v, 10, 64)
+			if err == nil {
+				return u
+			}
+		}
+	}
+	return g.Cfg(configPath).MustGet(ctx, configKey).Uint64()
+}
 
 func init() {
 	fmt.Println("全局配置文件:", configPath)
@@ -52,11 +93,11 @@ func init() {
 
 func getNacosClientConfig(ctx context.Context, configPath string) constant.ClientConfig {
 	return constant.ClientConfig{
-		CacheDir:            g.Cfg(configPath).MustGet(ctx, "nacos.cacheDir").String(),
-		LogDir:              g.Cfg(configPath).MustGet(ctx, "nacos.logDir").String(),
-		NamespaceId:         g.Cfg(configPath).MustGet(ctx, "nacos.namespaceId").String(),
-		Username:            g.Cfg(configPath).MustGet(ctx, "nacos.username").String(),
-		Password:            g.Cfg(configPath).MustGet(ctx, "nacos.password").String(),
+		CacheDir:            envFirstString(ctx, "NACOS_CACHE_DIR", configPath, "nacos.cacheDir"),
+		LogDir:              envFirstString(ctx, "NACOS_LOG_DIR", configPath, "nacos.logDir"),
+		NamespaceId:         envFirstString(ctx, "NACOS_NAMESPACE_ID", configPath, "nacos.namespaceId"),
+		Username:            envFirstString(ctx, "NACOS_USERNAME", configPath, "nacos.username"),
+		Password:            envFirstString(ctx, "NACOS_PASSWORD", configPath, "nacos.password"),
 		NotLoadCacheAtStart: true,
 		DisableUseSnapShot:  true,
 		TimeoutMs:           15000, // 增加超时到 15 秒
@@ -64,8 +105,8 @@ func getNacosClientConfig(ctx context.Context, configPath string) constant.Clien
 }
 
 func getNacosRegister(ctx context.Context, configPath string) {
-	addr := g.Cfg(configPath).MustGet(ctx, "nacos.address").String()
-	port := g.Cfg(configPath).MustGet(ctx, "nacos.port").Int()
+	addr := envFirstString(ctx, "NACOS_ADDRESS", configPath, "nacos.address")
+	port := envFirstInt(ctx, "NACOS_PORT", configPath, "nacos.port")
 	grpcx.Resolver.Register(rnacos.New(fmt.Sprintf("%s:%d", addr, port), func(config *constant.ClientConfig) {
 		*config = getNacosClientConfig(ctx, configPath) // 覆盖 config 指向的结构体内容
 	}).SetGroupName(env))
@@ -74,8 +115,8 @@ func getNacosRegister(ctx context.Context, configPath string) {
 func getNacosAdapter(ctx context.Context, configPath string) (adapter gcfg.Adapter, err error) {
 	var (
 		serverConfig = constant.ServerConfig{
-			IpAddr: g.Cfg(configPath).MustGet(ctx, "nacos.address").String(),
-			Port:   g.Cfg(configPath).MustGet(ctx, "nacos.port").Uint64(),
+			IpAddr: envFirstString(ctx, "NACOS_ADDRESS", configPath, "nacos.address"),
+			Port:   envFirstUint64(ctx, "NACOS_PORT", configPath, "nacos.port"),
 		}
 		clientConfig = getNacosClientConfig(ctx, configPath)
 		configParam  = vo.ConfigParam{
