@@ -183,14 +183,14 @@ func (s *sOrg) CreateOrg(ctx context.Context, in *v1.CreateOrgReq) (*v1.CreateOr
 	m := dao.Org
 
 	// 检查编码是否已存在
-	count, err := m.Ctx(ctx).
+	exist, err := m.Ctx(ctx).
 		Where(m.Columns().Code, in.Code).
 		Where(m.Columns().IsDeleted, false).
-		Count()
+		Exist()
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
 	}
-	if count > 0 {
+	if exist {
 		return nil, gerror.NewCode(berror.OrgCodeAlreadyExist)
 	}
 
@@ -581,10 +581,13 @@ func updateRecursiveInfo(tx gdb.TX, orgId uint64, oldPath, newPath, oldFullName,
 	m := dao.Org
 	// 如果路径有变化，批量更新子孙节点路径
 	if oldPath != newPath {
-		if _, err := tx.Exec(
-			fmt.Sprintf("UPDATE %s SET %s = REPLACE(%s, ?, ?) WHERE %s LIKE ? AND %s = 0 AND %s != ?",
-				m.Table(), m.Columns().Path, m.Columns().Path, m.Columns().Path, m.Columns().IsDeleted, m.Columns().Id),
-			oldPath, newPath, oldPath+"%", orgId); err != nil {
+		_, err := tx.Model(m.Table()).Data(g.Map{
+			m.Columns().Path: gdb.Raw(fmt.Sprintf("REPLACE(%s, %s, %s)", oldPath, oldFullName, newFullName)),
+		}).WhereLike(m.Columns().Path, oldPath+"%").
+			Where(m.Columns().IsDeleted, "=", false).
+			Where(m.Columns().Id, "<>", orgId).
+			Update()
+		if err != nil {
 			return err
 		}
 	}
