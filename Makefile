@@ -1,8 +1,8 @@
 # 根目录 Makefile（freeroam/Makefile）
 
 # 预留服务列表：后续加 ort system 等，按 app/<name> 目录名填写
-SERVICES := gateway
-# SERVICES := gateway ort system
+# SERVICES := gateway
+SERVICES := gateway org system
 
 ENV ?=
 TAG ?=
