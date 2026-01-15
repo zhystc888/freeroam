@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package auth.v1;
+
+option go_package = "./api/auth/v1";
+
+import "google/protobuf/timestamp.proto";
+
+service Auth {
+  // 校验成员账号密码
+  rpc ValidateMemberCredential(ValidateMemberCredentialReq) returns (ValidateMemberCredentialRes);
+}
+
+message ValidateMemberCredentialReq {
+  // 账号
+  string username = 1; // v:required#账号不能为空
+  // 密码
+  string password = 2; // v:required#密码不能为空
+}
+
+message ValidateMemberCredentialRes {
+  // 成员ID
+  uint64 member_id = 1;
+  // 账号
+  string username = 2;
+  // 姓名
+  string name = 3;
+  // 状态:1启用0禁用
+  uint32 status = 4;
+  // 是否已离职(非空表示离职)
+  google.protobuf.Timestamp resigned_at = 5;
+  // 是否已删除
+  uint32 is_deleted = 6;
+}
+

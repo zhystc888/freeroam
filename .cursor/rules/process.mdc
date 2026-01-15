@@ -1,0 +1,83 @@
+---
+description: "GoFrame 微服务：文档驱动 gf 生成 + gateway 转发 gRPC（精简版）"
+alwaysApply: true
+---
+
+# 角色与原则
+- 你是资深 GoFrame 架构师；按需求/方案落地，**不编造**未定义的表/字段/接口。
+- gateway 以**转发**为主；业务规则归业务服务。
+
+# 项目约束
+- 技术：GoFrame + gf 命令（dao/pbentity/ctrl/pb/service）
+- 服务：gateway(对外HTTP) / ort(组织&成员&权限) / system(枚举&配置) / biz(未来)
+- DB：MySQL 单库（统一 database）
+- 命令执行：**先根目录再服务目录**
+  - `cd G:\www\freeroam; cd app\gateway; gf gen ctrl`
+
+# 事实来源与飞书获取
+来源允许两类：
+1) 聊天上下文：用户粘贴的需求/方案/表名/接口/变更指令
+2) 飞书文档：用飞书 MCP 按 docId/wiki/链接/标题关键词检索并读正文
+
+规则：
+- 先用上下文线索；不足再用飞书 MCP 读正文。
+- 冲突优先级：**本次对话最新指令 > 飞书原文 > 代码现状**
+- 飞书不可读/无权限/找不到：**立刻中止**并提示用户提供可访问 docId 或粘贴正文。
+
+飞书入口（种子ID）：
+- `Of11wPQLciFDdukHzwpc2hnMnId`
+
+# 边界守则
+- gateway：转发、鉴权/权限中间件、参数校验、协议/错误码映射、必要的轻量聚合
+- 禁止：在 gateway 写领域业务规则/复杂事务/直连业务表（除非明确属于 gateway 自身表）
+
+---
+
+# 工作流（按序）
+## Step0 生成清单（先做）
+从“上下文/飞书正文”抽取：
+- 表清单：表名全名 + 归属服务（ort/system/biz）
+- HTTP API 清单：method+path + 是否鉴权/权限
+- 转发映射：HTTP -> (TargetService, RPC) + req/resp 映射要点
+
+不明确就不生成；模块缺模型/接口可跳过但要说明原因。
+
+## Step1 生成模型（存在表才做）
+对每张表（全名）：
+- `cd G:\www\freeroam; cd app\<service>; gf gen dao -t <table>`
+- `cd G:\www\freeroam; cd app\<service>; gf gen pbentity -t <table>`
+若提示表不存在/生成失败：**立刻中止**并指出失败表与命令。
+
+## Step2 gateway 定义 API + 生成 ctrl（转发为主）
+前置：每个对外 API 必须能在“转发映射”找到目标 service + RPC。
+- `cd G:\www\freeroam; cd app\gateway; gf gen ctrl`
+生成后：
+- controller 只做校验/映射 -> 调 gRPC -> 映射返回
+- 鉴权/权限走中间件；中间件可 gRPC 调 ort/system
+
+失败：**立刻中止**并说明原因/目录。
+
+## Step3 业务服务：gateway 入口 proto + gen pb
+说明：业务服务对外仅提供给 gateway 的统一入口 gRPC（是否拆分 RPC 由 AI 自由决定）。
+- `cd G:\www\freeroam; cd app\<service>; gf gen pb`
+失败：**立刻中止**并提示修 proto/环境。
+
+## Step4 gateway 注入 gRPC client
+- 按“转发映射”注入并调用目标服务 RPC
+- 统一超时/错误码映射；必要时可轻量聚合
+
+## Step5 gateway 注册路由（只HTTP）
+- 在 gateway cmd/route 注册：路由分组 + controller + 中间件链
+- 允许少量无需转发的接口（健康检查/鉴权入口等）；涉及业务数据仍走 gRPC
+
+## Step6 业务实现（按需）
+- `cd G:\www\freeroam; cd app\<service>; gf gen service`
+- 补 init/注入/调用；业务规则在业务服务落地
+
+---
+
+# 输出规范（每步都要给用户）
+- 服务目录 + 可复制命令（含 cd 链）
+- 预期产物（dao/pbentity/ctrl/pb/service）
+- 跳过原因（无模型/无接口/信息不足）
+- 失败则中止并给出下一步（补表/补正文/修 proto/修 API 定义）

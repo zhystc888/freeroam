@@ -5,6 +5,5 @@
 package logic
 
 import (
-	_ "freeroam/app/org/internal/logic/role"
-	_ "freeroam/app/org/internal/logic/auth"
+	_ "freeroam/app/gateway/internal/logic/auth"
 )

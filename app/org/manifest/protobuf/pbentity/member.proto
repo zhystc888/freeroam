@@ -1,0 +1,32 @@
+// ==========================================================================
+// Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
+// ==========================================================================
+
+syntax = "proto3";
+
+package pbentity;
+
+option go_package = "freeroam/app/org/api/pbentity";
+
+import "google/protobuf/timestamp.proto";
+
+message Member {
+    uint64                    Id               = 1;  // 主键
+    string                    Username         = 2;  // 账号(<=20), 不可重复
+    string                    Name             = 3;  // 姓名(<=10)
+    uint32                    Gender           = 4;  // 性别:1男2女(可扩展0未知)
+    string                    Mobile           = 5;  // 手机号(11位数字)
+    uint32                    Status           = 6;  // 状态:1启用0禁用
+    uint32                    IsSuperAdmin     = 7;  // 超级管理员:1是0否
+    string                    PasswordHash     = 8;  // 密码hash
+    google.protobuf.Timestamp LastLoginAt      = 9;  // 最近一次登录时间
+    google.protobuf.Timestamp ResignedAt       = 10; // 离职时间(非空表示离职)
+    int32                     SuperAdminUnique = 11; // 仅用于保证超管唯一(业务字段勿用)
+    uint32                    IsDeleted        = 12; // 数据状态0正常1删除
+    uint64                    CreateBy         = 13; // 创建人
+    uint64                    UpdateBy         = 14; // 修改人
+    uint64                    DeleteBy         = 15; // 删除人
+    google.protobuf.Timestamp CreateAt         = 16; // 创建时间
+    google.protobuf.Timestamp UpdateAt         = 17; // 更新时间
+    google.protobuf.Timestamp DeletedAt        = 18; // 删除时间
+}

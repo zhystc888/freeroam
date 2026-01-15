@@ -10,6 +10,20 @@ server:
     timeFormat:            "2006-01-02T15:04:05" # 自定义日志输出的时间格式，使用Golang标准的时间格式配置
     stdout:                true                  # 日志是否同时输出到终端。默认true
     stdoutColorDisabled:   true                 # 关闭终端的颜色打印。默认开启
+
+# JWT 配置
+jwt:
+  secret: "freeroam-gateway-secret-key-change-in-production"  # JWT 签名密钥（必须，生产环境请修改）
+  issuer: "freeroam-gateway"  # 签发者（可选，默认为 freeroam-gateway）
+  audience: "freeroam-client"  # 默认接收者（可选，默认为 freeroam-client。可在登录时通过请求参数或请求头覆盖）
+  expire: 86400  # 默认过期时间（秒，可选，默认 24 小时；兜底用，实际使用 max_lifetime）
+
+# Redis 配置（会话/鉴权使用）
+redis:
+  default:
+    address: "127.0.0.1:6379"
+    db: 0
+    pass: ""
 database:
   default:
     host: "124.221.249.230"     # 地址
