@@ -213,16 +213,7 @@ func (s *sRole) ListRole(ctx context.Context, in *v1.ListRoleReq) (*v1.ListRoleR
 	// 分页查询
 	var roles []*entity.Role
 	page := int(in.Page)
-	if page < 1 {
-		page = 1
-	}
 	pageSize := int(in.PageSize)
-	if pageSize < 1 {
-		pageSize = 10
-	}
-	if pageSize > 100 {
-		pageSize = 100
-	}
 
 	err = query.
 		OrderDesc(m.Columns().Id).
@@ -271,44 +262,60 @@ func (s *sRole) GetRolePositionList(ctx context.Context, in *v1.GetRolePositionL
 		return nil, gerror.NewCode(berror.RoleNotExist)
 	}
 
-	// TODO: 职务表完成后编写
 	// 查询角色绑定的职务列表
-	// 假设有角色职务关联表 free_role_position 和职务表 free_position
-	// 通过关联查询获取职务信息
-	//var positionList []struct {
-	//	Id   uint64 `json:"id"`
-	//	Code string `json:"code"`
-	//	Name string `json:"name"`
-	//}
-	//
-	//err = g.DB().Ctx(ctx).
-	//	Table("free_position p").
-	//	InnerJoin("free_role_position rp", "p.id = rp.position_id").
-	//	Where("rp.role_id", in.RoleId).
-	//	Where("rp.is_deleted", 0).
-	//	Where("p.is_deleted", 0).
-	//	Fields("p.id, p.code, p.name").
-	//	OrderAsc("p.id").
-	//	Scan(&positionList)
-	//if err != nil {
-	//	return nil, gerror.NewCode(berror.DBErr, err.Error())
-	//}
-	//
-	//// 转换为响应格式
-	//list := make([]*v1.PositionItem, 0, len(positionList))
-	//for _, item := range positionList {
-	//	list = append(list, &v1.PositionItem{
-	//		Id:   item.Id,
-	//		Code: item.Code,
-	//		Name: item.Name,
-	//	})
-	//}
-	//
-	//return &v1.GetRolePositionListRes{
-	//	List: list,
-	//}, nil
+	positionRole := dao.PositionRole
+	positionIds, err := positionRole.Ctx(ctx).
+		Where(positionRole.Columns().RoleId, in.RoleId).
+		Where(positionRole.Columns().IsDeleted, false).
+		Fields(positionRole.Columns().PositionId).
+		Array()
+	if err != nil {
+		return nil, gerror.NewCode(berror.DBErr, err.Error())
+	}
 
-	return nil, nil
+	// 查询获取职务信息
+	page := int(in.Page)
+	pageSize := int(in.PageSize)
+
+	positions := make([]*entity.Position, 0, pageSize)
+	position := dao.Position
+
+	positionQuery := position.Ctx(ctx).
+		WhereIn(position.Columns().Id, positionIds).
+		Where(position.Columns().IsDeleted, false)
+
+	if in.Keyword != "" {
+		positionQuery = positionQuery.WhereLike(position.Columns().Name, "%"+in.Keyword+"%")
+	}
+
+	count, err := positionQuery.Count()
+	if err != nil {
+		return nil, gerror.NewCode(berror.DBErr, err.Error())
+	}
+
+	if err = positionQuery.OrderAsc(position.Columns().Id).
+		Page(page, pageSize).
+		Scan(&positions); err != nil {
+		return nil, gerror.NewCode(berror.DBErr, err.Error())
+	}
+
+	// 转换为响应格式
+	list := make([]*v1.PositionItem, 0, pageSize)
+	for _, item := range positions {
+		list = append(list, &v1.PositionItem{
+			PositionId:     int64(item.Id),
+			PositionName:   item.Name,
+			PositionStatus: item.Status,
+			CreateAt:       item.CreateAt.Format("2006-01-02 15:04:05"),
+		})
+	}
+
+	return &v1.GetRolePositionListRes{
+		List:     list,
+		Total:    int64(count),
+		Page:     int64(page),
+		PageSize: int64(pageSize),
+	}, nil
 }
 
 // BatchAssignRolePosition 批量绑定职务到角色（覆盖式）
@@ -328,9 +335,9 @@ func (s *sRole) BatchAssignRolePosition(ctx context.Context, in *v1.BatchAssignR
 
 	// 使用事务处理
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
-		// 先删除该角色的所有职务关联（覆盖式）
+		// 先删除该角色的所有职务关联
 		positionRole := dao.PositionRole
-		_, err := tx.Model(positionRole.Table()).Ctx(ctx).
+		_, err := tx.Model(positionRole.Table()).Ctx(ctx).Unscoped().
 			Where(positionRole.Columns().RoleId, in.RoleId).
 			Data(g.Map{
 				positionRole.Columns().IsDeleted: true,
@@ -344,19 +351,18 @@ func (s *sRole) BatchAssignRolePosition(ctx context.Context, in *v1.BatchAssignR
 
 		// 如果有新的职务ID列表，则插入新的关联
 		if len(in.PositionIds) > 0 {
-			// TODO: 验证职务是否存在
-			//var positionCount int
-			//err := tx.Ctx(ctx).
-			//	Table("free_position").
-			//	Where("id", in.PositionIds).
-			//	Where("is_deleted", 0).
-			//	Count(&positionCount)
-			//if err != nil {
-			//	return err
-			//}
-			//if positionCount != len(in.PositionIds) {
-			//	return gerror.NewCode(berror.DataNotExist, "部分职务不存在")
-			//}
+			// 验证职务是否存在
+			position := dao.Position
+			positionCount, err := tx.Model(position.Table()).Ctx(ctx).
+				WhereIn(position.Columns().Id, in.PositionIds).
+				Where(position.Columns().IsDeleted, false).
+				Count()
+			if err != nil {
+				return err
+			}
+			if positionCount != len(in.PositionIds) {
+				return gerror.NewCode(berror.DataNotExist, "部分职务不存在")
+			}
 
 			// 批量插入新的关联关系
 			insertData := make([]g.Map, 0, len(in.PositionIds))
