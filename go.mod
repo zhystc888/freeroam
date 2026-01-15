@@ -8,6 +8,7 @@ require (
 	github.com/gogf/gf/contrib/nosql/redis/v2 v2.9.6
 	github.com/gogf/gf/contrib/rpc/grpcx/v2 v2.9.0
 	github.com/gogf/gf/v2 v2.9.6
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/nacos-group/nacos-sdk-go/v2 v2.3.2
 	google.golang.org/grpc v1.73.0
 	google.golang.org/protobuf v1.36.6
@@ -16,7 +17,6 @@ require (
 require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/emirpasic/gods/v2 v2.0.0-alpha // indirect
-	github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
 	github.com/olekukonko/errors v1.1.0 // indirect
 	github.com/olekukonko/ll v0.0.9 // indirect
 	github.com/redis/go-redis/v9 v9.12.1 // indirect
@@ -58,7 +58,7 @@ require (
 	github.com/gogf/gf/contrib/registry/nacos/v2 v2.9.0
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
-	github.com/google/uuid v1.6.0 // indirect
+	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/grokify/html-strip-tags-go v0.1.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
@@ -88,7 +88,7 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	golang.org/x/crypto v0.39.0 // indirect
+	golang.org/x/crypto v0.39.0
 	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/sync v0.15.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect

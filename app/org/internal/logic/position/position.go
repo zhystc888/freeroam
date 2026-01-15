@@ -371,7 +371,7 @@ func (s *sPosition) DeletePosition(ctx context.Context, in *v1.DeletePositionReq
 // GetPositionOptions 按组织获取可选职务集合
 func (s *sPosition) GetPositionOptions(ctx context.Context, in *v1.GetPositionOptionsReq) (*v1.GetPositionOptionsRes, error) {
 	if len(in.OrgIds) == 0 {
-		return nil, gerror.NewCode(berror.IncorrectParameters, "组织 ID 不能为空")
+		return nil, gerror.NewCode(berror.DataNotExist, "组织 ID 不能为空")
 	}
 
 	m := dao.Position
