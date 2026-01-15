@@ -62,4 +62,4 @@ jobs:
           script_stop: true
           script: |
             set -e
-            bash /data/deploy/freeroam-dev.sh
+            bash /data/deploy/freeroam-dev
