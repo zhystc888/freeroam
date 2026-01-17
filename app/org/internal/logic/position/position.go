@@ -8,12 +8,12 @@ import (
 	"freeroam/app/org/internal/model/entity"
 	"freeroam/app/org/internal/service"
 	"freeroam/common/berror"
-	"freeroam/common/tools/enum"
+	"freeroam/common/consts/enum"
+	"freeroam/common/tools/jwt_claims"
 
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gtime"
 )
 
 type sPosition struct{}
@@ -114,6 +114,10 @@ func (s *sPosition) GetPosition(ctx context.Context, in *v1.GetPositionReq) (*v1
 
 // CreatePosition 新建职务
 func (s *sPosition) CreatePosition(ctx context.Context, in *v1.CreatePositionReq) (*v1.CreatePositionRes, error) {
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, berror.NewCode(berror.NotFindMemberIdFromCtx)
+	}
 	m := dao.Position
 	mPosOrg := dao.PositionOrg
 	mPosRole := dao.PositionRole
@@ -133,7 +137,7 @@ func (s *sPosition) CreatePosition(ctx context.Context, in *v1.CreatePositionReq
 			Name:      in.Name,
 			Status:    in.Status,
 			DataScope: in.DataScope,
-			CreateBy:  0, // TODO: 从上下文获取用户ID
+			CreateBy:  memberId,
 		}
 
 		result, err := tx.Model(m.Table()).Ctx(ctx).Data(data).Insert()
@@ -153,7 +157,7 @@ func (s *sPosition) CreatePosition(ctx context.Context, in *v1.CreatePositionReq
 				insertData = append(insertData, g.Map{
 					mPosOrg.Columns().PositionId: positionId,
 					mPosOrg.Columns().OrgId:      orgId,
-					mPosOrg.Columns().CreateBy:   0, // TODO: 从上下文获取用户ID
+					mPosOrg.Columns().CreateBy:   memberId,
 				})
 			}
 			if _, err = tx.Model(mPosOrg.Table()).Ctx(ctx).Data(insertData).Insert(); err != nil {
@@ -168,7 +172,7 @@ func (s *sPosition) CreatePosition(ctx context.Context, in *v1.CreatePositionReq
 				insertData = append(insertData, g.Map{
 					mPosRole.Columns().PositionId: positionId,
 					mPosRole.Columns().RoleId:     roleId,
-					mPosRole.Columns().CreateBy:   0, // TODO: 从上下文获取用户ID
+					mPosRole.Columns().CreateBy:   memberId,
 				})
 			}
 			if _, err = tx.Model(mPosRole.Table()).Ctx(ctx).Data(insertData).Insert(); err != nil {
@@ -193,17 +197,16 @@ func (s *sPosition) UpdatePosition(ctx context.Context, in *v1.UpdatePositionReq
 	m := dao.Position
 	mPosOrg := dao.PositionOrg
 	mPosRole := dao.PositionRole
-
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, berror.NewCode(berror.NotFindMemberIdFromCtx)
+	}
 	// 检查职务是否存在
-	var pos entity.Position
-	err := m.Ctx(ctx).
-		Where(m.Columns().Id, in.Id).
-		Where(m.Columns().IsDeleted, false).
-		Scan(&pos)
+	exists, err := m.CheckExists(ctx, in.Id)
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
 	}
-	if pos.Id == 0 {
+	if !exists {
 		return nil, gerror.NewCode(berror.PositionNotExist)
 	}
 
@@ -218,7 +221,7 @@ func (s *sPosition) UpdatePosition(ctx context.Context, in *v1.UpdatePositionReq
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
 		// 更新职务
 		data := do.Position{
-			UpdateBy: 0, // TODO: 从上下文获取用户ID
+			UpdateBy: memberId,
 		}
 		if in.Name != "" {
 			data.Name = in.Name
@@ -253,7 +256,7 @@ func (s *sPosition) UpdatePosition(ctx context.Context, in *v1.UpdatePositionReq
 				insertData = append(insertData, g.Map{
 					mPosOrg.Columns().PositionId: in.Id,
 					mPosOrg.Columns().OrgId:      orgId,
-					mPosOrg.Columns().CreateBy:   0, // TODO: 从上下文获取用户ID
+					mPosOrg.Columns().CreateBy:   memberId,
 				})
 			}
 			_, err = tx.Model(mPosOrg.Table()).Ctx(ctx).Data(insertData).Insert()
@@ -277,7 +280,7 @@ func (s *sPosition) UpdatePosition(ctx context.Context, in *v1.UpdatePositionReq
 				insertData = append(insertData, g.Map{
 					mPosRole.Columns().PositionId: in.Id,
 					mPosRole.Columns().RoleId:     roleId,
-					mPosRole.Columns().CreateBy:   0, // TODO: 从上下文获取用户ID
+					mPosRole.Columns().CreateBy:   memberId,
 				})
 			}
 			_, err = tx.Model(mPosRole.Table()).Ctx(ctx).Data(insertData).Insert()
@@ -303,55 +306,33 @@ func (s *sPosition) DeletePosition(ctx context.Context, in *v1.DeletePositionReq
 	m := dao.Position
 	mPosOrg := dao.PositionOrg
 	mPosRole := dao.PositionRole
-
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, berror.NewCode(berror.NotFindMemberIdFromCtx)
+	}
 	// 检查职务是否存在
-	var pos entity.Position
-	err := m.Ctx(ctx).
-		Where(m.Columns().Id, in.Id).
-		Where(m.Columns().IsDeleted, false).
-		Scan(&pos)
+	exists, err := m.CheckExists(ctx, in.Id)
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
 	}
-	if pos.Id == 0 {
+	if !exists {
 		return nil, gerror.NewCode(berror.PositionNotExist)
 	}
 
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
 		// 软删除职务
-		if _, err := tx.Model(m.Table()).Ctx(ctx).
-			Where(m.Columns().Id, in.Id).
-			Data(g.Map{
-				m.Columns().IsDeleted: true,
-				m.Columns().DeleteBy:  0, // TODO: 从上下文获取用户ID
-				m.Columns().DeletedAt: gtime.Now(),
-			}).
-			Update(); err != nil {
-			return err
+		if err = m.DeleteById(ctx, in.Id, memberId, tx); err != nil {
+			return berror.WrapCode(berror.DBErr, err)
 		}
 
 		// 软删除职务-组织关联
-		if _, err = tx.Model(mPosOrg.Table()).Ctx(ctx).
-			Where(mPosOrg.Columns().PositionId, in.Id).
-			Data(g.Map{
-				mPosOrg.Columns().IsDeleted: true,
-				mPosOrg.Columns().DeleteBy:  0,
-				mPosOrg.Columns().DeletedAt: gtime.Now(),
-			}).
-			Update(); err != nil {
-			return err
+		if err = mPosOrg.DeleteByPositionId(ctx, in.Id, memberId, tx); err != nil {
+			return berror.WrapCode(berror.DBErr, err)
 		}
 
 		// 软删除职务-角色关联
-		if _, err = tx.Model(mPosRole.Table()).Ctx(ctx).
-			Where(mPosRole.Columns().PositionId, in.Id).
-			Data(g.Map{
-				mPosRole.Columns().IsDeleted: true,
-				mPosRole.Columns().DeleteBy:  0,
-				mPosRole.Columns().DeletedAt: gtime.Now(),
-			}).
-			Update(); err != nil {
-			return err
+		if err = mPosRole.DeleteByPositionId(ctx, in.Id, memberId, tx); err != nil {
+			return berror.WrapCode(berror.DBErr, err)
 		}
 
 		// TODO: 成员关联删除
@@ -403,12 +384,7 @@ func (s *sPosition) GetPositionOptions(ctx context.Context, in *v1.GetPositionOp
 	if in.Status != "" {
 		query = query.Where(m.Columns().Status, in.Status)
 	} else {
-		code, err := enum.GetByTypeAndCode("position_status", "enable")
-		if err != nil {
-			return nil, gerror.WrapCode(berror.CodeInternal, err)
-		}
-
-		query = query.Where(m.Columns().Status, code.EnumValue)
+		query = query.Where(m.Columns().Status, enum.PositionStatusEnabled)
 	}
 
 	if in.Keyword != "" {
