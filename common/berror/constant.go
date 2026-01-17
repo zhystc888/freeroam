@@ -43,7 +43,8 @@ var (
 	RedisNotInitialized    = gcode.New(500100, "Redis 未初始化", nil)
 
 	// 兼容旧代码（保留）
-	RedisErr           = gcode.New(500100, "Redis 查询错误", nil)
-	DBErr              = gcode.New(500200, "DB 查询错误", nil)
-	DeserializationErr = gcode.New(500301, "反序列化错误", nil)
+	RedisErr               = gcode.New(500100, "Redis 查询错误", nil)
+	DBErr                  = gcode.New(500200, "DB 查询错误", nil)
+	DeserializationErr     = gcode.New(500301, "反序列化错误", nil)
+	NotFindMemberIdFromCtx = gcode.New(500401, "上下文中找不到成员id", nil)
 )

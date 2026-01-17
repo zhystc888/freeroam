@@ -16,8 +16,24 @@ import (
 	"github.com/gogf/gf/v2/net/ghttp"
 )
 
+func isMetaTrue(h *ghttp.HandlerItemParsed, key string) bool {
+	if h == nil {
+		return false
+	}
+	v := h.GetMetaTag(key)
+	// 约定：notLogin:"1" / "true" / "yes"
+	return v == "1" || v == "true" || v == "yes"
+}
+
 // AuthSign JWT 验签中间件
 func AuthSign(r *ghttp.Request) {
+	h := r.GetServeHandler()
+
+	if isMetaTrue(h, "skip_authn") {
+		r.Middleware.Next()
+		return
+	}
+
 	tokenString, err := jwtutil.ExtractTokenFromHeader(r.Header.Get("Authorization"))
 	if err != nil {
 		writeAuthError(r, err)

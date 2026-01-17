@@ -5,6 +5,7 @@
 package dao
 
 import (
+	"context"
 	"freeroam/app/org/internal/dao/internal"
 )
 
@@ -20,3 +21,17 @@ var (
 )
 
 // Add your custom methods and functionality below.
+
+func (r *roleDao) CheckCodeExists(ctx context.Context, code string) (bool, error) {
+	return r.Ctx(ctx).
+		Where(r.Columns().Code, code).
+		Where(r.Columns().IsDeleted, false).
+		Exist()
+}
+
+func (r *roleDao) CheckRoleExists(ctx context.Context, roleId int64) (bool, error) {
+	return r.Ctx(ctx).
+		Where(r.Columns().Id, roleId).
+		Where(r.Columns().IsDeleted, false).
+		Exist()
+}
