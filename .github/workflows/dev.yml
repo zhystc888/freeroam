@@ -5,8 +5,8 @@ on:
     branches: [ "dev" ]
 
 concurrency:
-  group: dev-image-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.sha }}  # 基于提交的 SHA 值确保唯一性
+  cancel-in-progress: false  # 不取消正在进行的任务，保证每次推送只触发一次任务
 
 jobs:
   build_and_push:
