@@ -3,9 +3,6 @@ name: Build & Push (dev)
 on:
   push:
     branches: [ "test" ]
-  pull_request:
-    branches: [ "test" ]
-    types: [ closed ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.sha }}  # 基于提交的 SHA 值确保唯一性
