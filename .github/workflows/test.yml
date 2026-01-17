@@ -1,0 +1,60 @@
+name: Build & Push (dev)
+
+on:
+  push:
+    branches: [ "test" ]
+  pull_request:
+    branches: [ "test" ]
+    types: [ closed ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}  # 基于提交的 SHA 值确保唯一性
+  cancel-in-progress: false  # 不取消正在进行的任务，保证每次推送只触发一次任务
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    environment: test
+
+    steps:
+      - name: Checkout latest test
+        uses: actions/checkout@v4
+        with:
+          ref: test
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24.2"
+
+      - name: Install gf CLI
+        run: |
+          go install github.com/gogf/gf/cmd/gf/v2@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+          gf -v
+
+      - name: Docker login (Aliyun ACR)
+        uses: docker/login-action@v3
+        with:
+          registry: crpi-r1dgt60thunecut1.cn-shanghai.personal.cr.aliyuncs.com
+          username: ${{ secrets.ALIYUN_ACR_USERNAME }}
+          password: ${{ secrets.ALIYUN_ACR_PASSWORD }}
+
+      - name: Build & push images (ENV=test)
+        env:
+          ENV: test
+        run: |
+          # 根目录 Makefile 会分发到 app/gateway（你已实现）
+          make image.push ENV=test
+      - name: Deploy (run remote script)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          script_stop: true
+          script: |
+            set -e
+            bash /data/deploy/freeroam-test
