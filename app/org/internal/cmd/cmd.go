@@ -5,6 +5,8 @@ import (
 	"freeroam/app/org/internal/controller/auth"
 	"freeroam/common/interceptor/cgrpcx"
 
+	"freeroam/app/org/internal/controller/org"
+	"freeroam/app/org/internal/controller/position"
 	"freeroam/app/org/internal/controller/role"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
@@ -31,6 +33,8 @@ var (
 			// 注册 controller
 			role.Register(s)
 			auth.Register(s)
+			org.Register(s)
+			position.Register(s)
 			s.Run()
 			return nil
 		},

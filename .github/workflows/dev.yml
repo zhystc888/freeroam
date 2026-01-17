@@ -3,9 +3,6 @@ name: Build & Push (dev)
 on:
   push:
     branches: [ "dev" ]
-  pull_request:
-    branches: [ "dev" ]
-    types: [ "closed" ]
 
 concurrency:
   group: dev-image-${{ github.ref }}
@@ -15,11 +12,6 @@ jobs:
   build_and_push:
     runs-on: ubuntu-latest
     environment: dev
-
-    # push 事件直接跑；PR 事件仅当 merged 才跑
-    if: >
-      github.event_name == 'push' ||
-      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
 
     steps:
       - name: Checkout latest dev

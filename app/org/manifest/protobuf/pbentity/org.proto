@@ -1,0 +1,30 @@
+// ==========================================================================
+// Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
+// ==========================================================================
+
+syntax = "proto3";
+
+package pbentity;
+
+option go_package = "freeroam/app/org/api/pbentity";
+
+import "google/protobuf/timestamp.proto";
+
+message Org {
+    uint64                    Id        = 1;  // 主键
+    uint64                    ParentId  = 2;  // 父组织ID, 0为顶级
+    string                    Name      = 3;  // 组织名称
+    string                    FullName  = 4;  // 组织全称
+    string                    Code      = 5;  // 组织编码
+    string                    Category  = 6;  // 分类:org_category
+    string                    Status    = 7;  // 状态:org_status
+    int32                     Sort      = 8;  // 同级排序
+    string                    Path      = 9;  // 物化路径, 如 /1/10/
+    uint32                    IsDeleted = 10; // 是否删除0:否,1:是
+    uint64                    CreateBy  = 11; // 创建人
+    uint64                    UpdateBy  = 12; // 修改人
+    uint64                    DeleteBy  = 13; // 删除人
+    google.protobuf.Timestamp CreateAt  = 14; // 创建时间
+    google.protobuf.Timestamp UpdateAt  = 15; // 更新时间
+    google.protobuf.Timestamp DeletedAt = 16; // 删除时间
+}

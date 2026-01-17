@@ -4,6 +4,8 @@ import (
 	"context"
 	"freeroam/app/gateway/internal/controller/auth"
 	"freeroam/app/gateway/internal/controller/enum"
+	"freeroam/app/gateway/internal/controller/org"
+	"freeroam/app/gateway/internal/controller/position"
 	"freeroam/app/gateway/internal/controller/role"
 	"freeroam/app/gateway/internal/middleware"
 	cMiddleware "freeroam/common/middleware"
@@ -31,6 +33,8 @@ var (
 				AuthGroup.Middleware(middleware.AuthSign).Bind(
 					enum.NewV1(),
 					role.NewV1(),
+					org.NewV1(),
+					position.NewV1(),
 				)
 			})
 			s.Run()
