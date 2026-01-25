@@ -8,6 +8,7 @@ import (
 	"freeroam/app/org/internal/model/entity"
 	"freeroam/app/org/internal/service"
 	"freeroam/common/berror"
+	"freeroam/common/tools/jwt_claims"
 
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -24,17 +25,17 @@ func init() {
 // CreateRole 创建角色
 func (s *sRole) CreateRole(ctx context.Context, in *v1.CreateRoleReq) (*v1.CreateRoleRes, error) {
 	m := dao.Role
-
-	// 检查角色编码是否已存在
-	count, err := m.Ctx(ctx).
-		Where(m.Columns().Code, in.Code).
-		Where(m.Columns().IsDeleted, false).
-		Count()
-	if err != nil {
-		return nil, gerror.NewCode(berror.DBErr, err.Error())
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, berror.NewCode(berror.NotFindMemberIdFromCtx)
 	}
-	if count > 0 {
-		return nil, gerror.NewCode(berror.RoleCodeAlreadyExists)
+	// 检查角色编码是否已存在
+	exists, err := m.CheckCodeExists(ctx, in.Code)
+	if err != nil {
+		return nil, berror.WrapCode(berror.DBErr, err)
+	}
+	if exists {
+		return nil, berror.NewCode(berror.RoleCodeAlreadyExists)
 	}
 
 	// 创建角色
@@ -43,7 +44,7 @@ func (s *sRole) CreateRole(ctx context.Context, in *v1.CreateRoleReq) (*v1.Creat
 		Name:     in.Name,
 		Status:   in.Status,
 		Remark:   in.Remark,
-		CreateBy: 0, // TODO: 从上下文获取用户ID
+		CreateBy: memberId,
 	}
 
 	result, err := m.Ctx(ctx).Data(data).Insert()
@@ -64,7 +65,10 @@ func (s *sRole) CreateRole(ctx context.Context, in *v1.CreateRoleReq) (*v1.Creat
 // UpdateRole 更新角色
 func (s *sRole) UpdateRole(ctx context.Context, in *v1.UpdateRoleReq) (*v1.UpdateRoleRes, error) {
 	m := dao.Role
-
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, berror.NewCode(berror.NotFindMemberIdFromCtx)
+	}
 	// 检查角色是否存在
 	count, err := m.Ctx(ctx).
 		Where(m.Columns().Id, in.Id).
@@ -79,7 +83,7 @@ func (s *sRole) UpdateRole(ctx context.Context, in *v1.UpdateRoleReq) (*v1.Updat
 
 	// 更新角色
 	data := do.Role{
-		UpdateBy: 0, // TODO: 从上下文获取用户ID
+		UpdateBy: memberId,
 	}
 	if in.Name != "" {
 		data.Name = in.Name
@@ -107,7 +111,10 @@ func (s *sRole) UpdateRole(ctx context.Context, in *v1.UpdateRoleReq) (*v1.Updat
 // DeleteRole 删除角色
 func (s *sRole) DeleteRole(ctx context.Context, in *v1.DeleteRoleReq) (*v1.DeleteRoleRes, error) {
 	m := dao.Role
-
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, berror.NewCode(berror.NotFindMemberIdFromCtx)
+	}
 	// 检查角色是否存在
 	var role entity.Role
 	err := m.Ctx(ctx).
@@ -144,7 +151,7 @@ func (s *sRole) DeleteRole(ctx context.Context, in *v1.DeleteRoleReq) (*v1.Delet
 		Where(m.Columns().Id, in.Id).
 		Data(do.Role{
 			IsDeleted: true,
-			DeleteBy:  0, // TODO: 从上下文获取用户ID
+			DeleteBy:  memberId,
 			DeletedAt: gtime.Now(),
 		}).
 		Update()
@@ -322,15 +329,16 @@ func (s *sRole) GetRolePositionList(ctx context.Context, in *v1.GetRolePositionL
 func (s *sRole) BatchAssignRolePosition(ctx context.Context, in *v1.BatchAssignRolePositionReq) (*v1.BatchAssignRolePositionRes, error) {
 	// 检查角色是否存在
 	m := dao.Role
-	count, err := m.Ctx(ctx).
-		Where(m.Columns().Id, in.RoleId).
-		Where(m.Columns().IsDeleted, false).
-		Count()
-	if err != nil {
-		return nil, gerror.NewCode(berror.DBErr, err.Error())
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, berror.NewCode(berror.NotFindMemberIdFromCtx)
 	}
-	if count == 0 {
-		return nil, gerror.NewCode(berror.RoleNotExist)
+	exists, err := m.CheckRoleExists(ctx, in.RoleId)
+	if err != nil {
+		return nil, berror.WrapCode(berror.DBErr, err)
+	}
+	if exists {
+		return nil, berror.NewCode(berror.RoleNotExist)
 	}
 
 	// 使用事务处理
@@ -341,7 +349,7 @@ func (s *sRole) BatchAssignRolePosition(ctx context.Context, in *v1.BatchAssignR
 			Where(positionRole.Columns().RoleId, in.RoleId).
 			Data(g.Map{
 				positionRole.Columns().IsDeleted: true,
-				positionRole.Columns().DeleteBy:  0, // TODO: 从上下文获取用户ID
+				positionRole.Columns().DeleteBy:  memberId,
 				positionRole.Columns().DeletedAt: gtime.Now(),
 			}).
 			Update()
@@ -370,7 +378,7 @@ func (s *sRole) BatchAssignRolePosition(ctx context.Context, in *v1.BatchAssignR
 				insertData = append(insertData, g.Map{
 					positionRole.Columns().RoleId:     in.RoleId,
 					positionRole.Columns().PositionId: positionId,
-					positionRole.Columns().CreateBy:   0, // TODO: 从上下文获取用户ID
+					positionRole.Columns().CreateBy:   memberId,
 				})
 			}
 

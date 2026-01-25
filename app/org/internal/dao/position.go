@@ -5,7 +5,12 @@
 package dao
 
 import (
+	"context"
 	"freeroam/app/org/internal/dao/internal"
+
+	"github.com/gogf/gf/v2/database/gdb"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 // positionDao is the data access object for the table free_position.
@@ -19,4 +24,25 @@ var (
 	Position = positionDao{internal.NewPositionDao()}
 )
 
-// Add your custom methods and functionality below.
+func (p *positionDao) CheckExists(ctx context.Context, id int64) (bool, error) {
+	return p.Ctx(ctx).Where(p.Columns().Id, id).Where(p.Columns().IsDeleted, false).Exist()
+}
+
+// DeleteById Add your custom methods and functionality below.
+func (p *positionDao) DeleteById(ctx context.Context, id int64, memberId uint64, tx ...gdb.TX) error {
+	var model *gdb.Model
+	if len(tx) > 0 {
+		model = tx[0].Ctx(ctx).Model(p.Table())
+	} else {
+		model = p.Ctx(ctx)
+	}
+
+	_, err := model.Where(p.Columns().Id, id).
+		Data(g.Map{
+			p.Columns().IsDeleted: true,
+			p.Columns().DeleteBy:  memberId,
+			p.Columns().DeletedAt: gtime.Now(),
+		}).Update()
+
+	return err
+}

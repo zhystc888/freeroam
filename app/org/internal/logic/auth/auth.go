@@ -2,12 +2,12 @@ package auth
 
 import (
 	"context"
-
 	v1 "freeroam/app/org/api/auth/v1"
 	"freeroam/app/org/internal/dao"
 	"freeroam/app/org/internal/model/entity"
 	"freeroam/app/org/internal/service"
 	"freeroam/common/berror"
+	"freeroam/common/consts/enum"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"golang.org/x/crypto/bcrypt"
@@ -49,13 +49,13 @@ func (s *sAuth) ValidateMemberCredential(ctx context.Context, req *v1.ValidateMe
 		return nil, gerror.NewCode(berror.CodePasswordError)
 	}
 
-	// 校验是否禁用 TODO 用枚举
-	if member.Status == 2 {
+	// 校验是否禁用
+	if member.Status == enum.MemberStatusDisable {
 		return nil, berror.NewCode(berror.CodeAccountDisabled)
 	}
 
-	// 校验是否已离职（resigned_at 不为空） TODO 用枚举
-	if member.Status == 3 {
+	// 校验是否已离职（resigned_at 不为空）
+	if member.Status == enum.MemberStatusResigned {
 		return nil, berror.NewCode(berror.CodeAccountResigned)
 	}
 
