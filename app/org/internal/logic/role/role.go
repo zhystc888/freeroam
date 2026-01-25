@@ -8,6 +8,7 @@ import (
 	"freeroam/app/org/internal/model/entity"
 	"freeroam/app/org/internal/service"
 	"freeroam/common/berror"
+	"freeroam/common/tools/jwt_claims"
 
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -23,6 +24,11 @@ func init() {
 
 // CreateRole 创建角色
 func (s *sRole) CreateRole(ctx context.Context, in *v1.CreateRoleReq) (*v1.CreateRoleRes, error) {
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, gerror.NewCode(berror.CodeInternal, "获取 memberId 失败")
+	}
+
 	m := dao.Role
 
 	// 检查角色编码是否已存在
@@ -43,7 +49,7 @@ func (s *sRole) CreateRole(ctx context.Context, in *v1.CreateRoleReq) (*v1.Creat
 		Name:     in.Name,
 		Status:   in.Status,
 		Remark:   in.Remark,
-		CreateBy: 0, // TODO: 从上下文获取用户ID
+		CreateBy: memberId,
 	}
 
 	result, err := m.Ctx(ctx).Data(data).Insert()
@@ -63,6 +69,11 @@ func (s *sRole) CreateRole(ctx context.Context, in *v1.CreateRoleReq) (*v1.Creat
 
 // UpdateRole 更新角色
 func (s *sRole) UpdateRole(ctx context.Context, in *v1.UpdateRoleReq) (*v1.UpdateRoleRes, error) {
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, gerror.NewCode(berror.CodeInternal, "获取 memberId 失败")
+	}
+
 	m := dao.Role
 
 	// 检查角色是否存在
@@ -79,7 +90,7 @@ func (s *sRole) UpdateRole(ctx context.Context, in *v1.UpdateRoleReq) (*v1.Updat
 
 	// 更新角色
 	data := do.Role{
-		UpdateBy: 0, // TODO: 从上下文获取用户ID
+		UpdateBy: memberId,
 	}
 	if in.Name != "" {
 		data.Name = in.Name
@@ -106,6 +117,11 @@ func (s *sRole) UpdateRole(ctx context.Context, in *v1.UpdateRoleReq) (*v1.Updat
 
 // DeleteRole 删除角色
 func (s *sRole) DeleteRole(ctx context.Context, in *v1.DeleteRoleReq) (*v1.DeleteRoleRes, error) {
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, gerror.NewCode(berror.CodeInternal, "获取 memberId 失败")
+	}
+
 	m := dao.Role
 
 	// 检查角色是否存在
@@ -144,7 +160,7 @@ func (s *sRole) DeleteRole(ctx context.Context, in *v1.DeleteRoleReq) (*v1.Delet
 		Where(m.Columns().Id, in.Id).
 		Data(do.Role{
 			IsDeleted: true,
-			DeleteBy:  0, // TODO: 从上下文获取用户ID
+			DeleteBy:  memberId,
 			DeletedAt: gtime.Now(),
 		}).
 		Update()
@@ -320,6 +336,11 @@ func (s *sRole) GetRolePositionList(ctx context.Context, in *v1.GetRolePositionL
 
 // BatchAssignRolePosition 批量绑定职务到角色（覆盖式）
 func (s *sRole) BatchAssignRolePosition(ctx context.Context, in *v1.BatchAssignRolePositionReq) (*v1.BatchAssignRolePositionRes, error) {
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, gerror.NewCode(berror.CodeInternal, "获取 memberId 失败")
+	}
+
 	// 检查角色是否存在
 	m := dao.Role
 	count, err := m.Ctx(ctx).
@@ -341,7 +362,7 @@ func (s *sRole) BatchAssignRolePosition(ctx context.Context, in *v1.BatchAssignR
 			Where(positionRole.Columns().RoleId, in.RoleId).
 			Data(g.Map{
 				positionRole.Columns().IsDeleted: true,
-				positionRole.Columns().DeleteBy:  0, // TODO: 从上下文获取用户ID
+				positionRole.Columns().DeleteBy:  memberId,
 				positionRole.Columns().DeletedAt: gtime.Now(),
 			}).
 			Update()
@@ -370,7 +391,7 @@ func (s *sRole) BatchAssignRolePosition(ctx context.Context, in *v1.BatchAssignR
 				insertData = append(insertData, g.Map{
 					positionRole.Columns().RoleId:     in.RoleId,
 					positionRole.Columns().PositionId: positionId,
-					positionRole.Columns().CreateBy:   0, // TODO: 从上下文获取用户ID
+					positionRole.Columns().CreateBy:   memberId,
 				})
 			}
 

@@ -9,6 +9,7 @@ import (
 	"freeroam/app/org/internal/service"
 	"freeroam/common/berror"
 	"freeroam/common/tools/enum"
+	"freeroam/common/tools/jwt_claims"
 
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -114,6 +115,11 @@ func (s *sPosition) GetPosition(ctx context.Context, in *v1.GetPositionReq) (*v1
 
 // CreatePosition 新建职务
 func (s *sPosition) CreatePosition(ctx context.Context, in *v1.CreatePositionReq) (*v1.CreatePositionRes, error) {
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, gerror.NewCode(berror.CodeInternal, "获取 memberId 失败")
+	}
+
 	m := dao.Position
 	mPosOrg := dao.PositionOrg
 	mPosRole := dao.PositionRole
@@ -133,7 +139,7 @@ func (s *sPosition) CreatePosition(ctx context.Context, in *v1.CreatePositionReq
 			Name:      in.Name,
 			Status:    in.Status,
 			DataScope: in.DataScope,
-			CreateBy:  0, // TODO: 从上下文获取用户ID
+			CreateBy:  memberId,
 		}
 
 		result, err := tx.Model(m.Table()).Ctx(ctx).Data(data).Insert()
@@ -153,7 +159,7 @@ func (s *sPosition) CreatePosition(ctx context.Context, in *v1.CreatePositionReq
 				insertData = append(insertData, g.Map{
 					mPosOrg.Columns().PositionId: positionId,
 					mPosOrg.Columns().OrgId:      orgId,
-					mPosOrg.Columns().CreateBy:   0, // TODO: 从上下文获取用户ID
+					mPosOrg.Columns().CreateBy:   memberId,
 				})
 			}
 			if _, err = tx.Model(mPosOrg.Table()).Ctx(ctx).Data(insertData).Insert(); err != nil {
@@ -168,7 +174,7 @@ func (s *sPosition) CreatePosition(ctx context.Context, in *v1.CreatePositionReq
 				insertData = append(insertData, g.Map{
 					mPosRole.Columns().PositionId: positionId,
 					mPosRole.Columns().RoleId:     roleId,
-					mPosRole.Columns().CreateBy:   0, // TODO: 从上下文获取用户ID
+					mPosRole.Columns().CreateBy:   memberId,
 				})
 			}
 			if _, err = tx.Model(mPosRole.Table()).Ctx(ctx).Data(insertData).Insert(); err != nil {
@@ -190,6 +196,11 @@ func (s *sPosition) CreatePosition(ctx context.Context, in *v1.CreatePositionReq
 
 // UpdatePosition 编辑职务
 func (s *sPosition) UpdatePosition(ctx context.Context, in *v1.UpdatePositionReq) (*v1.UpdatePositionRes, error) {
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, gerror.NewCode(berror.CodeInternal, "获取 memberId 失败")
+	}
+
 	m := dao.Position
 	mPosOrg := dao.PositionOrg
 	mPosRole := dao.PositionRole
@@ -218,7 +229,7 @@ func (s *sPosition) UpdatePosition(ctx context.Context, in *v1.UpdatePositionReq
 	err = g.DB().Transaction(ctx, func(ctx context.Context, tx gdb.TX) error {
 		// 更新职务
 		data := do.Position{
-			UpdateBy: 0, // TODO: 从上下文获取用户ID
+			UpdateBy: memberId,
 		}
 		if in.Name != "" {
 			data.Name = in.Name
@@ -253,7 +264,7 @@ func (s *sPosition) UpdatePosition(ctx context.Context, in *v1.UpdatePositionReq
 				insertData = append(insertData, g.Map{
 					mPosOrg.Columns().PositionId: in.Id,
 					mPosOrg.Columns().OrgId:      orgId,
-					mPosOrg.Columns().CreateBy:   0, // TODO: 从上下文获取用户ID
+					mPosOrg.Columns().CreateBy:   memberId,
 				})
 			}
 			_, err = tx.Model(mPosOrg.Table()).Ctx(ctx).Data(insertData).Insert()
@@ -277,7 +288,7 @@ func (s *sPosition) UpdatePosition(ctx context.Context, in *v1.UpdatePositionReq
 				insertData = append(insertData, g.Map{
 					mPosRole.Columns().PositionId: in.Id,
 					mPosRole.Columns().RoleId:     roleId,
-					mPosRole.Columns().CreateBy:   0, // TODO: 从上下文获取用户ID
+					mPosRole.Columns().CreateBy:   memberId,
 				})
 			}
 			_, err = tx.Model(mPosRole.Table()).Ctx(ctx).Data(insertData).Insert()
@@ -300,6 +311,11 @@ func (s *sPosition) UpdatePosition(ctx context.Context, in *v1.UpdatePositionReq
 
 // DeletePosition 删除职务
 func (s *sPosition) DeletePosition(ctx context.Context, in *v1.DeletePositionReq) (*v1.DeletePositionRes, error) {
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, gerror.NewCode(berror.CodeInternal, "获取 memberId 失败")
+	}
+
 	m := dao.Position
 	mPosOrg := dao.PositionOrg
 	mPosRole := dao.PositionRole
@@ -323,7 +339,7 @@ func (s *sPosition) DeletePosition(ctx context.Context, in *v1.DeletePositionReq
 			Where(m.Columns().Id, in.Id).
 			Data(g.Map{
 				m.Columns().IsDeleted: true,
-				m.Columns().DeleteBy:  0, // TODO: 从上下文获取用户ID
+				m.Columns().DeleteBy:  memberId,
 				m.Columns().DeletedAt: gtime.Now(),
 			}).
 			Update(); err != nil {
