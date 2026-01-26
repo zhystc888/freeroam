@@ -23,7 +23,11 @@ var (
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 			s := g.Server()
 			s.Group("/", func(group *ghttp.RouterGroup) {
-				group.Middleware(ghttp.MiddlewareHandlerResponse).Middleware(cMiddleware.ErrorHandler).Middleware(middleware.AuthSign)
+				group.Middleware(ghttp.MiddlewareHandlerResponse)
+				group.Middleware(cMiddleware.ErrorHandler)
+				group.Middleware(middleware.AuthSign)
+				group.Middleware(middleware.Permissions)
+
 				group.Bind(
 					auth.NewV1(),
 					enum.NewV1(),

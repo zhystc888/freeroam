@@ -28,6 +28,8 @@ var (
 	CodeAccountDisabled    = gcode.New(400103, "账号被禁用", nil)
 	CodeAccountResigned    = gcode.New(400104, "账号已离职", nil)
 	UnrecognizedClientType = gcode.New(400106, "未识别的客户端类型", nil)
+
+	CodeNotPermissions = gcode.New(403001, "无权限", nil)
 )
 
 // 依赖/系统异常（500）
