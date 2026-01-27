@@ -7,4 +7,5 @@ package logic
 import (
 	_ "freeroam/app/system/internal/logic/config"
 	_ "freeroam/app/system/internal/logic/enum"
+	_ "freeroam/app/system/internal/logic/permission"
 )

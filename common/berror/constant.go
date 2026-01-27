@@ -4,7 +4,8 @@ import "github.com/gogf/gf/v2/errors/gcode"
 
 // 异常code 6位，前3位和httpStatus保持一致
 var (
-	DataNotExist = gcode.New(400000, "数据不存在！", nil)
+	DataNotExist       = gcode.New(400000, "数据不存在！", nil)
+	InvalidPermissions = gcode.New(400001, "无效的权限标识！", nil)
 
 	OrgNotExist      = gcode.New(404001, "组织不存在！", nil)
 	PositionNotExist = gcode.New(404002, "职务不存在！", nil)
