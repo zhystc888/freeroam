@@ -1,0 +1,31 @@
+// ==========================================================================
+// Code generated and maintained by GoFrame CLI tool. DO NOT EDIT.
+// ==========================================================================
+
+syntax = "proto3";
+
+package pbentity;
+
+option go_package = "freeroam/app/system/api/pbentity";
+
+import "google/protobuf/timestamp.proto";
+
+message Permissions {
+    uint64                    Id        = 1;  // 主键ID
+    uint64                    ParentId  = 2;  // 父权限ID（0为根）
+    string                    IdPath    = 3;  // ID路径（/1/12/88/）
+    string                    CodePath  = 4;  // Code路径（/org/org.member/org.member.list/）
+    uint32                    PermType  = 5;  // 权限类型:permissions_type
+    string                    PermCode  = 6;  // 权限标识
+    string                    Name      = 7;  // 权限名称
+    string                    Desc      = 8;  // 权限描述
+    uint32                    IsEnabled = 9;  // 是否启用0:否,1:是
+    uint32                    Sort      = 10; // 排序
+    uint32                    IsDeleted = 11; // 是否删除0:否,1:是
+    uint64                    CreateBy  = 12; //
+    uint64                    UpdateBy  = 13; //
+    uint64                    DeleteBy  = 14; //
+    google.protobuf.Timestamp CreateAt  = 15; //
+    google.protobuf.Timestamp UpdateAt  = 16; //
+    google.protobuf.Timestamp DeletedAt = 17; //
+}

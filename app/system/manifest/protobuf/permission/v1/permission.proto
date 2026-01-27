@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package permission.v1;
+
+option go_package = "./api/permission/v1";
+
+service Permission {
+  // 角色权限分配
+  rpc AssignRolePermissions(AssignRolePermissionsReq) returns (AssignRolePermissionsRes);
+  // 查询角色已分配权限
+  rpc GetRolePermissions(GetRolePermissionsReq) returns (GetRolePermissionsRes);
+  // 查询权限资源树（授权用）
+  rpc GetPermissionTree(GetPermissionTreeReq) returns (GetPermissionTreeRes);
+  // 获取前端权限集合（页面+组件）
+  rpc GetFrontPermissions(GetFrontPermissionsReq) returns (GetFrontPermissionsRes);
+}
+
+// 角色权限分配请求
+message AssignRolePermissionsReq {
+  // 角色ID
+  int64 roleId = 1; // v:required|min:1#角色ID不能为空|角色ID必须大于0
+  // 权限标识列表（页面/组件）
+  repeated string permCodes = 2; // v:required|min-length:1#权限标识列表不能为空|至少需要一个权限标识
+}
+
+// 角色权限分配响应
+message AssignRolePermissionsRes {
+  // 是否成功
+  bool success = 1;
+}
+
+// 查询角色已分配权限请求
+message GetRolePermissionsReq {
+  // 角色ID
+  int64 roleId = 1; // v:required|min:1#角色ID不能为空|角色ID必须大于0
+}
+
+// 查询角色已分配权限响应
+message GetRolePermissionsRes {
+  // 权限标识列表（页面/组件）
+  repeated string permCodes = 1;
+}
+
+// 查询权限资源树请求
+message GetPermissionTreeReq {
+  // 空请求，返回完整权限树
+}
+
+// 查询权限资源树响应
+message GetPermissionTreeRes {
+  // 权限树
+  repeated PermissionTreeNode tree = 1;
+}
+
+// 权限树节点
+message PermissionTreeNode {
+  // 权限ID
+  int64 id = 1;
+  // 权限标识
+  string permCode = 2;
+  // 权限名称
+  string name = 3;
+  // 权限类型：1页面 2组件 3接口
+  int32 permType = 4;
+  // 子节点
+  repeated PermissionTreeNode children = 5;
+}
+
+// 获取前端权限集合请求
+message GetFrontPermissionsReq {
+  // 成员ID
+  int64 memberId = 1; // v:required|min:1#成员ID不能为空|成员ID必须大于0
+}
+
+// 获取前端权限集合响应
+message GetFrontPermissionsRes {
+  // 权限标识列表（页面+组件）
+  repeated string permissions = 1;
+}
