@@ -38,6 +38,9 @@ func ErrorHandler(r *ghttp.Request) {
 	if httpStatus == 500 {
 		respMsg = "服务器内部错误"
 	}
+	if respMsg == "" {
+		respMsg = err.Error()
+	}
 
 	r.Response.ClearBuffer()
 	r.Response.WriteStatus(httpStatus, nil)
