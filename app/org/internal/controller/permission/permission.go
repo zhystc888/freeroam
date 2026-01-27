@@ -30,14 +30,6 @@ func (*Controller) GetPermissionTree(ctx context.Context, req *v1.GetPermissionT
 	return service.Permission().GetPermissionTree(ctx, req)
 }
 
-func (*Controller) GetFrontPermissions(ctx context.Context, req *v1.GetFrontPermissionsReq) (res *v1.GetFrontPermissionsRes, err error) {
-	return service.Permission().GetFrontPermissions(ctx, req)
-}
-
-func (*Controller) GetPermissions(ctx context.Context, req *v1.GetPermissionsReq) (res *v1.GetPermissionsRes, err error) {
-	return nil, gerror.NewCode(gcode.CodeNotImplemented)
-}
-
 func (*Controller) GetMemberPermissions(ctx context.Context, req *v1.GetMemberPermissionsReq) (res *v1.GetMemberPermissionsRes, err error) {
 	return nil, gerror.NewCode(gcode.CodeNotImplemented)
 }

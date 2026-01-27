@@ -17,7 +17,12 @@ func (c *ControllerV1) GetRolePermissions(ctx context.Context, req *v1.GetRolePe
 		return nil, err
 	}
 
+	permissionIds := rpcRes.PermissionIds
+	if len(permissionIds) == 0 {
+		permissionIds = make([]int64, 0)
+	}
+
 	return &v1.GetRolePermissionsRes{
-		PermCodes: rpcRes.PermCodes,
+		PermissionIds: permissionIds,
 	}, nil
 }

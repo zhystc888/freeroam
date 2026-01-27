@@ -26,13 +26,13 @@ type GetRolePermissionsReq struct {
 
 // GetRolePermissionsRes 查询角色已分配权限响应
 type GetRolePermissionsRes struct {
-	// 权限标识列表（页面/组件）
-	PermCodes []string `json:"permCodes" dc:"权限标识列表"`
+	// 权限 ID列表
+	PermissionIds []int64 `json:"permissionIds" dc:"权限ID列表"`
 }
 
 // GetPermissionTreeReq 查询权限资源树请求
 type GetPermissionTreeReq struct {
-	g.Meta `path:"/org/permissions/tree" tags:"权限管理" method:"get" summary:"查询权限资源树"`
+	g.Meta `path:"/org/permissions/tree" tags:"权限管理" method:"get" summary:"查询权限资源树" perm:"org:permissions:tree:get"`
 }
 
 // GetPermissionTreeRes 查询权限资源树响应
