@@ -5,7 +5,7 @@
 package dao
 
 import (
-	"freeroam/app/system/internal/dao/internal"
+	"freeroam/app/org/internal/dao/internal"
 )
 
 // permissionsDao is the data access object for the table free_permissions.

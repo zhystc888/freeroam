@@ -7,19 +7,19 @@ package service
 
 import (
 	"context"
-	v1 "freeroam/app/system/api/permission/v1"
+	v1 "freeroam/app/org/api/permission/v1"
 )
 
 type (
 	IPermission interface {
-		// AssignRolePermissions 角色权限分配（写时扩散）
+		// AssignRolePermissions 角色权限分配
 		AssignRolePermissions(ctx context.Context, req *v1.AssignRolePermissionsReq) (*v1.AssignRolePermissionsRes, error)
-		// GetRolePermissions 查询角色已分配权限
+		// GetRolePermissions 查询角色权限
 		GetRolePermissions(ctx context.Context, req *v1.GetRolePermissionsReq) (*v1.GetRolePermissionsRes, error)
 		// GetPermissionTree 查询权限资源树（授权用）
 		GetPermissionTree(ctx context.Context, req *v1.GetPermissionTreeReq) (*v1.GetPermissionTreeRes, error)
-		// GetFrontPermissions 获取前端权限集合（页面+组件）
-		GetFrontPermissions(ctx context.Context, req *v1.GetFrontPermissionsReq) (*v1.GetFrontPermissionsRes, error)
+		// GetMemberPermissions 获取用户权限
+		GetMemberPermissions(ctx context.Context, req *v1.GetMemberPermissionsReq) (*v1.GetMemberPermissionsRes, error)
 	}
 )
 

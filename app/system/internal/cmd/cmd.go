@@ -4,7 +4,6 @@ import (
 	"context"
 	"freeroam/app/system/internal/controller/config"
 	"freeroam/app/system/internal/controller/enum"
-	"freeroam/app/system/internal/controller/permission"
 	"freeroam/common/interceptor/cgrpcx"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
@@ -31,7 +30,6 @@ var (
 
 			config.Register(s)
 			enum.Register(s)
-			permission.Register(s)
 
 			// grpc 反射，通过 url 直接获取 grpc 接口信息
 			reflection.Register(s.Server)

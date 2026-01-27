@@ -2,9 +2,10 @@ package permission
 
 import (
 	"context"
+	"freeroam/common/tools/enum"
 
-	"freeroam/app/gateway/api/permission/v1"
-	sPermission "freeroam/app/system/api/permission/v1"
+	v1 "freeroam/app/gateway/api/permission/v1"
+	oPermission "freeroam/app/org/api/permission/v1"
 	"freeroam/common/tools/jwt_claims"
 )
 
@@ -12,11 +13,25 @@ func (c *ControllerV1) GetFrontPermissions(ctx context.Context, req *v1.GetFront
 	// 从 JWT 中获取成员ID
 	memberId := jwt_claims.GetMemberId(ctx)
 
-	rpcReq := &sPermission.GetFrontPermissionsReq{
-		MemberId: int64(memberId),
+	typeList, err := enum.GetByType("permissions_type")
+	if err != nil {
+		return nil, err
 	}
 
-	rpcRes, err := c.PermissionRpcService.GetFrontPermissions(ctx, rpcReq)
+	permTypes := make([]string, 0, len(typeList.Options)-1)
+	for _, item := range typeList.Options {
+		if item.EnumCode == "interface" {
+			continue
+		}
+		permTypes = append(permTypes, item.EnumValue)
+	}
+
+	rpcReq := &oPermission.GetMemberPermissionsReq{
+		MemberId:  int64(memberId),
+		PermTypes: permTypes,
+	}
+
+	rpcRes, err := c.PermissionRpcService.GetMemberPermissions(ctx, rpcReq)
 	if err != nil {
 		return nil, err
 	}

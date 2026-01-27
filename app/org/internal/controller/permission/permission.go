@@ -2,10 +2,12 @@ package permission
 
 import (
 	"context"
-	v1 "freeroam/app/system/api/permission/v1"
-	"freeroam/app/system/internal/service"
+	v1 "freeroam/app/org/api/permission/v1"
+	"freeroam/app/org/internal/service"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
+	"github.com/gogf/gf/v2/errors/gcode"
+	"github.com/gogf/gf/v2/errors/gerror"
 )
 
 type Controller struct {
@@ -30,4 +32,12 @@ func (*Controller) GetPermissionTree(ctx context.Context, req *v1.GetPermissionT
 
 func (*Controller) GetFrontPermissions(ctx context.Context, req *v1.GetFrontPermissionsReq) (res *v1.GetFrontPermissionsRes, err error) {
 	return service.Permission().GetFrontPermissions(ctx, req)
+}
+
+func (*Controller) GetPermissions(ctx context.Context, req *v1.GetPermissionsReq) (res *v1.GetPermissionsRes, err error) {
+	return nil, gerror.NewCode(gcode.CodeNotImplemented)
+}
+
+func (*Controller) GetMemberPermissions(ctx context.Context, req *v1.GetMemberPermissionsReq) (res *v1.GetMemberPermissionsRes, err error) {
+	return nil, gerror.NewCode(gcode.CodeNotImplemented)
 }

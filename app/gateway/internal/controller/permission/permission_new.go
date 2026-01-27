@@ -6,18 +6,18 @@ package permission
 
 import (
 	"freeroam/app/gateway/api/permission"
-	sPermission "freeroam/app/system/api/permission/v1"
+	oPermission "freeroam/app/org/api/permission/v1"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 )
 
 type ControllerV1 struct {
-	PermissionRpcService sPermission.PermissionClient
+	PermissionRpcService oPermission.PermissionClient
 }
 
 func NewV1() permission.IPermissionV1 {
-	conn := grpcx.Client.MustNewGrpcClientConn("system")
+	conn := grpcx.Client.MustNewGrpcClientConn("org")
 	return &ControllerV1{
-		PermissionRpcService: sPermission.NewPermissionClient(conn),
+		PermissionRpcService: oPermission.NewPermissionClient(conn),
 	}
 }

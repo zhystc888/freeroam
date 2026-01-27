@@ -86,7 +86,7 @@ type OrgTreeNode struct {
 	// 该组织成员数量
 	MemberCount int64 `protobuf:"varint,7,opt,name=memberCount,proto3" json:"memberCount,omitempty" dc:"该组织成员数量"`
 	// 子组织数组
-	Children      []*OrgTreeNode `protobuf:"bytes,8,rep,name=children,proto3" json:"children,omitempty" dc:"子组织数组" json:"\"children\""` // json:"children"
+	Children      []*OrgTreeNode `protobuf:"bytes,8,rep,name=children,proto3" json:"children,omitempty" dc:"子组织数组"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
