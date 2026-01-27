@@ -3,8 +3,6 @@ package main
 import (
 	_ "freeroam/app/system/internal/packed"
 
-	_ "freeroam/app/system/internal/logic"
-
 	"freeroam/app/system/internal/cmd"
 
 	"github.com/gogf/gf/v2/os/gctx"

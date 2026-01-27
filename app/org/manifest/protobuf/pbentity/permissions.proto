@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package pbentity;
 
-option go_package = "freeroam/app/system/api/pbentity";
+option go_package = "freeroam/app/org/api/pbentity";
 
 import "google/protobuf/timestamp.proto";
 
@@ -15,7 +15,7 @@ message Permissions {
     uint64                    ParentId  = 2;  // 父权限ID（0为根）
     string                    IdPath    = 3;  // ID路径（/1/12/88/）
     string                    CodePath  = 4;  // Code路径（/org/org.member/org.member.list/）
-    uint32                    PermType  = 5;  // 权限类型:permissions_type
+    string                    PermType  = 5;  // 权限类型:permissions_type
     string                    PermCode  = 6;  // 权限标识
     string                    Name      = 7;  // 权限名称
     string                    Desc      = 8;  // 权限描述

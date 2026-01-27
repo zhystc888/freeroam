@@ -3,11 +3,11 @@ package cmd
 import (
 	"context"
 	"freeroam/app/org/internal/controller/auth"
-	"freeroam/common/interceptor/cgrpcx"
-
 	"freeroam/app/org/internal/controller/org"
+	"freeroam/app/org/internal/controller/permission"
 	"freeroam/app/org/internal/controller/position"
 	"freeroam/app/org/internal/controller/role"
+	"freeroam/common/interceptor/cgrpcx"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 	"github.com/gogf/gf/v2/os/gcmd"
@@ -35,6 +35,7 @@ var (
 			auth.Register(s)
 			org.Register(s)
 			position.Register(s)
+			permission.Register(s)
 			s.Run()
 			return nil
 		},

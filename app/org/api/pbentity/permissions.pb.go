@@ -33,7 +33,7 @@ type Permissions struct {
 	ParentId      uint64                 `protobuf:"varint,2,opt,name=ParentId,proto3" json:"ParentId,omitempty" dc:"父权限ID（0为根）"`                              // 父权限ID（0为根）
 	IdPath        string                 `protobuf:"bytes,3,opt,name=IdPath,proto3" json:"IdPath,omitempty" dc:"ID路径（/1/12/88/）"`                              // ID路径（/1/12/88/）
 	CodePath      string                 `protobuf:"bytes,4,opt,name=CodePath,proto3" json:"CodePath,omitempty" dc:"Code路径（/org/org.member/org.member.list/）"` // Code路径（/org/org.member/org.member.list/）
-	PermType      uint32                 `protobuf:"varint,5,opt,name=PermType,proto3" json:"PermType,omitempty" dc:"权限类型:permissions_type"`                   // 权限类型:permissions_type
+	PermType      string                 `protobuf:"bytes,5,opt,name=PermType,proto3" json:"PermType,omitempty" dc:"权限类型:permissions_type"`                    // 权限类型:permissions_type
 	PermCode      string                 `protobuf:"bytes,6,opt,name=PermCode,proto3" json:"PermCode,omitempty" dc:"权限标识"`                                     // 权限标识
 	Name          string                 `protobuf:"bytes,7,opt,name=Name,proto3" json:"Name,omitempty" dc:"权限名称"`                                             // 权限名称
 	Desc          string                 `protobuf:"bytes,8,opt,name=Desc,proto3" json:"Desc,omitempty" dc:"权限描述"`                                             // 权限描述
@@ -108,11 +108,11 @@ func (x *Permissions) GetCodePath() string {
 	return ""
 }
 
-func (x *Permissions) GetPermType() uint32 {
+func (x *Permissions) GetPermType() string {
 	if x != nil {
 		return x.PermType
 	}
-	return 0
+	return ""
 }
 
 func (x *Permissions) GetPermCode() string {
@@ -209,7 +209,7 @@ const file_pbentity_permissions_proto_rawDesc = "" +
 	"\bParentId\x18\x02 \x01(\x04R\bParentId\x12\x16\n" +
 	"\x06IdPath\x18\x03 \x01(\tR\x06IdPath\x12\x1a\n" +
 	"\bCodePath\x18\x04 \x01(\tR\bCodePath\x12\x1a\n" +
-	"\bPermType\x18\x05 \x01(\rR\bPermType\x12\x1a\n" +
+	"\bPermType\x18\x05 \x01(\tR\bPermType\x12\x1a\n" +
 	"\bPermCode\x18\x06 \x01(\tR\bPermCode\x12\x12\n" +
 	"\x04Name\x18\a \x01(\tR\x04Name\x12\x12\n" +
 	"\x04Desc\x18\b \x01(\tR\x04Desc\x12\x1c\n" +
@@ -222,7 +222,7 @@ const file_pbentity_permissions_proto_rawDesc = "" +
 	"\bDeleteBy\x18\x0e \x01(\x04R\bDeleteBy\x126\n" +
 	"\bCreateAt\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\bCreateAt\x126\n" +
 	"\bUpdateAt\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampR\bUpdateAt\x128\n" +
-	"\tDeletedAt\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampR\tDeletedAtB\"Z freeroam/app/system/api/pbentityb\x06proto3"
+	"\tDeletedAt\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampR\tDeletedAtB\x1fZ\x1dfreeroam/app/org/api/pbentityb\x06proto3"
 
 var (
 	file_pbentity_permissions_proto_rawDescOnce sync.Once

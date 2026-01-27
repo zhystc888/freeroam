@@ -14,7 +14,7 @@ type Permissions struct {
 	ParentId  uint64      `json:"parentId"  orm:"parent_id"  description:"父权限ID（0为根）"`                               // 父权限ID（0为根）
 	IdPath    string      `json:"idPath"    orm:"id_path"    description:"ID路径（/1/12/88/）"`                          // ID路径（/1/12/88/）
 	CodePath  string      `json:"codePath"  orm:"code_path"  description:"Code路径（/org/org.member/org.member.list/）"` // Code路径（/org/org.member/org.member.list/）
-	PermType  uint        `json:"permType"  orm:"perm_type"  description:"权限类型:permissions_type"`                    // 权限类型:permissions_type
+	PermType  string      `json:"permType"  orm:"perm_type"  description:"权限类型:permissions_type"`                    // 权限类型:permissions_type
 	PermCode  string      `json:"permCode"  orm:"perm_code"  description:"权限标识"`                                     // 权限标识
 	Name      string      `json:"name"      orm:"name"       description:"权限名称"`                                     // 权限名称
 	Desc      string      `json:"desc"      orm:"desc"       description:"权限描述"`                                     // 权限描述

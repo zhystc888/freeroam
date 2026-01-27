@@ -275,6 +275,7 @@ func (s *sRole) GetRolePositionList(ctx context.Context, in *v1.GetRolePositionL
 		Where(positionRole.Columns().RoleId, in.RoleId).
 		Where(positionRole.Columns().IsDeleted, false).
 		Fields(positionRole.Columns().PositionId).
+		Distinct().
 		Array()
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())
@@ -417,13 +418,14 @@ func (s *sRole) GetRolePositionIds(ctx context.Context, in *v1.GetRolePositionId
 		return nil, gerror.NewCode(berror.RoleNotExist)
 	}
 
-	// 查询角色绑定的职务ID列表
+	// 查询角色绑定的职务 ID列表
 	positionRole := dao.PositionRole
 	positionIds, err := positionRole.Ctx(ctx).
 		Where(positionRole.Columns().RoleId, in.RoleId).
 		Where(positionRole.Columns().IsDeleted, false).
 		Fields(positionRole.Columns().PositionId).
 		OrderAsc(positionRole.Columns().PositionId).
+		Distinct().
 		Array()
 	if err != nil {
 		return nil, gerror.NewCode(berror.DBErr, err.Error())

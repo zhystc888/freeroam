@@ -27,8 +27,8 @@ type AssignRolePermissionsReq struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// 角色ID
 	RoleId int64 `protobuf:"varint,1,opt,name=roleId,proto3" json:"roleId,omitempty" dc:"角色ID" v:"required|min:1#角色ID不能为空|角色ID必须大于0"` // v:required|min:1#角色ID不能为空|角色ID必须大于0
-	// 权限标识列表（页面/组件）
-	PermCodes     []string `protobuf:"bytes,2,rep,name=permCodes,proto3" json:"permCodes,omitempty" dc:"权限标识列表（页面/组件）" v:"required|min-length:1#权限标识列表不能为空|至少需要一个权限标识"` // v:required|min-length:1#权限标识列表不能为空|至少需要一个权限标识
+	// 权限标识列表
+	PermCodes     []string `protobuf:"bytes,2,rep,name=permCodes,proto3" json:"permCodes,omitempty" dc:"权限标识列表" v:"required|min-length:1#权限标识列表不能为空|至少需要一个权限标识"` // v:required|min-length:1#权限标识列表不能为空|至少需要一个权限标识
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -123,7 +123,7 @@ func (x *AssignRolePermissionsRes) GetSuccess() bool {
 	return false
 }
 
-// 查询角色已分配权限请求
+// 查询角色权限请求
 type GetRolePermissionsReq struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// 角色ID
@@ -169,11 +169,11 @@ func (x *GetRolePermissionsReq) GetRoleId() int64 {
 	return 0
 }
 
-// 查询角色已分配权限响应
+// 查询角色权限响应
 type GetRolePermissionsRes struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// 权限标识列表（页面/组件）
-	PermCodes     []string `protobuf:"bytes,1,rep,name=permCodes,proto3" json:"permCodes,omitempty" dc:"权限标识列表（页面/组件）"`
+	// 权限ID列表
+	PermissionIds []int64 `protobuf:"varint,1,rep,packed,name=permissionIds,proto3" json:"permissionIds,omitempty" dc:"权限ID列表"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -208,9 +208,9 @@ func (*GetRolePermissionsRes) Descriptor() ([]byte, []int) {
 	return file_permission_v1_permission_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetRolePermissionsRes) GetPermCodes() []string {
+func (x *GetRolePermissionsRes) GetPermissionIds() []int64 {
 	if x != nil {
-		return x.PermCodes
+		return x.PermissionIds
 	}
 	return nil
 }
@@ -307,8 +307,8 @@ type PermissionTreeNode struct {
 	PermCode string `protobuf:"bytes,2,opt,name=permCode,proto3" json:"permCode,omitempty" dc:"权限标识"`
 	// 权限名称
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty" dc:"权限名称"`
-	// 权限类型：1页面 2组件 3接口
-	PermType int32 `protobuf:"varint,4,opt,name=permType,proto3" json:"permType,omitempty" dc:"权限类型：1页面 2组件 3接口"`
+	// 权限类型:permissions_type
+	PermType string `protobuf:"bytes,4,opt,name=permType,proto3" json:"permType,omitempty" dc:"权限类型:permissions_type"`
 	// 子节点
 	Children      []*PermissionTreeNode `protobuf:"bytes,5,rep,name=children,proto3" json:"children,omitempty" dc:"子节点"`
 	unknownFields protoimpl.UnknownFields
@@ -366,11 +366,11 @@ func (x *PermissionTreeNode) GetName() string {
 	return ""
 }
 
-func (x *PermissionTreeNode) GetPermType() int32 {
+func (x *PermissionTreeNode) GetPermType() string {
 	if x != nil {
 		return x.PermType
 	}
-	return 0
+	return ""
 }
 
 func (x *PermissionTreeNode) GetChildren() []*PermissionTreeNode {
@@ -380,29 +380,31 @@ func (x *PermissionTreeNode) GetChildren() []*PermissionTreeNode {
 	return nil
 }
 
-// 获取前端权限集合请求
-type GetFrontPermissionsReq struct {
+// 获取用户权限请求
+type GetMemberPermissionsReq struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// 成员ID
-	MemberId      int64 `protobuf:"varint,1,opt,name=memberId,proto3" json:"memberId,omitempty" dc:"成员ID" v:"required|min:1#成员ID不能为空|成员ID必须大于0"` // v:required|min:1#成员ID不能为空|成员ID必须大于0
+	MemberId int64 `protobuf:"varint,1,opt,name=memberId,proto3" json:"memberId,omitempty" dc:"成员ID" v:"required|min:1#成员ID不能为空|成员ID必须大于0"` // v:required|min:1#成员ID不能为空|成员ID必须大于0
+	// 权限类型:permissions_type (不传返回所有类型)
+	PermTypes     []string `protobuf:"bytes,2,rep,name=PermTypes,proto3" json:"PermTypes,omitempty" dc:"权限类型:permissions_type (不传返回所有类型)"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetFrontPermissionsReq) Reset() {
-	*x = GetFrontPermissionsReq{}
+func (x *GetMemberPermissionsReq) Reset() {
+	*x = GetMemberPermissionsReq{}
 	mi := &file_permission_v1_permission_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetFrontPermissionsReq) String() string {
+func (x *GetMemberPermissionsReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetFrontPermissionsReq) ProtoMessage() {}
+func (*GetMemberPermissionsReq) ProtoMessage() {}
 
-func (x *GetFrontPermissionsReq) ProtoReflect() protoreflect.Message {
+func (x *GetMemberPermissionsReq) ProtoReflect() protoreflect.Message {
 	mi := &file_permission_v1_permission_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -414,41 +416,48 @@ func (x *GetFrontPermissionsReq) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetFrontPermissionsReq.ProtoReflect.Descriptor instead.
-func (*GetFrontPermissionsReq) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetMemberPermissionsReq.ProtoReflect.Descriptor instead.
+func (*GetMemberPermissionsReq) Descriptor() ([]byte, []int) {
 	return file_permission_v1_permission_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *GetFrontPermissionsReq) GetMemberId() int64 {
+func (x *GetMemberPermissionsReq) GetMemberId() int64 {
 	if x != nil {
 		return x.MemberId
 	}
 	return 0
 }
 
-// 获取前端权限集合响应
-type GetFrontPermissionsRes struct {
+func (x *GetMemberPermissionsReq) GetPermTypes() []string {
+	if x != nil {
+		return x.PermTypes
+	}
+	return nil
+}
+
+// 获取用户权限响应
+type GetMemberPermissionsRes struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// 权限标识列表（页面+组件）
-	Permissions   []string `protobuf:"bytes,1,rep,name=permissions,proto3" json:"permissions,omitempty" dc:"权限标识列表（页面+组件）"`
+	// 权限标识列表
+	Permissions   []string `protobuf:"bytes,1,rep,name=permissions,proto3" json:"permissions,omitempty" dc:"权限标识列表"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetFrontPermissionsRes) Reset() {
-	*x = GetFrontPermissionsRes{}
+func (x *GetMemberPermissionsRes) Reset() {
+	*x = GetMemberPermissionsRes{}
 	mi := &file_permission_v1_permission_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetFrontPermissionsRes) String() string {
+func (x *GetMemberPermissionsRes) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetFrontPermissionsRes) ProtoMessage() {}
+func (*GetMemberPermissionsRes) ProtoMessage() {}
 
-func (x *GetFrontPermissionsRes) ProtoReflect() protoreflect.Message {
+func (x *GetMemberPermissionsRes) ProtoReflect() protoreflect.Message {
 	mi := &file_permission_v1_permission_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -460,12 +469,12 @@ func (x *GetFrontPermissionsRes) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetFrontPermissionsRes.ProtoReflect.Descriptor instead.
-func (*GetFrontPermissionsRes) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetMemberPermissionsRes.ProtoReflect.Descriptor instead.
+func (*GetMemberPermissionsRes) Descriptor() ([]byte, []int) {
 	return file_permission_v1_permission_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *GetFrontPermissionsRes) GetPermissions() []string {
+func (x *GetMemberPermissionsRes) GetPermissions() []string {
 	if x != nil {
 		return x.Permissions
 	}
@@ -483,9 +492,9 @@ const file_permission_v1_permission_proto_rawDesc = "" +
 	"\x18AssignRolePermissionsRes\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\"/\n" +
 	"\x15GetRolePermissionsReq\x12\x16\n" +
-	"\x06roleId\x18\x01 \x01(\x03R\x06roleId\"5\n" +
-	"\x15GetRolePermissionsRes\x12\x1c\n" +
-	"\tpermCodes\x18\x01 \x03(\tR\tpermCodes\"\x16\n" +
+	"\x06roleId\x18\x01 \x01(\x03R\x06roleId\"=\n" +
+	"\x15GetRolePermissionsRes\x12$\n" +
+	"\rpermissionIds\x18\x01 \x03(\x03R\rpermissionIds\"\x16\n" +
 	"\x14GetPermissionTreeReq\"M\n" +
 	"\x14GetPermissionTreeRes\x125\n" +
 	"\x04tree\x18\x01 \x03(\v2!.permission.v1.PermissionTreeNodeR\x04tree\"\xaf\x01\n" +
@@ -493,18 +502,19 @@ const file_permission_v1_permission_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\bpermCode\x18\x02 \x01(\tR\bpermCode\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12\x1a\n" +
-	"\bpermType\x18\x04 \x01(\x05R\bpermType\x12=\n" +
-	"\bchildren\x18\x05 \x03(\v2!.permission.v1.PermissionTreeNodeR\bchildren\"4\n" +
-	"\x16GetFrontPermissionsReq\x12\x1a\n" +
-	"\bmemberId\x18\x01 \x01(\x03R\bmemberId\":\n" +
-	"\x16GetFrontPermissionsRes\x12 \n" +
-	"\vpermissions\x18\x01 \x03(\tR\vpermissions2\x9d\x03\n" +
+	"\bpermType\x18\x04 \x01(\tR\bpermType\x12=\n" +
+	"\bchildren\x18\x05 \x03(\v2!.permission.v1.PermissionTreeNodeR\bchildren\"S\n" +
+	"\x17GetMemberPermissionsReq\x12\x1a\n" +
+	"\bmemberId\x18\x01 \x01(\x03R\bmemberId\x12\x1c\n" +
+	"\tPermTypes\x18\x02 \x03(\tR\tPermTypes\";\n" +
+	"\x17GetMemberPermissionsRes\x12 \n" +
+	"\vpermissions\x18\x01 \x03(\tR\vpermissions2\xa0\x03\n" +
 	"\n" +
 	"Permission\x12i\n" +
 	"\x15AssignRolePermissions\x12'.permission.v1.AssignRolePermissionsReq\x1a'.permission.v1.AssignRolePermissionsRes\x12`\n" +
 	"\x12GetRolePermissions\x12$.permission.v1.GetRolePermissionsReq\x1a$.permission.v1.GetRolePermissionsRes\x12]\n" +
-	"\x11GetPermissionTree\x12#.permission.v1.GetPermissionTreeReq\x1a#.permission.v1.GetPermissionTreeRes\x12c\n" +
-	"\x13GetFrontPermissions\x12%.permission.v1.GetFrontPermissionsReq\x1a%.permission.v1.GetFrontPermissionsResB\x15Z\x13./api/permission/v1b\x06proto3"
+	"\x11GetPermissionTree\x12#.permission.v1.GetPermissionTreeReq\x1a#.permission.v1.GetPermissionTreeRes\x12f\n" +
+	"\x14GetMemberPermissions\x12&.permission.v1.GetMemberPermissionsReq\x1a&.permission.v1.GetMemberPermissionsResB\x15Z\x13./api/permission/v1b\x06proto3"
 
 var (
 	file_permission_v1_permission_proto_rawDescOnce sync.Once
@@ -527,8 +537,8 @@ var file_permission_v1_permission_proto_goTypes = []any{
 	(*GetPermissionTreeReq)(nil),     // 4: permission.v1.GetPermissionTreeReq
 	(*GetPermissionTreeRes)(nil),     // 5: permission.v1.GetPermissionTreeRes
 	(*PermissionTreeNode)(nil),       // 6: permission.v1.PermissionTreeNode
-	(*GetFrontPermissionsReq)(nil),   // 7: permission.v1.GetFrontPermissionsReq
-	(*GetFrontPermissionsRes)(nil),   // 8: permission.v1.GetFrontPermissionsRes
+	(*GetMemberPermissionsReq)(nil),  // 7: permission.v1.GetMemberPermissionsReq
+	(*GetMemberPermissionsRes)(nil),  // 8: permission.v1.GetMemberPermissionsRes
 }
 var file_permission_v1_permission_proto_depIdxs = []int32{
 	6, // 0: permission.v1.GetPermissionTreeRes.tree:type_name -> permission.v1.PermissionTreeNode
@@ -536,11 +546,11 @@ var file_permission_v1_permission_proto_depIdxs = []int32{
 	0, // 2: permission.v1.Permission.AssignRolePermissions:input_type -> permission.v1.AssignRolePermissionsReq
 	2, // 3: permission.v1.Permission.GetRolePermissions:input_type -> permission.v1.GetRolePermissionsReq
 	4, // 4: permission.v1.Permission.GetPermissionTree:input_type -> permission.v1.GetPermissionTreeReq
-	7, // 5: permission.v1.Permission.GetFrontPermissions:input_type -> permission.v1.GetFrontPermissionsReq
+	7, // 5: permission.v1.Permission.GetMemberPermissions:input_type -> permission.v1.GetMemberPermissionsReq
 	1, // 6: permission.v1.Permission.AssignRolePermissions:output_type -> permission.v1.AssignRolePermissionsRes
 	3, // 7: permission.v1.Permission.GetRolePermissions:output_type -> permission.v1.GetRolePermissionsRes
 	5, // 8: permission.v1.Permission.GetPermissionTree:output_type -> permission.v1.GetPermissionTreeRes
-	8, // 9: permission.v1.Permission.GetFrontPermissions:output_type -> permission.v1.GetFrontPermissionsRes
+	8, // 9: permission.v1.Permission.GetMemberPermissions:output_type -> permission.v1.GetMemberPermissionsRes
 	6, // [6:10] is the sub-list for method output_type
 	2, // [2:6] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

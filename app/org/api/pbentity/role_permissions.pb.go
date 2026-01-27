@@ -159,7 +159,7 @@ const file_pbentity_role_permissions_proto_rawDesc = "" +
 	"\bCreateAt\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\bCreateAt\x126\n" +
 	"\bUpdateAt\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\bUpdateAt\x128\n" +
 	"\tDeletedAt\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tDeletedAtB\"Z freeroam/app/system/api/pbentityb\x06proto3"
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tDeletedAtB\x1fZ\x1dfreeroam/app/org/api/pbentityb\x06proto3"
 
 var (
 	file_pbentity_role_permissions_proto_rawDescOnce sync.Once

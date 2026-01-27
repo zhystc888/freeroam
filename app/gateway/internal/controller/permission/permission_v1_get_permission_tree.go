@@ -3,12 +3,12 @@ package permission
 import (
 	"context"
 
-	"freeroam/app/gateway/api/permission/v1"
-	sPermission "freeroam/app/system/api/permission/v1"
+	v1 "freeroam/app/gateway/api/permission/v1"
+	oPermission "freeroam/app/org/api/permission/v1"
 )
 
 func (c *ControllerV1) GetPermissionTree(ctx context.Context, req *v1.GetPermissionTreeReq) (res *v1.GetPermissionTreeRes, err error) {
-	rpcReq := &sPermission.GetPermissionTreeReq{}
+	rpcReq := &oPermission.GetPermissionTreeReq{}
 
 	rpcRes, err := c.PermissionRpcService.GetPermissionTree(ctx, rpcReq)
 	if err != nil {
@@ -21,7 +21,7 @@ func (c *ControllerV1) GetPermissionTree(ctx context.Context, req *v1.GetPermiss
 }
 
 // convertTreeNodes 转换权限树节点
-func convertTreeNodes(nodes []*sPermission.PermissionTreeNode) []*v1.PermissionTreeNode {
+func convertTreeNodes(nodes []*oPermission.PermissionTreeNode) []*v1.PermissionTreeNode {
 	if nodes == nil {
 		return nil
 	}

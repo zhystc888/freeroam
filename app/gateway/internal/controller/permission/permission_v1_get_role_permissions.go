@@ -3,12 +3,12 @@ package permission
 import (
 	"context"
 
-	"freeroam/app/gateway/api/permission/v1"
-	sPermission "freeroam/app/system/api/permission/v1"
+	v1 "freeroam/app/gateway/api/permission/v1"
+	oPermission "freeroam/app/org/api/permission/v1"
 )
 
 func (c *ControllerV1) GetRolePermissions(ctx context.Context, req *v1.GetRolePermissionsReq) (res *v1.GetRolePermissionsRes, err error) {
-	rpcReq := &sPermission.GetRolePermissionsReq{
+	rpcReq := &oPermission.GetRolePermissionsReq{
 		RoleId: req.RoleId,
 	}
 

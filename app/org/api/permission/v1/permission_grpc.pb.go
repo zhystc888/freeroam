@@ -23,7 +23,7 @@ const (
 	Permission_AssignRolePermissions_FullMethodName = "/permission.v1.Permission/AssignRolePermissions"
 	Permission_GetRolePermissions_FullMethodName    = "/permission.v1.Permission/GetRolePermissions"
 	Permission_GetPermissionTree_FullMethodName     = "/permission.v1.Permission/GetPermissionTree"
-	Permission_GetFrontPermissions_FullMethodName   = "/permission.v1.Permission/GetFrontPermissions"
+	Permission_GetMemberPermissions_FullMethodName  = "/permission.v1.Permission/GetMemberPermissions"
 )
 
 // PermissionClient is the client API for Permission service.
@@ -32,12 +32,12 @@ const (
 type PermissionClient interface {
 	// 角色权限分配
 	AssignRolePermissions(ctx context.Context, in *AssignRolePermissionsReq, opts ...grpc.CallOption) (*AssignRolePermissionsRes, error)
-	// 查询角色已分配权限
+	// 查询角色权限
 	GetRolePermissions(ctx context.Context, in *GetRolePermissionsReq, opts ...grpc.CallOption) (*GetRolePermissionsRes, error)
-	// 查询权限资源树（授权用）
+	// 查询权限资源树
 	GetPermissionTree(ctx context.Context, in *GetPermissionTreeReq, opts ...grpc.CallOption) (*GetPermissionTreeRes, error)
-	// 获取前端权限集合（页面+组件）
-	GetFrontPermissions(ctx context.Context, in *GetFrontPermissionsReq, opts ...grpc.CallOption) (*GetFrontPermissionsRes, error)
+	// 获取用户权限
+	GetMemberPermissions(ctx context.Context, in *GetMemberPermissionsReq, opts ...grpc.CallOption) (*GetMemberPermissionsRes, error)
 }
 
 type permissionClient struct {
@@ -78,10 +78,10 @@ func (c *permissionClient) GetPermissionTree(ctx context.Context, in *GetPermiss
 	return out, nil
 }
 
-func (c *permissionClient) GetFrontPermissions(ctx context.Context, in *GetFrontPermissionsReq, opts ...grpc.CallOption) (*GetFrontPermissionsRes, error) {
+func (c *permissionClient) GetMemberPermissions(ctx context.Context, in *GetMemberPermissionsReq, opts ...grpc.CallOption) (*GetMemberPermissionsRes, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetFrontPermissionsRes)
-	err := c.cc.Invoke(ctx, Permission_GetFrontPermissions_FullMethodName, in, out, cOpts...)
+	out := new(GetMemberPermissionsRes)
+	err := c.cc.Invoke(ctx, Permission_GetMemberPermissions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,12 +94,12 @@ func (c *permissionClient) GetFrontPermissions(ctx context.Context, in *GetFront
 type PermissionServer interface {
 	// 角色权限分配
 	AssignRolePermissions(context.Context, *AssignRolePermissionsReq) (*AssignRolePermissionsRes, error)
-	// 查询角色已分配权限
+	// 查询角色权限
 	GetRolePermissions(context.Context, *GetRolePermissionsReq) (*GetRolePermissionsRes, error)
-	// 查询权限资源树（授权用）
+	// 查询权限资源树
 	GetPermissionTree(context.Context, *GetPermissionTreeReq) (*GetPermissionTreeRes, error)
-	// 获取前端权限集合（页面+组件）
-	GetFrontPermissions(context.Context, *GetFrontPermissionsReq) (*GetFrontPermissionsRes, error)
+	// 获取用户权限
+	GetMemberPermissions(context.Context, *GetMemberPermissionsReq) (*GetMemberPermissionsRes, error)
 	mustEmbedUnimplementedPermissionServer()
 }
 
@@ -119,8 +119,8 @@ func (UnimplementedPermissionServer) GetRolePermissions(context.Context, *GetRol
 func (UnimplementedPermissionServer) GetPermissionTree(context.Context, *GetPermissionTreeReq) (*GetPermissionTreeRes, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetPermissionTree not implemented")
 }
-func (UnimplementedPermissionServer) GetFrontPermissions(context.Context, *GetFrontPermissionsReq) (*GetFrontPermissionsRes, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetFrontPermissions not implemented")
+func (UnimplementedPermissionServer) GetMemberPermissions(context.Context, *GetMemberPermissionsReq) (*GetMemberPermissionsRes, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMemberPermissions not implemented")
 }
 func (UnimplementedPermissionServer) mustEmbedUnimplementedPermissionServer() {}
 func (UnimplementedPermissionServer) testEmbeddedByValue()                    {}
@@ -197,20 +197,20 @@ func _Permission_GetPermissionTree_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Permission_GetFrontPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetFrontPermissionsReq)
+func _Permission_GetMemberPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMemberPermissionsReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PermissionServer).GetFrontPermissions(ctx, in)
+		return srv.(PermissionServer).GetMemberPermissions(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Permission_GetFrontPermissions_FullMethodName,
+		FullMethod: Permission_GetMemberPermissions_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PermissionServer).GetFrontPermissions(ctx, req.(*GetFrontPermissionsReq))
+		return srv.(PermissionServer).GetMemberPermissions(ctx, req.(*GetMemberPermissionsReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -235,8 +235,8 @@ var Permission_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Permission_GetPermissionTree_Handler,
 		},
 		{
-			MethodName: "GetFrontPermissions",
-			Handler:    _Permission_GetFrontPermissions_Handler,
+			MethodName: "GetMemberPermissions",
+			Handler:    _Permission_GetMemberPermissions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
