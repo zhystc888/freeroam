@@ -23,7 +23,7 @@ func (c *ControllerV1) GetPermissionTree(ctx context.Context, req *v1.GetPermiss
 // convertTreeNodes 转换权限树节点
 func convertTreeNodes(nodes []*oPermission.PermissionTreeNode) []*v1.PermissionTreeNode {
 	if nodes == nil {
-		return nil
+		return make([]*v1.PermissionTreeNode, 0)
 	}
 
 	result := make([]*v1.PermissionTreeNode, len(nodes))
