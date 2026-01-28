@@ -1,29 +1,31 @@
-server:
-  address: ":8888"
-  name: "gateway"
-  openapiPath: "/api.json"
-  swaggerPath: "/swagger"
+grpc:
+  name:             "system"  # 服务名称
+  #  address:          "0.0.0.0:0"
+  logPath:          "G:/www/freeroam/log" # 日志存储目录路径
+  logStdout:        true    # 日志是否输出到终端
+  errorLogEnabled:  true    # 是否开启错误日志记录
+  accessLogEnabled: true    # 是否开启访问日志记录
+  errorStack:       true    # 当产生错误时，是否记录错误堆栈
+  #  endpoints:        ["192.168.1.3:8000"] # 自定义服务注册地址列表
   # 日志扩展配置(参数日志组件配置)
   logger:
-    prefix:                "gateway:"                    # 日志内容输出前缀。默认为空
+    path:                  "G:/www/freeroam/log/"           # 日志文件路径。默认为空，表示关闭，仅输出到终端
+    file:                  "{Y-m-d}.log"         # 日志文件格式。默认为"{Y-m-d}.log"
+    prefix:                "system:"                    # 日志内容输出前缀。默认为空
     level:                 "all"                 # 日志输出级别
     timeFormat:            "2006-01-02T15:04:05" # 自定义日志输出的时间格式，使用Golang标准的时间格式配置
+    ctxKeys:               []                    # 自定义Context上下文变量名称，自动打印Context的变量到日志中。默认为空
+    header:                true                  # 是否打印日志的头信息。默认true
     stdout:                true                  # 日志是否同时输出到终端。默认true
+    rotateSize:            0                     # 按照日志文件大小对文件进行滚动切分。默认为0，表示关闭滚动切分特性
+    rotateExpire:          24h                     # 按天切分（24小时）
+    rotateBackupLimit:     0                     # 按照切分的文件数量清理切分文件，当滚动切分特性开启时有效。默认为0，表示不备份，切分则删除
+    rotateBackupExpire:    720h                  # 按照切分的文件有效期清理切分文件，当滚动切分特性开启时有效。默认为0，表示不备份，切分则删除
+    rotateBackupCompress:  0                     # 滚动切分文件的压缩比（0-9）。默认为0，表示不压缩
+    rotateCheckInterval:   "1h"                  # 滚动切分的时间检测间隔，一般不需要设置。默认为1小时
     stdoutColorDisabled:   true                 # 关闭终端的颜色打印。默认开启
+    writerColorEnable:     false                 # 日志文件是否带上颜色。默认false，表示不带颜色
 
-# JWT 配置（本地环境 APP_ENV=local 使用本文件）
-jwt:
-  secret: "freeroam-gateway-secret-key-change-in-production"  # JWT 签名密钥（必须，生产环境请修改）
-  issuer: "freeroam-gateway"
-  audience: "freeroam-client"
-  expire: 86400  # 默认 24 小时；兜底用，实际应以会话 max_lifetime 为准
-
-# Redis 配置（会话/鉴权使用，APP_ENV=local 时走本地配置文件）
-redis:
-  default:
-    address: "124.221.249.230:16379"
-    db: 3
-    pass: ""
 database:
   default:
     host: "124.221.249.230"     # 地址
@@ -52,7 +54,7 @@ database:
 logger:
   path:                  "G:/www/freeroam/log/"           # 日志文件路径。默认为空，表示关闭，仅输出到终端
   file:                  "{Y-m-d}.log"         # 日志文件格式。默认为"{Y-m-d}.log"
-  prefix:                "gateway:"                    # 日志内容输出前缀。默认为空
+  prefix:                "system:"                    # 日志内容输出前缀。默认为空
   level:                 "all"                 # 日志输出级别
   timeFormat:            "2006-01-02T15:04:05" # 自定义日志输出的时间格式，使用Golang标准的时间格式配置
   ctxKeys:               []                    # 自定义Context上下文变量名称，自动打印Context的变量到日志中。默认为空
@@ -66,3 +68,8 @@ logger:
   rotateCheckInterval:   "1h"                  # 滚动切分的时间检测间隔，一般不需要设置。默认为1小时
   stdoutColorDisabled:   false                 # 关闭终端的颜色打印。默认开启
   writerColorEnable:     false                 # 日志文件是否带上颜色。默认false，表示不带颜色
+redis:
+  default:
+    address: "124.221.249.230:16379"
+    db: 0
+    pass: ""

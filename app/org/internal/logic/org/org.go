@@ -3,6 +3,7 @@ package org
 import (
 	"context"
 	"fmt"
+	"freeroam/common/tools/jwt_claims"
 	"strings"
 
 	v1 "freeroam/app/org/api/org/v1"
@@ -181,6 +182,10 @@ func (s *sOrg) GetOrg(ctx context.Context, in *v1.GetOrgReq) (*v1.GetOrgRes, err
 // CreateOrg 新建组织
 func (s *sOrg) CreateOrg(ctx context.Context, in *v1.CreateOrgReq) (*v1.CreateOrgRes, error) {
 	m := dao.Org
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, berror.NewCode(berror.NotFindMemberIdFromCtx)
+	}
 
 	// 检查编码是否已存在
 	exist, err := m.Ctx(ctx).
@@ -236,7 +241,7 @@ func (s *sOrg) CreateOrg(ctx context.Context, in *v1.CreateOrgReq) (*v1.CreateOr
 		Status:   in.Status,
 		Sort:     in.Sort,
 		Path:     parentPath, // 临时路径，插入后更新
-		CreateBy: 0,          // TODO: 从上下文获取用户ID
+		CreateBy: memberId,
 	}
 
 	result, err := m.Ctx(ctx).Data(data).Insert()
@@ -266,7 +271,10 @@ func (s *sOrg) CreateOrg(ctx context.Context, in *v1.CreateOrgReq) (*v1.CreateOr
 // UpdateOrg 编辑组织
 func (s *sOrg) UpdateOrg(ctx context.Context, in *v1.UpdateOrgReq) (*v1.UpdateOrgRes, error) {
 	m := dao.Org
-
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, berror.NewCode(berror.NotFindMemberIdFromCtx)
+	}
 	// 1. 获取当前组织信息 (检查是否存在)
 	var org entity.Org
 	if err := m.Ctx(ctx).
@@ -362,7 +370,7 @@ func (s *sOrg) UpdateOrg(ctx context.Context, in *v1.UpdateOrgReq) (*v1.UpdateOr
 
 	// 4. 构建更新数据
 	updateData := g.Map{
-		m.Columns().UpdateBy: 0, // TODO: 从上下文获取用户ID
+		m.Columns().UpdateBy: memberId,
 	}
 	if in.Name != "" {
 		updateData[m.Columns().Name] = in.Name
@@ -416,7 +424,10 @@ func (s *sOrg) UpdateOrg(ctx context.Context, in *v1.UpdateOrgReq) (*v1.UpdateOr
 // DeleteOrg 删除组织
 func (s *sOrg) DeleteOrg(ctx context.Context, in *v1.DeleteOrgReq) (*v1.DeleteOrgRes, error) {
 	m := dao.Org
-
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, berror.NewCode(berror.NotFindMemberIdFromCtx)
+	}
 	// 检查组织是否存在
 	var org entity.Org
 	err := m.Ctx(ctx).
@@ -448,7 +459,7 @@ func (s *sOrg) DeleteOrg(ctx context.Context, in *v1.DeleteOrgReq) (*v1.DeleteOr
 				Where(m.Columns().Id, item.Id).
 				Data(g.Map{
 					m.Columns().IsDeleted: true,
-					m.Columns().DeleteBy:  0, // TODO: 从上下文获取用户ID
+					m.Columns().DeleteBy:  memberId,
 					m.Columns().DeletedAt: gtime.Now(),
 				}).
 				Update(); err != nil {
@@ -461,7 +472,7 @@ func (s *sOrg) DeleteOrg(ctx context.Context, in *v1.DeleteOrgReq) (*v1.DeleteOr
 				Where(positionOrg.Columns().OrgId, item.Id).
 				Data(g.Map{
 					m.Columns().IsDeleted: true,
-					m.Columns().DeleteBy:  0, // TODO: 从上下文获取用户ID
+					m.Columns().DeleteBy:  memberId,
 					m.Columns().DeletedAt: gtime.Now(),
 				}).
 				Update(); err != nil {
@@ -482,7 +493,10 @@ func (s *sOrg) DeleteOrg(ctx context.Context, in *v1.DeleteOrgReq) (*v1.DeleteOr
 // MoveOrg 拖拽移动/排序
 func (s *sOrg) MoveOrg(ctx context.Context, in *v1.MoveOrgReq) (*v1.MoveOrgRes, error) {
 	m := dao.Org
-
+	memberId := jwt_claims.GetMemberId(ctx)
+	if memberId == 0 {
+		return nil, berror.NewCode(berror.NotFindMemberIdFromCtx)
+	}
 	// 检查组织是否存在
 	var org entity.Org
 	if err := m.Ctx(ctx).
@@ -555,7 +569,7 @@ func (s *sOrg) MoveOrg(ctx context.Context, in *v1.MoveOrgReq) (*v1.MoveOrgRes, 
 				m.Columns().Sort:     in.NewSort,
 				m.Columns().Path:     newPath,
 				m.Columns().FullName: newFullName,
-				m.Columns().UpdateBy: 0, // TODO: 从上下文获取用户ID
+				m.Columns().UpdateBy: memberId,
 			}).
 			Update(); err != nil {
 			return err

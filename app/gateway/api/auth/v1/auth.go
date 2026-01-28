@@ -4,7 +4,7 @@ import "github.com/gogf/gf/v2/frame/g"
 
 // LoginReq 登录请求
 type LoginReq struct {
-	g.Meta   `path:"/auth/login" tags:"认证管理" method:"post" summary:"登录"`
+	g.Meta   `path:"/auth/login" tags:"认证管理" method:"post" summary:"登录" skip_authn:"true"`
 	Username string `json:"username" v:"required|length:1,20#账号不能为空|账号长度必须在1-20之间" dc:"账号"`
 	Password string `json:"password" v:"required|length:1,255#密码不能为空|密码长度不能超过255" dc:"密码"`
 }
