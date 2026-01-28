@@ -7,6 +7,26 @@ import (
 	"freeroam/common/berror"
 )
 
+// GetMemberVersion 获取成员会话版本号（auth:ver:member:{memberId}）
+// 如果不存在则返回 0（注意：与 GetOrInitMemberVersion 不同，本方法不会初始化）
+func GetMemberVersion(ctx context.Context, memberId uint64) (int64, error) {
+	key := redisKey.MemberVerKey(memberId)
+
+	r, err := getRedis(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	v, err := r.Get(ctx, key)
+	if err != nil {
+		return 0, berror.WrapCode(berror.CodeRedisErr, err, "读取 member ver 失败")
+	}
+	if v.IsEmpty() {
+		return 0, nil
+	}
+	return v.Int64(), nil
+}
+
 // GetOrInitMemberVersion 获取成员会话版本号（auth:ver:member:{memberId}）
 // 如果不存在则初始化为 initVal（通常为 1），并返回当前版本
 func GetOrInitMemberVersion(ctx context.Context, memberId uint64, initVal int64) (int64, error) {

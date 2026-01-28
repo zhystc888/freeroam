@@ -141,6 +141,15 @@ func ValidateAndTouch(
 		return nil, 0, berror.NewCode(berror.CodeTokenInvalid, "会话一致性校验失败")
 	}
 
+	currentVer, err := GetMemberVersion(ctx, sess.MemberId)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if tokenVer != currentVer {
+		return nil, 0, berror.NewCode(berror.CodeTokenInvalid, "会话版本已失效（可能已被强制下线）")
+	}
+
 	// 绝对过期（max lifetime）
 	if nowUnix > sess.MaxExpAt {
 		return nil, 0, berror.NewCode(berror.CodeTokenInvalid, "会话绝对过期")
