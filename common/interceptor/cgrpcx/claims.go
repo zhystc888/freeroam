@@ -2,6 +2,7 @@ package cgrpcx
 
 import (
 	"context"
+	"encoding/json"
 	"freeroam/common/consts"
 	"freeroam/common/model/cjwt"
 
@@ -32,10 +33,9 @@ func withJwtClaimsFromIncoming(ctx context.Context) context.Context {
 		return ctx
 	}
 
-	claims, ok := rawClaims.(*cjwt.Claims)
-	if !ok || claims == nil {
-		return ctx
-	}
+	s, _ := rawClaims.(string) // 现在就是 string
+	var claims cjwt.Claims
+	_ = json.Unmarshal([]byte(s), &claims)
 
-	return context.WithValue(ctx, consts.CtxKeyJwtClaims, claims)
+	return context.WithValue(ctx, consts.CtxKeyJwtClaims, &claims)
 }
