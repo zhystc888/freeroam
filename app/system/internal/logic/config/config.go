@@ -3,7 +3,7 @@ package config
 import (
 	"context"
 	v1 "freeroam/app/system/api/config/v1"
-	"freeroam/app/system/internal/consts"
+	"freeroam/app/system/internal/consts/redisKey"
 	"freeroam/app/system/internal/dao"
 	"freeroam/app/system/internal/model/entity"
 	"freeroam/app/system/internal/service"
@@ -40,7 +40,12 @@ func (s *sConfig) GetByCode(ctx context.Context, in *v1.GetByCodeReq) (*v1.GetBy
 }
 
 func (*sConfig) redisGetByCode(ctx context.Context, configCode string) (*string, error) {
-	enumItem, err := g.Redis().HGet(ctx, consts.RedisSystemConfigKey, configCode)
+	redis := g.Redis()
+	if redis == nil {
+		return nil, gerror.NewCode(berror.RedisErr, "redis client is nil")
+	}
+
+	enumItem, err := redis.HGet(ctx, redisKey.SystemConfigKey(), configCode)
 	if err != nil {
 		return nil, gerror.NewCode(berror.RedisErr, err.Error())
 	}
@@ -55,7 +60,12 @@ func (*sConfig) redisGetByCode(ctx context.Context, configCode string) (*string,
 }
 
 func (s *sConfig) dbToRedis(ctx context.Context) error {
-	_, err := g.Redis().Del(ctx, consts.RedisSystemConfigKey)
+	redis := g.Redis()
+	if redis == nil {
+		return gerror.NewCode(berror.RedisErr, "redis client is nil")
+	}
+
+	_, err := redis.Del(ctx, redisKey.SystemConfigKey())
 
 	m := dao.SystemConfig
 	query := m.Ctx(ctx).Safe(false).
@@ -76,7 +86,7 @@ func (s *sConfig) dbToRedis(ctx context.Context) error {
 		configMap[item.ConfigCode] = item.ConfigValue
 	}
 
-	_, err = g.Redis().HSet(ctx, consts.RedisSystemConfigKey, configMap)
+	_, err = redis.HSet(ctx, redisKey.SystemConfigKey(), configMap)
 	if err != nil {
 		return gerror.NewCode(berror.RedisErr, err.Error())
 	}

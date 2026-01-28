@@ -3,7 +3,7 @@ package enum
 import (
 	"context"
 	v1 "freeroam/app/system/api/enum/v1"
-	"freeroam/app/system/internal/consts"
+	"freeroam/app/system/internal/consts/redisKey"
 	"freeroam/app/system/internal/dao"
 	"freeroam/app/system/internal/model/entity"
 	"freeroam/app/system/internal/service"
@@ -94,7 +94,12 @@ func (s *sEnum) GetByType(ctx context.Context, in *v1.GetByTypeReq) (*v1.GetByTy
 }
 
 func (*sEnum) redisGetByTypeAndCode(ctx context.Context, enumType, enumCode string) (*entity.SystemEnumData, error) {
-	enumItem, err := g.Redis().HGet(ctx, consts.RedisEnumKey+enumType, enumCode)
+	redis := g.Redis()
+	if redis == nil {
+		return nil, gerror.NewCode(berror.RedisErr, "redis client is nil")
+	}
+
+	enumItem, err := redis.HGet(ctx, redisKey.EnumKey(enumType), enumCode)
 	if err != nil {
 		return nil, gerror.NewCode(berror.RedisErr, err.Error())
 	}
@@ -112,7 +117,12 @@ func (*sEnum) redisGetByTypeAndCode(ctx context.Context, enumType, enumCode stri
 }
 
 func (*sEnum) redisGetByType(ctx context.Context, enumType string) ([]*entity.SystemEnumData, error) {
-	enumMap, err := g.Redis().HGetAll(ctx, consts.RedisEnumKey+enumType)
+	redis := g.Redis()
+	if redis == nil {
+		return nil, gerror.NewCode(berror.RedisErr, "redis client is nil")
+	}
+
+	enumMap, err := redis.HGetAll(ctx, redisKey.EnumKey(enumType))
 	if err != nil {
 		return nil, gerror.NewCode(berror.RedisErr, err.Error())
 	}
@@ -151,7 +161,12 @@ func (*sEnum) dbToRedisByType(ctx context.Context, enumType string) error {
 		return nil
 	}
 
-	_, err := g.Redis().Del(ctx, consts.RedisEnumKey+enumType)
+	redis := g.Redis()
+	if redis == nil {
+		return gerror.NewCode(berror.RedisErr, "redis client is nil")
+	}
+
+	_, err := redis.Del(ctx, redisKey.EnumKey(enumType))
 
 	enumMap := make(g.Map, len(data))
 
@@ -159,7 +174,7 @@ func (*sEnum) dbToRedisByType(ctx context.Context, enumType string) error {
 		enumMap[item.EnumCode] = item
 	}
 
-	_, err = g.Redis().HSet(ctx, consts.RedisEnumKey+enumType, enumMap)
+	_, err = redis.HSet(ctx, redisKey.EnumKey(enumType), enumMap)
 	if err != nil {
 		return gerror.NewCode(berror.RedisErr, err.Error())
 	}
