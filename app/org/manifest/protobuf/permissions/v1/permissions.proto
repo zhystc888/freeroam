@@ -1,16 +1,16 @@
 syntax = "proto3";
 
-package permission.v1;
+package permissions.v1;
 
-option go_package = "./api/permission/v1";
+option go_package = "./api/permissions/v1";
 
-service Permission {
+service Permissions {
   // 角色权限分配
   rpc AssignRolePermissions(AssignRolePermissionsReq) returns (AssignRolePermissionsRes);
   // 查询角色权限
   rpc GetRolePermissions(GetRolePermissionsReq) returns (GetRolePermissionsRes);
   // 查询权限资源树
-  rpc GetPermissionTree(GetPermissionTreeReq) returns (GetPermissionTreeRes);
+  rpc GetPermissionsTree(GetPermissionsTreeReq) returns (GetPermissionsTreeRes);
   // 获取用户权限
   rpc GetMemberPermissions(GetMemberPermissionsReq) returns (GetMemberPermissionsRes);
 }
@@ -38,22 +38,22 @@ message GetRolePermissionsReq {
 // 查询角色权限响应
 message GetRolePermissionsRes {
   // 权限ID列表
-  repeated int64 permissionIds = 1;
+  repeated int64 permissionsIds = 1;
 }
 
 // 查询权限资源树请求
-message GetPermissionTreeReq {
+message GetPermissionsTreeReq {
   // 空请求，返回完整权限树
 }
 
 // 查询权限资源树响应
-message GetPermissionTreeRes {
+message GetPermissionsTreeRes {
   // 权限树
-  repeated PermissionTreeNode tree = 1;
+  repeated PermissionsTreeNode tree = 1;
 }
 
 // 权限树节点
-message PermissionTreeNode {
+message PermissionsTreeNode {
   // 权限ID
   int64 id = 1;
   // 权限标识
@@ -63,15 +63,15 @@ message PermissionTreeNode {
   // 权限类型:permissions_type
   string permType = 4;
   // 子节点
-  repeated PermissionTreeNode children = 5;
+  repeated PermissionsTreeNode children = 5;
 }
 
 // 获取用户权限请求
 message GetMemberPermissionsReq {
   // 成员ID
-  int64 memberId = 1; // v:required|min:1#成员ID不能为空|成员ID必须大于0
-  // 权限类型:permissions_type (不传返回所有类型)
-  repeated string PermTypes = 2;
+  int64 MemberId = 1; // v:required|min:1#成员ID不能为空|成员ID必须大于0
+  // 权限类型:permissions_type 空返回所有类型
+  repeated string PermType = 2;
 }
 
 // 获取用户权限响应

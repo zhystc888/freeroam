@@ -4,6 +4,7 @@ import (
 	"context"
 	redisKey "freeroam/app/gateway/internal/consts/redisKey"
 	"freeroam/common/berror"
+	"freeroam/common/tools/authsession"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
@@ -12,6 +13,7 @@ import (
 const (
 	fieldMemberID   = "member_id"
 	fieldVer        = "ver"
+	fieldGlobalVer  = "global_ver"
 	fieldCreatedAt  = "created_at"
 	fieldLastSeenAt = "last_seen_at"
 	fieldMaxExpAt   = "max_exp_at"
@@ -33,6 +35,7 @@ func CreateSession(ctx context.Context, sid string, sess *Session, ttlSeconds in
 	data := g.Map{
 		fieldMemberID:   sess.MemberId,
 		fieldVer:        sess.Ver,
+		fieldGlobalVer:  sess.GlobalVer,
 		fieldCreatedAt:  sess.CreatedAt,
 		fieldLastSeenAt: sess.LastSeenAt,
 		fieldMaxExpAt:   sess.MaxExpAt,
@@ -47,7 +50,7 @@ func CreateSession(ctx context.Context, sid string, sess *Session, ttlSeconds in
 		data[fieldDeviceID] = sess.DeviceID
 	}
 
-	r, err := getRedis(ctx)
+	r, err := authsession.GetRedis(ctx)
 	if err != nil {
 		return err
 	}
@@ -67,7 +70,7 @@ func CreateSession(ctx context.Context, sid string, sess *Session, ttlSeconds in
 func GetSession(ctx context.Context, sid string) (*Session, error) {
 	key := redisKey.SessKey(sid)
 
-	r, err := getRedis(ctx)
+	r, err := authsession.GetRedis(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -84,6 +87,7 @@ func GetSession(ctx context.Context, sid string) (*Session, error) {
 	sess := &Session{
 		MemberId:   gconv.Uint64(m[fieldMemberID]),
 		Ver:        gconv.Int64(m[fieldVer]),
+		GlobalVer:  gconv.Int64(m[fieldGlobalVer]),
 		CreatedAt:  gconv.Int64(m[fieldCreatedAt]),
 		LastSeenAt: gconv.Int64(m[fieldLastSeenAt]),
 		MaxExpAt:   gconv.Int64(m[fieldMaxExpAt]),
@@ -102,7 +106,7 @@ func GetSession(ctx context.Context, sid string) (*Session, error) {
 // DeleteSession 删除 sess:{sid}，幂等
 func DeleteSession(ctx context.Context, sid string) error {
 	key := redisKey.SessKey(sid)
-	r, err := getRedis(ctx)
+	r, err := authsession.GetRedis(ctx)
 	if err != nil {
 		return err
 	}
@@ -127,8 +131,8 @@ func ValidateAndTouch(
 	ctx context.Context,
 	sid string,
 	tokenMemberId uint64,
-	tokenVer int64,
-	nowUnix int64,
+	tokenVer, tokenGlobalVer,
+	nowUnix,
 	idleTimeoutSeconds int64,
 ) (*Session, int64, error) {
 	sess, err := GetSession(ctx, sid)
@@ -137,16 +141,21 @@ func ValidateAndTouch(
 	}
 
 	// 一致性校验
-	if sess.MemberId != tokenMemberId || sess.Ver != tokenVer {
+	if sess.MemberId != tokenMemberId || sess.Ver != tokenVer || sess.GlobalVer != tokenGlobalVer {
 		return nil, 0, berror.NewCode(berror.CodeTokenInvalid, "会话一致性校验失败")
 	}
 
-	currentVer, err := GetMemberVersion(ctx, sess.MemberId)
+	globalVersion, err := authsession.GetGlobalVersion(ctx)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	if tokenVer != currentVer {
+	currentVer, err := authsession.GetMemberVersion(ctx, sess.MemberId)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if tokenGlobalVer != globalVersion || tokenVer != currentVer {
 		return nil, 0, berror.NewCode(berror.CodeTokenInvalid, "会话版本已失效（可能已被强制下线）")
 	}
 
@@ -167,7 +176,7 @@ func ValidateAndTouch(
 
 	// 更新 last_seen_at + 续租 TTL
 	key := redisKey.SessKey(sid)
-	r, err := getRedis(ctx)
+	r, err := authsession.GetRedis(ctx)
 	if err != nil {
 		return nil, 0, err
 	}

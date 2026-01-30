@@ -48,6 +48,16 @@ func GetMemberVer(ctx context.Context) int64 {
 	return claims.Ver
 }
 
+// GetGlobalVer 从 ctx 的 claims 中获取会话版本 GlobalVer。
+// 当 claims 不存在时返回 0。
+func GetGlobalVer(ctx context.Context) int64 {
+	claims := GetClaims(ctx)
+	if claims == nil {
+		return 0
+	}
+	return claims.GlobalVer
+}
+
 // GetSid 从 ctx 的 claims 中获取 sid（约定使用 JWT 标准字段 jti：`RegisteredClaims.ID`）。
 // 当 claims 不存在时返回空字符串。
 func GetSid(ctx context.Context) string {

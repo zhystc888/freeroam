@@ -1,35 +1,33 @@
-package permission
+package permissions
 
 import (
 	"context"
-	v1 "freeroam/app/org/api/permission/v1"
+	v1 "freeroam/app/org/api/permissions/v1"
 	"freeroam/app/org/internal/service"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
-	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
 )
 
 type Controller struct {
-	v1.UnimplementedPermissionServer
+	v1.UnimplementedPermissionsServer
 }
 
 func Register(s *grpcx.GrpcServer) {
-	v1.RegisterPermissionServer(s.Server, &Controller{})
+	v1.RegisterPermissionsServer(s.Server, &Controller{})
 }
 
 func (*Controller) AssignRolePermissions(ctx context.Context, req *v1.AssignRolePermissionsReq) (res *v1.AssignRolePermissionsRes, err error) {
-	return service.Permission().AssignRolePermissions(ctx, req)
+	return service.Permissions().AssignRolePermissions(ctx, req)
 }
 
 func (*Controller) GetRolePermissions(ctx context.Context, req *v1.GetRolePermissionsReq) (res *v1.GetRolePermissionsRes, err error) {
-	return service.Permission().GetRolePermissions(ctx, req)
+	return service.Permissions().GetRolePermissions(ctx, req)
 }
 
-func (*Controller) GetPermissionTree(ctx context.Context, req *v1.GetPermissionTreeReq) (res *v1.GetPermissionTreeRes, err error) {
-	return service.Permission().GetPermissionTree(ctx, req)
+func (*Controller) GetPermissionsTree(ctx context.Context, req *v1.GetPermissionsTreeReq) (res *v1.GetPermissionsTreeRes, err error) {
+	return service.Permissions().GetPermissionsTree(ctx, req)
 }
 
 func (*Controller) GetMemberPermissions(ctx context.Context, req *v1.GetMemberPermissionsReq) (res *v1.GetMemberPermissionsRes, err error) {
-	return nil, gerror.NewCode(gcode.CodeNotImplemented)
+	return service.Permissions().GetMemberPermissions(ctx, req)
 }

@@ -8,6 +8,7 @@ import (
 	"freeroam/app/system/internal/model/entity"
 	"freeroam/app/system/internal/service"
 	"freeroam/common/berror"
+	"freeroam/common/tools/authsession"
 	"sort"
 
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -94,9 +95,9 @@ func (s *sEnum) GetByType(ctx context.Context, in *v1.GetByTypeReq) (*v1.GetByTy
 }
 
 func (*sEnum) redisGetByTypeAndCode(ctx context.Context, enumType, enumCode string) (*entity.SystemEnumData, error) {
-	redis := g.Redis()
-	if redis == nil {
-		return nil, gerror.NewCode(berror.RedisErr, "redis client is nil")
+	redis, err := authsession.GetRedis(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	enumItem, err := redis.HGet(ctx, redisKey.EnumKey(enumType), enumCode)
@@ -117,9 +118,9 @@ func (*sEnum) redisGetByTypeAndCode(ctx context.Context, enumType, enumCode stri
 }
 
 func (*sEnum) redisGetByType(ctx context.Context, enumType string) ([]*entity.SystemEnumData, error) {
-	redis := g.Redis()
-	if redis == nil {
-		return nil, gerror.NewCode(berror.RedisErr, "redis client is nil")
+	redis, err := authsession.GetRedis(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	enumMap, err := redis.HGetAll(ctx, redisKey.EnumKey(enumType))
@@ -161,12 +162,12 @@ func (*sEnum) dbToRedisByType(ctx context.Context, enumType string) error {
 		return nil
 	}
 
-	redis := g.Redis()
-	if redis == nil {
-		return gerror.NewCode(berror.RedisErr, "redis client is nil")
+	redis, err := authsession.GetRedis(ctx)
+	if err != nil {
+		return err
 	}
 
-	_, err := redis.Del(ctx, redisKey.EnumKey(enumType))
+	_, err = redis.Del(ctx, redisKey.EnumKey(enumType))
 
 	enumMap := make(g.Map, len(data))
 

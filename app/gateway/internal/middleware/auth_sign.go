@@ -51,9 +51,9 @@ func AuthSign(r *ghttp.Request) {
 
 	if _, _, err := authsession.ValidateAndTouch(
 		r.Context(),
-		claims.ID,       // sid = jti
-		claims.MemberId, // token 内的 member_id
-		claims.Ver,      // token 内的 ver
+		claims.ID,                    // sid = jti
+		claims.MemberId,              // token 内的 member_id
+		claims.Ver, claims.GlobalVer, // token 内的 ver
 		time.Now().Unix(),
 		idleTimeoutSeconds,
 	); err != nil {

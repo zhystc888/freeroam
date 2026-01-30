@@ -8,6 +8,7 @@ import (
 	"freeroam/app/system/internal/model/entity"
 	"freeroam/app/system/internal/service"
 	"freeroam/common/berror"
+	"freeroam/common/tools/authsession"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
@@ -40,9 +41,9 @@ func (s *sConfig) GetByCode(ctx context.Context, in *v1.GetByCodeReq) (*v1.GetBy
 }
 
 func (*sConfig) redisGetByCode(ctx context.Context, configCode string) (*string, error) {
-	redis := g.Redis()
-	if redis == nil {
-		return nil, gerror.NewCode(berror.RedisErr, "redis client is nil")
+	redis, err := authsession.GetRedis(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	enumItem, err := redis.HGet(ctx, redisKey.SystemConfigKey(), configCode)
@@ -60,12 +61,12 @@ func (*sConfig) redisGetByCode(ctx context.Context, configCode string) (*string,
 }
 
 func (s *sConfig) dbToRedis(ctx context.Context) error {
-	redis := g.Redis()
-	if redis == nil {
-		return gerror.NewCode(berror.RedisErr, "redis client is nil")
+	redis, err := authsession.GetRedis(ctx)
+	if err != nil {
+		return err
 	}
 
-	_, err := redis.Del(ctx, redisKey.SystemConfigKey())
+	_, err = redis.Del(ctx, redisKey.SystemConfigKey())
 
 	m := dao.SystemConfig
 	query := m.Ctx(ctx).Safe(false).

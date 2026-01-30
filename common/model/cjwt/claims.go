@@ -8,8 +8,9 @@ import (
 // 根据文档：成员登录与会话管理方案
 type Claims struct {
 	// 业务字段（仅业务相关，避免与 JWT 标准字段冲突）
-	MemberId uint64 `json:"member_id"` // 成员ID
-	Ver      int64  `json:"ver"`       // 成员会话版本
+	MemberId  uint64 `json:"member_id"`  // 成员ID
+	Ver       int64  `json:"ver"`        // 成员会话版本
+	GlobalVer int64  `json:"global_ver"` // 全局会话版本
 
 	// JWT 标准字段：只放在 RegisteredClaims（避免 exp/iat/iss/aud/jti 重复字段导致歧义）
 	// - sid 使用 jti：RegisteredClaims.ID

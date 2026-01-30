@@ -27,22 +27,22 @@ type GetRolePermissionsReq struct {
 // GetRolePermissionsRes 查询角色已分配权限响应
 type GetRolePermissionsRes struct {
 	// 权限 ID列表
-	PermissionIds []int64 `json:"permissionIds" dc:"权限ID列表"`
+	PermissionsIds []int64 `json:"permissionsIds" dc:"权限ID列表"`
 }
 
-// GetPermissionTreeReq 查询权限资源树请求
-type GetPermissionTreeReq struct {
+// GetPermissionsTreeReq 查询权限资源树请求
+type GetPermissionsTreeReq struct {
 	g.Meta `path:"/org/permissions/tree" tags:"权限管理" method:"get" summary:"查询权限资源树" perm:"org:permissions:tree:get"`
 }
 
-// GetPermissionTreeRes 查询权限资源树响应
-type GetPermissionTreeRes struct {
+// GetPermissionsTreeRes 查询权限资源树响应
+type GetPermissionsTreeRes struct {
 	// 权限树
-	Tree []*PermissionTreeNode `json:"tree" dc:"权限树"`
+	Tree []*PermissionsTreeNode `json:"tree" dc:"权限树"`
 }
 
-// PermissionTreeNode 权限树节点
-type PermissionTreeNode struct {
+// PermissionsTreeNode 权限树节点
+type PermissionsTreeNode struct {
 	// 权限 ID
 	Id int64 `json:"id" dc:"权限ID"`
 	// 权限标识
@@ -52,7 +52,7 @@ type PermissionTreeNode struct {
 	// 权限类型:permissions_type
 	PermType string `json:"permType" dc:"权限类型:permissions_type"`
 	// 子节点
-	Children []*PermissionTreeNode `json:"children" dc:"子节点"`
+	Children []*PermissionsTreeNode `json:"children" dc:"子节点"`
 }
 
 // GetFrontPermissionsReq 获取前端权限集合请求

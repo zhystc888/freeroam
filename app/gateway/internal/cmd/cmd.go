@@ -5,7 +5,7 @@ import (
 	"freeroam/app/gateway/internal/controller/auth"
 	"freeroam/app/gateway/internal/controller/enum"
 	"freeroam/app/gateway/internal/controller/org"
-	"freeroam/app/gateway/internal/controller/permission"
+	"freeroam/app/gateway/internal/controller/permissions"
 	"freeroam/app/gateway/internal/controller/position"
 	"freeroam/app/gateway/internal/controller/role"
 	"freeroam/app/gateway/internal/middleware"
@@ -35,7 +35,7 @@ var (
 					role.NewV1(),
 					org.NewV1(),
 					position.NewV1(),
-					permission.NewV1(),
+					permissions.NewV1(),
 				)
 			})
 			s.Run()

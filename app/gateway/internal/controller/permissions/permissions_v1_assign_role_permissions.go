@@ -1,19 +1,18 @@
-package permission
+package permissions
 
 import (
 	"context"
-
-	v1 "freeroam/app/gateway/api/permission/v1"
-	oPermission "freeroam/app/org/api/permission/v1"
+	"freeroam/app/gateway/api/permissions/v1"
+	oPermissions "freeroam/app/org/api/permissions/v1"
 )
 
 func (c *ControllerV1) AssignRolePermissions(ctx context.Context, req *v1.AssignRolePermissionsReq) (res *v1.AssignRolePermissionsRes, err error) {
-	rpcReq := &oPermission.AssignRolePermissionsReq{
+	rpcReq := &oPermissions.AssignRolePermissionsReq{
 		RoleId:    req.RoleId,
 		PermCodes: req.PermCodes,
 	}
 
-	rpcRes, err := c.PermissionRpcService.AssignRolePermissions(ctx, rpcReq)
+	rpcRes, err := c.PermissionsRpcService.AssignRolePermissions(ctx, rpcReq)
 	if err != nil {
 		return nil, err
 	}

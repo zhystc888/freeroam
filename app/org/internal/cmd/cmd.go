@@ -4,7 +4,7 @@ import (
 	"context"
 	"freeroam/app/org/internal/controller/auth"
 	"freeroam/app/org/internal/controller/org"
-	"freeroam/app/org/internal/controller/permission"
+	"freeroam/app/org/internal/controller/permissions"
 	"freeroam/app/org/internal/controller/position"
 	"freeroam/app/org/internal/controller/role"
 	"freeroam/common/interceptor/cgrpcx"
@@ -35,7 +35,7 @@ var (
 			auth.Register(s)
 			org.Register(s)
 			position.Register(s)
-			permission.Register(s)
+			permissions.Register(s)
 			s.Run()
 			return nil
 		},

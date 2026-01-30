@@ -17,6 +17,7 @@ package authsession
 type Session struct {
 	MemberId   uint64
 	Ver        int64
+	GlobalVer  int64
 	CreatedAt  int64
 	LastSeenAt int64
 	MaxExpAt   int64

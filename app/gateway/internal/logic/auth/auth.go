@@ -11,6 +11,7 @@ import (
 	jwtutil "freeroam/app/gateway/internal/utility/jwt"
 	orgAuth "freeroam/app/org/api/auth/v1"
 	"freeroam/common/berror"
+	cAuthsession "freeroam/common/tools/authsession"
 	"freeroam/common/tools/systemConfig"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
@@ -52,13 +53,19 @@ func (s *sAuth) Login(ctx context.Context, req *v1.LoginReq) (res *v1.LoginRes, 
 	now := time.Now().Unix()
 	maxExpAt := now + maxLifetimeSeconds
 
-	// 生成/获取会话版本 ver
+	// 生成/获取 用户 会话版本 ver
 	var ver int64
 	if allowMultiLogin {
-		ver, err = authsession.GetOrInitMemberVersion(ctx, memberRes.MemberId, 1)
+		ver, err = cAuthsession.GetOrInitMemberVersion(ctx, memberRes.MemberId, 1)
 	} else {
-		ver, err = authsession.IncrMemberVersion(ctx, memberRes.MemberId)
+		ver, err = cAuthsession.IncrMemberVersion(ctx, memberRes.MemberId)
 	}
+	if err != nil {
+		return nil, err
+	}
+
+	// 生成/获取 全局 会话版本 ver
+	globalVer, err := cAuthsession.GetOrInitGlobalVersion(ctx, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -70,6 +77,7 @@ func (s *sAuth) Login(ctx context.Context, req *v1.LoginReq) (res *v1.LoginRes, 
 	sess := &authsession.Session{
 		MemberId:   memberRes.MemberId,
 		Ver:        ver,
+		GlobalVer:  globalVer,
 		CreatedAt:  now,
 		LastSeenAt: now,
 		MaxExpAt:   maxExpAt,
@@ -93,8 +101,9 @@ func (s *sAuth) Login(ctx context.Context, req *v1.LoginReq) (res *v1.LoginRes, 
 
 	// 签发 JWT：member_id/ver 为业务字段；jti(sid)/exp 等为标准字段
 	claims := &cjwt.Claims{
-		MemberId: memberRes.MemberId,
-		Ver:      ver,
+		MemberId:  memberRes.MemberId,
+		Ver:       ver,
+		GlobalVer: globalVer,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ID:        sid, // jti = sid
 			ExpiresAt: jwt.NewNumericDate(time.Unix(maxExpAt, 0)),

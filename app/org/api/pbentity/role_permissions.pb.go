@@ -29,16 +29,16 @@ const (
 
 type RolePermissions struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty" dc:"主键ID"`                      // 主键ID
-	RoleId        uint64                 `protobuf:"varint,2,opt,name=RoleId,proto3" json:"RoleId,omitempty" dc:"角色ID"`              // 角色ID
-	PermissionId  uint64                 `protobuf:"varint,3,opt,name=PermissionId,proto3" json:"PermissionId,omitempty" dc:"权限ID"`  // 权限ID
-	IsDeleted     uint32                 `protobuf:"varint,4,opt,name=IsDeleted,proto3" json:"IsDeleted,omitempty" dc:"是否删除0:否,1:是"` // 是否删除0:否,1:是
-	CreateBy      uint64                 `protobuf:"varint,5,opt,name=CreateBy,proto3" json:"CreateBy,omitempty" dc:"创建人"`           // 创建人
-	UpdateBy      uint64                 `protobuf:"varint,6,opt,name=UpdateBy,proto3" json:"UpdateBy,omitempty" dc:"修改人"`           // 修改人
-	DeleteBy      uint64                 `protobuf:"varint,7,opt,name=DeleteBy,proto3" json:"DeleteBy,omitempty" dc:"删除人"`           // 删除人
-	CreateAt      *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=CreateAt,proto3" json:"CreateAt,omitempty" dc:"创建时间"`           // 创建时间
-	UpdateAt      *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=UpdateAt,proto3" json:"UpdateAt,omitempty" dc:"更新时间"`           // 更新时间
-	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=DeletedAt,proto3" json:"DeletedAt,omitempty" dc:"删除时间"`        // 删除时间
+	Id            uint64                 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty" dc:"主键ID"`                       // 主键ID
+	RoleId        uint64                 `protobuf:"varint,2,opt,name=RoleId,proto3" json:"RoleId,omitempty" dc:"角色ID"`               // 角色ID
+	PermissionsId uint64                 `protobuf:"varint,3,opt,name=PermissionsId,proto3" json:"PermissionsId,omitempty" dc:"权限ID"` // 权限ID
+	IsDeleted     uint32                 `protobuf:"varint,4,opt,name=IsDeleted,proto3" json:"IsDeleted,omitempty" dc:"是否删除0:否,1:是"`  // 是否删除0:否,1:是
+	CreateBy      uint64                 `protobuf:"varint,5,opt,name=CreateBy,proto3" json:"CreateBy,omitempty" dc:"创建人"`            // 创建人
+	UpdateBy      uint64                 `protobuf:"varint,6,opt,name=UpdateBy,proto3" json:"UpdateBy,omitempty" dc:"修改人"`            // 修改人
+	DeleteBy      uint64                 `protobuf:"varint,7,opt,name=DeleteBy,proto3" json:"DeleteBy,omitempty" dc:"删除人"`            // 删除人
+	CreateAt      *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=CreateAt,proto3" json:"CreateAt,omitempty" dc:"创建时间"`            // 创建时间
+	UpdateAt      *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=UpdateAt,proto3" json:"UpdateAt,omitempty" dc:"更新时间"`            // 更新时间
+	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=DeletedAt,proto3" json:"DeletedAt,omitempty" dc:"删除时间"`         // 删除时间
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -87,9 +87,9 @@ func (x *RolePermissions) GetRoleId() uint64 {
 	return 0
 }
 
-func (x *RolePermissions) GetPermissionId() uint64 {
+func (x *RolePermissions) GetPermissionsId() uint64 {
 	if x != nil {
-		return x.PermissionId
+		return x.PermissionsId
 	}
 	return 0
 }
@@ -147,11 +147,11 @@ var File_pbentity_role_permissions_proto protoreflect.FileDescriptor
 
 const file_pbentity_role_permissions_proto_rawDesc = "" +
 	"\n" +
-	"\x1fpbentity/role_permissions.proto\x12\bpbentity\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf9\x02\n" +
+	"\x1fpbentity/role_permissions.proto\x12\bpbentity\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfb\x02\n" +
 	"\x0fRolePermissions\x12\x0e\n" +
 	"\x02Id\x18\x01 \x01(\x04R\x02Id\x12\x16\n" +
-	"\x06RoleId\x18\x02 \x01(\x04R\x06RoleId\x12\"\n" +
-	"\fPermissionId\x18\x03 \x01(\x04R\fPermissionId\x12\x1c\n" +
+	"\x06RoleId\x18\x02 \x01(\x04R\x06RoleId\x12$\n" +
+	"\rPermissionsId\x18\x03 \x01(\x04R\rPermissionsId\x12\x1c\n" +
 	"\tIsDeleted\x18\x04 \x01(\rR\tIsDeleted\x12\x1a\n" +
 	"\bCreateBy\x18\x05 \x01(\x04R\bCreateBy\x12\x1a\n" +
 	"\bUpdateBy\x18\x06 \x01(\x04R\bUpdateBy\x12\x1a\n" +

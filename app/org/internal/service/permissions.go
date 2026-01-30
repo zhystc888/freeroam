@@ -7,33 +7,33 @@ package service
 
 import (
 	"context"
-	v1 "freeroam/app/org/api/permission/v1"
+	v1 "freeroam/app/org/api/permissions/v1"
 )
 
 type (
-	IPermission interface {
+	IPermissions interface {
 		// AssignRolePermissions 角色权限分配
 		AssignRolePermissions(ctx context.Context, req *v1.AssignRolePermissionsReq) (*v1.AssignRolePermissionsRes, error)
 		// GetRolePermissions 查询角色权限
 		GetRolePermissions(ctx context.Context, req *v1.GetRolePermissionsReq) (*v1.GetRolePermissionsRes, error)
-		// GetPermissionTree 查询权限资源树（授权用）
-		GetPermissionTree(ctx context.Context, req *v1.GetPermissionTreeReq) (*v1.GetPermissionTreeRes, error)
+		// GetPermissionsTree 查询权限资源树（授权用）
+		GetPermissionsTree(ctx context.Context, req *v1.GetPermissionsTreeReq) (*v1.GetPermissionsTreeRes, error)
 		// GetMemberPermissions 获取用户权限
 		GetMemberPermissions(ctx context.Context, req *v1.GetMemberPermissionsReq) (*v1.GetMemberPermissionsRes, error)
 	}
 )
 
 var (
-	localPermission IPermission
+	localPermissions IPermissions
 )
 
-func Permission() IPermission {
-	if localPermission == nil {
-		panic("implement not found for interface IPermission, forgot register?")
+func Permissions() IPermissions {
+	if localPermissions == nil {
+		panic("implement not found for interface IPermissions, forgot register?")
 	}
-	return localPermission
+	return localPermissions
 }
 
-func RegisterPermission(i IPermission) {
-	localPermission = i
+func RegisterPermissions(i IPermissions) {
+	localPermissions = i
 }

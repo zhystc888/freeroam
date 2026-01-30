@@ -6,7 +6,7 @@ import (
 
 const (
 	// RootPrefix Redis key 根前缀（固定，不做配置化拼接）
-	RootPrefix = "free"
+	RootPrefix = "free:"
 )
 
 // GetFullKey 将 keyFmt 和 args 通过 fmt.Sprintf 生成最终 Redis key。

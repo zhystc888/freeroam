@@ -21,30 +21,30 @@ type RolePermissionsDao struct {
 
 // RolePermissionsColumns defines and stores column names for the table free_role_permissions.
 type RolePermissionsColumns struct {
-	Id           string // 主键ID
-	RoleId       string // 角色ID
-	PermissionId string // 权限ID
-	IsDeleted    string // 是否删除0:否,1:是
-	CreateBy     string // 创建人
-	UpdateBy     string // 修改人
-	DeleteBy     string // 删除人
-	CreateAt     string // 创建时间
-	UpdateAt     string // 更新时间
-	DeletedAt    string // 删除时间
+	Id            string // 主键ID
+	RoleId        string // 角色ID
+	PermissionsId string // 权限ID
+	IsDeleted     string // 是否删除0:否,1:是
+	CreateBy      string // 创建人
+	UpdateBy      string // 修改人
+	DeleteBy      string // 删除人
+	CreateAt      string // 创建时间
+	UpdateAt      string // 更新时间
+	DeletedAt     string // 删除时间
 }
 
 // rolePermissionsColumns holds the columns for the table free_role_permissions.
 var rolePermissionsColumns = RolePermissionsColumns{
-	Id:           "id",
-	RoleId:       "role_id",
-	PermissionId: "permission_id",
-	IsDeleted:    "is_deleted",
-	CreateBy:     "create_by",
-	UpdateBy:     "update_by",
-	DeleteBy:     "delete_by",
-	CreateAt:     "create_at",
-	UpdateAt:     "update_at",
-	DeletedAt:    "deleted_at",
+	Id:            "id",
+	RoleId:        "role_id",
+	PermissionsId: "permissions_id",
+	IsDeleted:     "is_deleted",
+	CreateBy:      "create_by",
+	UpdateBy:      "update_by",
+	DeleteBy:      "delete_by",
+	CreateAt:      "create_at",
+	UpdateAt:      "update_at",
+	DeletedAt:     "deleted_at",
 }
 
 // NewRolePermissionsDao creates and returns a new DAO object for table data access.
